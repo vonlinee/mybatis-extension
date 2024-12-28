@@ -15,6 +15,8 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
+import org.apache.ibatis.scripting.ExpressionEvaluator;
+
 /**
  * @author Frank D. Martinez [mnesarco]
  */
@@ -22,15 +24,17 @@ public class VarDeclSqlNode implements SqlNode {
 
   private final String name;
   private final String expression;
+  private final ExpressionEvaluator evaluator;
 
-  public VarDeclSqlNode(String name, String exp) {
+  public VarDeclSqlNode(ExpressionEvaluator evaluator, String name, String exp) {
     this.name = name;
     this.expression = exp;
+    this.evaluator = evaluator;
   }
 
   @Override
   public boolean apply(DynamicContext context) {
-    final Object value = OgnlCache.getValue(expression, context.getBindings());
+    final Object value = evaluator.getValue(expression, context.getBindings());
     context.bind(name, value);
     return true;
   }

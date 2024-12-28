@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.ibatis.domain.blog.Author;
+import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -59,8 +60,8 @@ class ChooseSqlNodeTest extends SqlNodeTest {
 
   @BeforeEach
   void setup() {
-    SqlNode first = new IfSqlNode(new StaticTextSqlNode(FIRST_TEXT), "title != null");
-    SqlNode second = new IfSqlNode(new StaticTextSqlNode(SECOND_TEXT), "author != null && author.username != null");
+    SqlNode first = new IfSqlNode(new OgnlExpressionEvaluator(), new StaticTextSqlNode(FIRST_TEXT), "title != null");
+    SqlNode second = new IfSqlNode(new OgnlExpressionEvaluator(), new StaticTextSqlNode(SECOND_TEXT), "author != null && author.username != null");
     List<SqlNode> ifNodes = Arrays.asList(first, second);
 
     SqlNode defaultNode = new StaticTextSqlNode(OTHERWISE_TEXT);

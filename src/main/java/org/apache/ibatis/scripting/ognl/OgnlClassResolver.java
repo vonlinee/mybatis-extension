@@ -13,10 +13,9 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package org.apache.ibatis.scripting.xmltags;
+package org.apache.ibatis.scripting.ognl;
 
 import ognl.DefaultClassResolver;
-
 import org.apache.ibatis.io.Resources;
 
 /**
@@ -24,13 +23,12 @@ import org.apache.ibatis.io.Resources;
  * {@code Resources} utility class to find the target class instead of {@code Class#forName(String)}.
  *
  * @author Daniel Guggi
- *
  * @see <a href='https://github.com/mybatis/mybatis-3/issues/161'>Issue 161</a>
  */
-public class OgnlClassResolver extends DefaultClassResolver {
+class OgnlClassResolver extends DefaultClassResolver {
 
   @Override
-  protected Class toClassForName(String className) throws ClassNotFoundException {
+  protected Class<?> toClassForName(String className) throws ClassNotFoundException {
     return Resources.classForName(className);
   }
 

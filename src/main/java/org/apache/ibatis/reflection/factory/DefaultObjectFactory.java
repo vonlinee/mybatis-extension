@@ -15,6 +15,11 @@
  */
 package org.apache.ibatis.reflection.factory;
 
+import org.apache.ibatis.reflection.ReflectionException;
+import org.apache.ibatis.reflection.Reflector;
+import org.apache.ibatis.scripting.ExpressionEvaluator;
+import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
+
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -24,14 +29,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
-import org.apache.ibatis.reflection.ReflectionException;
-import org.apache.ibatis.reflection.Reflector;
 
 /**
  * @author Clinton Begin
@@ -40,8 +44,27 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
 
   private static final long serialVersionUID = -8855120656740914948L;
 
+  Map<Class<?>, Supplier<?>> objectProviders = new HashMap<>();
+
+  {
+    // TODO find a better way to create internal singleton object
+    objectProviders.put(ExpressionEvaluator.class, new Supplier<ExpressionEvaluator>() {
+      @Override
+      public ExpressionEvaluator get() {
+        return new OgnlExpressionEvaluator();
+      }
+    });
+  }
+
   @Override
+  @SuppressWarnings("unchecked")
   public <T> T create(Class<T> type) {
+    if (objectProviders.containsKey(type)) {
+      Supplier<?> supplier = objectProviders.get(type);
+      Object object = supplier.get();
+      Objects.requireNonNull(object, "cannot provider null object");
+      return (T) object;
+    }
     return create(type, null, null);
   }
 
@@ -80,11 +103,11 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
       }
     } catch (Exception e) {
       String argTypes = Optional.ofNullable(constructorArgTypes).orElseGet(Collections::emptyList).stream()
-          .map(Class::getSimpleName).collect(Collectors.joining(","));
+        .map(Class::getSimpleName).collect(Collectors.joining(","));
       String argValues = Optional.ofNullable(constructorArgs).orElseGet(Collections::emptyList).stream()
-          .map(String::valueOf).collect(Collectors.joining(","));
+        .map(String::valueOf).collect(Collectors.joining(","));
       throw new ReflectionException("Error instantiating " + type + " with invalid types (" + argTypes + ") or values ("
-          + argValues + "). Cause: " + e, e);
+        + argValues + "). Cause: " + e, e);
     }
   }
 

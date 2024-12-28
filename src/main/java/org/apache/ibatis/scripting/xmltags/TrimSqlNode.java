@@ -15,14 +15,15 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
+import org.apache.ibatis.session.Configuration;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
-
-import org.apache.ibatis.session.Configuration;
 
 /**
  * @author Clinton Begin
@@ -34,22 +35,19 @@ public class TrimSqlNode implements SqlNode {
   private final String suffix;
   private final List<String> prefixesToOverride;
   private final List<String> suffixesToOverride;
-  private final Configuration configuration;
 
-  public TrimSqlNode(Configuration configuration, SqlNode contents, String prefix, String prefixesToOverride,
-      String suffix, String suffixesToOverride) {
-    this(configuration, contents, prefix, parseOverrides(prefixesToOverride), suffix,
-        parseOverrides(suffixesToOverride));
+  public TrimSqlNode(SqlNode contents, String prefix, String prefixesToOverride,
+                     String suffix, String suffixesToOverride) {
+    this(contents, prefix, parseOverrides(prefixesToOverride), suffix, parseOverrides(suffixesToOverride));
   }
 
-  protected TrimSqlNode(Configuration configuration, SqlNode contents, String prefix, List<String> prefixesToOverride,
-      String suffix, List<String> suffixesToOverride) {
+  protected TrimSqlNode(SqlNode contents, String prefix, List<String> prefixesToOverride,
+                        String suffix, List<String> suffixesToOverride) {
     this.contents = contents;
     this.prefix = prefix;
     this.prefixesToOverride = prefixesToOverride;
     this.suffix = suffix;
     this.suffixesToOverride = suffixesToOverride;
-    this.configuration = configuration;
   }
 
   @Override
@@ -72,14 +70,13 @@ public class TrimSqlNode implements SqlNode {
     return Collections.emptyList();
   }
 
-  private class FilteredDynamicContext extends DynamicContext {
+  private class FilteredDynamicContext implements DynamicContext {
     private final DynamicContext delegate;
     private boolean prefixApplied;
     private boolean suffixApplied;
     private StringBuilder sqlBuffer;
 
     public FilteredDynamicContext(DynamicContext delegate) {
-      super(configuration, null);
       this.delegate = delegate;
       this.prefixApplied = false;
       this.suffixApplied = false;
@@ -89,7 +86,7 @@ public class TrimSqlNode implements SqlNode {
     public void applyAll() {
       sqlBuffer = new StringBuilder(sqlBuffer.toString().trim());
       String trimmedUppercaseSql = sqlBuffer.toString().toUpperCase(Locale.ENGLISH);
-      if (trimmedUppercaseSql.length() > 0) {
+      if (!trimmedUppercaseSql.isEmpty()) {
         applyPrefix(sqlBuffer, trimmedUppercaseSql);
         applySuffix(sqlBuffer, trimmedUppercaseSql);
       }
@@ -97,7 +94,7 @@ public class TrimSqlNode implements SqlNode {
     }
 
     @Override
-    public Map<String, Object> getBindings() {
+    public @NotNull Map<String, Object> getBindings() {
       return delegate.getBindings();
     }
 
@@ -117,7 +114,7 @@ public class TrimSqlNode implements SqlNode {
     }
 
     @Override
-    public String getSql() {
+    public @NotNull String getSql() {
       return delegate.getSql();
     }
 
@@ -125,10 +122,10 @@ public class TrimSqlNode implements SqlNode {
       if (prefixApplied) {
         return;
       }
-      prefixApplied = true;
+      this.prefixApplied = true;
       if (prefixesToOverride != null) {
         prefixesToOverride.stream().filter(trimmedUppercaseSql::startsWith).findFirst()
-            .ifPresent(toRemove -> sql.delete(0, toRemove.trim().length()));
+          .ifPresent(toRemove -> sql.delete(0, toRemove.trim().length()));
       }
       if (prefix != null) {
         sql.insert(0, " ").insert(0, prefix);
@@ -142,12 +139,12 @@ public class TrimSqlNode implements SqlNode {
       suffixApplied = true;
       if (suffixesToOverride != null) {
         suffixesToOverride.stream()
-            .filter(toRemove -> trimmedUppercaseSql.endsWith(toRemove) || trimmedUppercaseSql.endsWith(toRemove.trim()))
-            .findFirst().ifPresent(toRemove -> {
-              int start = sql.length() - toRemove.trim().length();
-              int end = sql.length();
-              sql.delete(start, end);
-            });
+          .filter(toRemove -> trimmedUppercaseSql.endsWith(toRemove) || trimmedUppercaseSql.endsWith(toRemove.trim()))
+          .findFirst().ifPresent(toRemove -> {
+            int start = sql.length() - toRemove.trim().length();
+            int end = sql.length();
+            sql.delete(start, end);
+          });
       }
       if (suffix != null) {
         sql.append(" ").append(suffix);

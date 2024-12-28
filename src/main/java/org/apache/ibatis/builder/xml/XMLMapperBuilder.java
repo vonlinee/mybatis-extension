@@ -25,6 +25,7 @@ import org.apache.ibatis.cache.Cache;
 import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.Discriminator;
+import org.apache.ibatis.mapping.ParameterMap;
 import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.mapping.ParameterMode;
 import org.apache.ibatis.mapping.ResultFlag;
@@ -194,7 +195,8 @@ public class XMLMapperBuilder extends BaseBuilder {
           javaTypeClass, jdbcTypeEnum, resultMap, modeEnum, typeHandlerClass, numericScale);
         parameterMappings.add(parameterMapping);
       }
-      builderAssistant.addParameterMap(id, parameterClass, parameterMappings);
+      ParameterMap parameterMap = builderAssistant.addParameterMap(id, parameterClass, parameterMappings);
+      configuration.addParameterMap(parameterMap);
     }
   }
 

@@ -15,45 +15,34 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
-import java.util.Map;
-import java.util.Optional;
-
 import org.apache.ibatis.parsing.GenericTokenParser;
-import org.apache.ibatis.session.Configuration;
+import org.apache.ibatis.scripting.ExpressionEvaluator;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
 
 /**
  * @author Clinton Begin
  */
 public class ForEachSqlNode implements SqlNode {
-  public static final String ITEM_PREFIX = "__frch_";
+  static final String ITEM_PREFIX = "__frch_";
 
   private final ExpressionEvaluator evaluator;
   private final String collectionExpression;
-  private final Boolean nullable;
+  private final boolean nullable;
   private final SqlNode contents;
   private final String open;
   private final String close;
   private final String separator;
   private final String item;
   private final String index;
-  private final Configuration configuration;
-
-  /**
-   * @deprecated Since 3.5.9, use the
-   *             {@link #ForEachSqlNode(Configuration, SqlNode, String, Boolean, String, String, String, String, String)}.
-   */
-  @Deprecated
-  public ForEachSqlNode(Configuration configuration, SqlNode contents, String collectionExpression, String index,
-      String item, String open, String close, String separator) {
-    this(configuration, contents, collectionExpression, null, index, item, open, close, separator);
-  }
 
   /**
    * @since 3.5.9
    */
-  public ForEachSqlNode(Configuration configuration, SqlNode contents, String collectionExpression, Boolean nullable,
-      String index, String item, String open, String close, String separator) {
-    this.evaluator = new ExpressionEvaluator();
+  public ForEachSqlNode(@NotNull ExpressionEvaluator evaluator, SqlNode contents, String collectionExpression, boolean nullable,
+                        String index, String item, String open, String close, String separator) {
+    this.evaluator = evaluator;
     this.collectionExpression = collectionExpression;
     this.nullable = nullable;
     this.contents = contents;
@@ -62,14 +51,12 @@ public class ForEachSqlNode implements SqlNode {
     this.separator = separator;
     this.index = index;
     this.item = item;
-    this.configuration = configuration;
   }
 
   @Override
   public boolean apply(DynamicContext context) {
     Map<String, Object> bindings = context.getBindings();
-    final Iterable<?> iterable = evaluator.evaluateIterable(collectionExpression, bindings,
-        Optional.ofNullable(nullable).orElseGet(configuration::isNullableOnForEach));
+    final Iterable<?> iterable = evaluator.evaluateIterable(collectionExpression, bindings, nullable);
     if (iterable == null || !iterable.iterator().hasNext()) {
       return true;
     }
@@ -94,7 +81,7 @@ public class ForEachSqlNode implements SqlNode {
         applyIndex(context, i, uniqueNumber);
         applyItem(context, o, uniqueNumber);
       }
-      contents.apply(new FilteredDynamicContext(configuration, context, index, item, uniqueNumber));
+      contents.apply(new FilteredDynamicContext(context, index, item, uniqueNumber));
       if (first) {
         first = !((PrefixedContext) context).isPrefixApplied();
       }
@@ -137,15 +124,14 @@ public class ForEachSqlNode implements SqlNode {
     return ITEM_PREFIX + item + "_" + i;
   }
 
-  private static class FilteredDynamicContext extends DynamicContext {
+  private static class FilteredDynamicContext implements DynamicContext {
     private final DynamicContext delegate;
     private final int index;
     private final String itemIndex;
     private final String item;
 
-    public FilteredDynamicContext(Configuration configuration, DynamicContext delegate, String itemIndex, String item,
-        int i) {
-      super(configuration, null);
+    public FilteredDynamicContext(DynamicContext delegate, String itemIndex, String item,
+                                  int i) {
       this.delegate = delegate;
       this.index = i;
       this.itemIndex = itemIndex;
@@ -153,7 +139,7 @@ public class ForEachSqlNode implements SqlNode {
     }
 
     @Override
-    public Map<String, Object> getBindings() {
+    public @NotNull Map<String, Object> getBindings() {
       return delegate.getBindings();
     }
 
@@ -163,7 +149,7 @@ public class ForEachSqlNode implements SqlNode {
     }
 
     @Override
-    public String getSql() {
+    public @NotNull String getSql() {
       return delegate.getSql();
     }
 
@@ -184,16 +170,14 @@ public class ForEachSqlNode implements SqlNode {
     public int getUniqueNumber() {
       return delegate.getUniqueNumber();
     }
-
   }
 
-  private class PrefixedContext extends DynamicContext {
+  private static class PrefixedContext implements DynamicContext {
     private final DynamicContext delegate;
     private final String prefix;
     private boolean prefixApplied;
 
     public PrefixedContext(DynamicContext delegate, String prefix) {
-      super(configuration, null);
       this.delegate = delegate;
       this.prefix = prefix;
       this.prefixApplied = false;
@@ -204,7 +188,7 @@ public class ForEachSqlNode implements SqlNode {
     }
 
     @Override
-    public Map<String, Object> getBindings() {
+    public @NotNull Map<String, Object> getBindings() {
       return delegate.getBindings();
     }
 
@@ -215,7 +199,7 @@ public class ForEachSqlNode implements SqlNode {
 
     @Override
     public void appendSql(String sql) {
-      if (!prefixApplied && sql != null && sql.trim().length() > 0) {
+      if (!prefixApplied && sql != null && !sql.trim().isEmpty()) {
         delegate.appendSql(prefix);
         prefixApplied = true;
       }
@@ -223,7 +207,7 @@ public class ForEachSqlNode implements SqlNode {
     }
 
     @Override
-    public String getSql() {
+    public @NotNull String getSql() {
       return delegate.getSql();
     }
 
@@ -232,5 +216,4 @@ public class ForEachSqlNode implements SqlNode {
       return delegate.getUniqueNumber();
     }
   }
-
 }

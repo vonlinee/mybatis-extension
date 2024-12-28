@@ -190,8 +190,9 @@ public final class TypeHandlerRegistry {
    *
    * @since 3.4.5
    */
-  public void setDefaultEnumTypeHandler(Class<? extends TypeHandler> typeHandler) {
-    this.defaultEnumTypeHandler = typeHandler;
+  @SuppressWarnings("unchecked")
+  public <T> void setDefaultEnumTypeHandler(Class<T> typeHandler) {
+    this.defaultEnumTypeHandler = (Class<? extends TypeHandler>) typeHandler;
   }
 
   public boolean hasTypeHandler(Class<?> javaType) {

@@ -27,6 +27,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.IntStream;
 
+import org.apache.ibatis.scripting.ognl.OgnlCache;
 import org.junit.jupiter.api.Test;
 
 class OgnlCacheTest {

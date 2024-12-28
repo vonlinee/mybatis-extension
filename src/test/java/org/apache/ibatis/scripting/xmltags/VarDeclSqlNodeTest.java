@@ -15,14 +15,15 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * <pre>{@code
@@ -32,7 +33,6 @@ import org.junit.jupiter.api.Test;
  * }</pre>
  *
  * @author <a href="1181963012mw@gmail.com">mawen12</a>
- *
  * @see <a href="https://mybatis.org/mybatis-3/dynamic-sql.html#bind">bind</a>
  */
 class VarDeclSqlNodeTest extends SqlNodeTest {
@@ -41,7 +41,7 @@ class VarDeclSqlNodeTest extends SqlNodeTest {
 
   @BeforeEach
   void setup() {
-    this.sqlNode = new VarDeclSqlNode("pattern", "'%' + _parameter.getTitle() + '%'");
+    this.sqlNode = new VarDeclSqlNode(new OgnlExpressionEvaluator(), "pattern", "'%' + _parameter.getTitle() + '%'");
   }
 
   @Test

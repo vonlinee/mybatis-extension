@@ -15,12 +15,13 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
-import java.util.regex.Pattern;
-
 import org.apache.ibatis.parsing.GenericTokenParser;
 import org.apache.ibatis.parsing.TokenHandler;
+import org.apache.ibatis.scripting.ExpressionEvaluator;
 import org.apache.ibatis.scripting.ScriptingException;
 import org.apache.ibatis.type.SimpleTypeRegistry;
+
+import java.util.regex.Pattern;
 
 /**
  * @author Clinton Begin
@@ -28,13 +29,15 @@ import org.apache.ibatis.type.SimpleTypeRegistry;
 public class TextSqlNode implements SqlNode {
   private final String text;
   private final Pattern injectionFilter;
+  private final ExpressionEvaluator evaluator;
 
-  public TextSqlNode(String text) {
-    this(text, null);
+  public TextSqlNode(String text, ExpressionEvaluator evaluator) {
+    this(text, evaluator, null);
   }
 
-  public TextSqlNode(String text, Pattern injectionFilter) {
+  public TextSqlNode(String text, ExpressionEvaluator evaluator, Pattern injectionFilter) {
     this.text = text;
+    this.evaluator = evaluator;
     this.injectionFilter = injectionFilter;
   }
 
@@ -47,7 +50,7 @@ public class TextSqlNode implements SqlNode {
 
   @Override
   public boolean apply(DynamicContext context) {
-    GenericTokenParser parser = createParser(new BindingTokenParser(context, injectionFilter));
+    GenericTokenParser parser = createParser(new BindingTokenParser(context, injectionFilter, evaluator));
     context.appendSql(parser.parse(text));
     return true;
   }
@@ -60,10 +63,12 @@ public class TextSqlNode implements SqlNode {
 
     private final DynamicContext context;
     private final Pattern injectionFilter;
+    private final ExpressionEvaluator evaluator;
 
-    public BindingTokenParser(DynamicContext context, Pattern injectionFilter) {
+    public BindingTokenParser(DynamicContext context, Pattern injectionFilter, ExpressionEvaluator evaluator) {
       this.context = context;
       this.injectionFilter = injectionFilter;
+      this.evaluator = evaluator;
     }
 
     @Override
@@ -74,7 +79,7 @@ public class TextSqlNode implements SqlNode {
       } else if (SimpleTypeRegistry.isSimpleType(parameter.getClass())) {
         context.getBindings().put("value", parameter);
       }
-      Object value = OgnlCache.getValue(content, context.getBindings());
+      Object value = evaluator.getValue(content, context.getBindings());
       String srtValue = value == null ? "" : String.valueOf(value); // issue #274 return "" instead of "null"
       checkInjection(srtValue);
       return srtValue;

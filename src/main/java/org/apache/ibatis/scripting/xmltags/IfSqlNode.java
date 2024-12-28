@@ -15,6 +15,8 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
+import org.apache.ibatis.scripting.ExpressionEvaluator;
+
 /**
  * @author Clinton Begin
  */
@@ -23,10 +25,10 @@ public class IfSqlNode implements SqlNode {
   private final String test;
   private final SqlNode contents;
 
-  public IfSqlNode(SqlNode contents, String test) {
+  public IfSqlNode(ExpressionEvaluator evaluator, SqlNode contents, String test) {
     this.test = test;
     this.contents = contents;
-    this.evaluator = new ExpressionEvaluator();
+    this.evaluator = evaluator;
   }
 
   @Override
@@ -37,5 +39,4 @@ public class IfSqlNode implements SqlNode {
     }
     return false;
   }
-
 }

@@ -23,6 +23,7 @@ import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.parsing.PropertyParser;
 import org.apache.ibatis.parsing.XNode;
 import org.apache.ibatis.parsing.XPathParser;
+import org.apache.ibatis.scripting.ExpressionEvaluator;
 import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
 import org.apache.ibatis.scripting.defaults.RawSqlSource;
@@ -53,8 +54,10 @@ public class XMLLanguageDriver implements LanguageDriver {
       return createSqlSource(configuration, parser.evalNode("/script"), parameterType);
     }
     // issue #127
+    ExpressionEvaluator evaluator = configuration.getSingleton(ExpressionEvaluator.class);
+
     script = PropertyParser.parse(script, configuration.getVariables());
-    TextSqlNode textSqlNode = new TextSqlNode(script);
+    TextSqlNode textSqlNode = new TextSqlNode(script, evaluator);
     if (textSqlNode.isDynamic()) {
       return new DynamicSqlSource(configuration, textSqlNode);
     } else {

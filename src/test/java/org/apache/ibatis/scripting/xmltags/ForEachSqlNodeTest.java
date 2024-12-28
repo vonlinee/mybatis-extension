@@ -23,6 +23,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.ibatis.scripting.ExpressionEvaluator;
+import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -49,7 +51,10 @@ class ForEachSqlNodeTest extends SqlNodeTest {
   @BeforeEach
   void setup() {
     SqlNode contents = new StaticTextSqlNode("#{name}");
-    this.sqlNode = new ForEachSqlNode(configuration, contents, "list", "index", "item", "ID in (", ")", ",");
+
+    ExpressionEvaluator evaluator = new OgnlExpressionEvaluator();
+
+    this.sqlNode = new ForEachSqlNode(evaluator, contents, "list", false, "index", "item", "ID in (", ")", ",");
   }
 
   @Test
