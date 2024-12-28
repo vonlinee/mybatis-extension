@@ -255,9 +255,9 @@ public class VelocityLanguageDriverConfig {
         .uncapitalize(StringUtils.capitalize(Objects.toString(key), '-').replaceAll("-", ""));
       if (metaObject.hasSetter(propertyPath)) {
         PropertyTokenizer pt = new PropertyTokenizer(propertyPath);
-        if (Map.class.isAssignableFrom(metaObject.getGetterType(pt.getName()))) {
+        if (Map.class.isAssignableFrom(metaObject.getGetterType(pt.getPropertyName()))) {
           @SuppressWarnings("unchecked")
-          Map<String, Object> map = (Map<String, Object>) metaObject.getValue(pt.getName());
+          Map<String, Object> map = (Map<String, Object>) metaObject.getValue(pt.getPropertyName());
           map.put(pt.getChildren(), value);
         } else {
           if (value != null) {

@@ -2,6 +2,7 @@ package org.mybatis.utils;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.function.Predicate;
 
 public class StringUtils {
@@ -88,7 +89,7 @@ public class StringUtils {
 
 
   /**
-   * Uncapitalizes all the whitespace separated words in a String.
+   * un capitalizes all the whitespace separated words in a String.
    * Only the first character of each word is changed.
    *
    * <p>Whitespace is defined by {@link Character#isWhitespace(char)}.
@@ -189,7 +190,7 @@ public class StringUtils {
   /**
    * Given the array of delimiters supplied; returns a function determining whether a character code point is a delimiter.
    * The function provides O(1) lookup time.
-   * Whitespace is defined by {@link Character#isWhitespace(char)} and is used as the defaultvalue if delimiters is null.
+   * Whitespace is defined by {@link Character#isWhitespace(char)} and is used as the default value if delimiters is null.
    *
    * @param delimiters set of characters to determine delimiters, null means whitespace
    * @return Predicate<Integer> taking a code point value as an argument and returning true if a delimiter.
@@ -218,5 +219,49 @@ public class StringUtils {
       split[i] = split[i].trim();
     }
     return split;
+  }
+
+  public static String removeExtraWhitespaces(String original) {
+    StringTokenizer tokenizer = new StringTokenizer(original);
+    StringBuilder builder = new StringBuilder();
+    boolean hasMoreTokens = tokenizer.hasMoreTokens();
+    while (hasMoreTokens) {
+      builder.append(tokenizer.nextToken());
+      hasMoreTokens = tokenizer.hasMoreTokens();
+      if (hasMoreTokens) {
+        builder.append(' ');
+      }
+    }
+    return builder.toString();
+  }
+
+  public static String trimmedStr(String str, int start, int end) {
+    while (str.charAt(start) <= 0x20) {
+      start++;
+    }
+    while (str.charAt(end - 1) <= 0x20) {
+      end--;
+    }
+    return start >= end ? "" : str.substring(start, end);
+  }
+
+  public static int skipUntil(String expression, int p, final String endChars) {
+    for (int i = p; i < expression.length(); i++) {
+      char c = expression.charAt(i);
+      if (endChars.indexOf(c) > -1) {
+        return i;
+      }
+    }
+    return expression.length();
+  }
+
+  public static int skipWhitespace(String expression, int p) {
+    for (int i = p; i < expression.length(); i++) {
+      // 0x20 represents the space character in the ASCII character set
+      if (expression.charAt(i) > 0x20) {
+        return i;
+      }
+    }
+    return expression.length();
   }
 }

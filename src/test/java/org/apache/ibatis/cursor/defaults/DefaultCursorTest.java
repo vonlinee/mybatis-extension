@@ -15,22 +15,6 @@
  */
 package org.apache.ibatis.cursor.defaults;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
-
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.ibatis.builder.StaticSqlSource;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
@@ -50,6 +34,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class DefaultCursorTest {
@@ -71,7 +69,7 @@ class DefaultCursorTest {
     final RowBounds rowBounds = RowBounds.DEFAULT;
 
     final DefaultResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, ms, parameterHandler,
-        resultHandler, boundSql, rowBounds);
+      resultHandler, boundSql, rowBounds);
 
     when(rsmd.getColumnCount()).thenReturn(2);
     doReturn("id").when(rsmd).getColumnLabel(1);
@@ -103,27 +101,24 @@ class DefaultCursorTest {
     final Configuration config = new Configuration();
     final TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
 
-    ResultMap nestedResultMap = new ResultMap.Builder(config, "roleMap", HashMap.class, new ArrayList<ResultMapping>() {
-      private static final long serialVersionUID = 1L;
+    ResultMap nestedResultMap = new ResultMap.Builder(config, "roleMap", HashMap.class, new ArrayList<>() {
       {
-        add(new ResultMapping.Builder(config, "role", "role", registry.getTypeHandler(String.class)).build());
+        add(new ResultMapping.Builder("role", "role", registry.getTypeHandler(String.class)).build(config));
       }
     }).build();
     config.addResultMap(nestedResultMap);
 
     return new MappedStatement.Builder(config, "selectPerson", new StaticSqlSource(config, "select person..."),
-        SqlCommandType.SELECT).resultMaps(new ArrayList<ResultMap>() {
-          private static final long serialVersionUID = 1L;
+      SqlCommandType.SELECT).resultMaps(new ArrayList<>() {
+      {
+        add(new ResultMap.Builder(config, "personMap", HashMap.class, new ArrayList<>() {
           {
-            add(new ResultMap.Builder(config, "personMap", HashMap.class, new ArrayList<ResultMapping>() {
-              private static final long serialVersionUID = 1L;
-              {
-                add(new ResultMapping.Builder(config, "id", "id", registry.getTypeHandler(Integer.class)).build());
-                add(new ResultMapping.Builder(config, "roles").nestedResultMapId("roleMap").build());
-              }
-            }).build());
+            add(new ResultMapping.Builder("id", "id", registry.getTypeHandler(Integer.class)).build(config));
+            add(new ResultMapping.Builder("roles").nestedResultMapId("roleMap").build(config));
           }
-        }).resultOrdered(true).build();
+        }).build());
+      }
+    }).resultOrdered(true).build();
   }
 
   /*

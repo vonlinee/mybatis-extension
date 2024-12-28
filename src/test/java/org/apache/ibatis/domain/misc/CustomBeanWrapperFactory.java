@@ -23,10 +23,7 @@ import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
 public class CustomBeanWrapperFactory implements ObjectWrapperFactory {
   @Override
   public boolean hasWrapperFor(Object object) {
-    if (object instanceof Author) {
-      return true;
-    }
-    return false;
+    return object instanceof Author;
   }
 
   @Override

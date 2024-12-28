@@ -153,7 +153,10 @@ public class MapperBuilderAssistant extends BaseBuilder {
     Class<?> javaTypeClass = resolveParameterJavaType(parameterType, property, javaType, jdbcType);
     TypeHandler<?> typeHandlerInstance = resolveTypeHandler(javaTypeClass, typeHandler);
 
-    return new ParameterMapping.Builder(configuration, property, javaTypeClass).jdbcType(jdbcType)
+    if (typeHandlerInstance == null) {
+      typeHandlerInstance = configuration.getTypeHandlerRegistry().getTypeHandler(javaTypeClass, jdbcType);
+    }
+    return new ParameterMapping.Builder(property, javaTypeClass).jdbcType(jdbcType)
       .resultMapId(resultMap)
       .mode(parameterMode)
       .numericScale(numericScale)
@@ -299,12 +302,12 @@ public class MapperBuilderAssistant extends BaseBuilder {
     } else {
       composites = parseCompositeColumnName(column);
     }
-    return new ResultMapping.Builder(configuration, property, column, javaTypeClass).jdbcType(jdbcType)
+    return new ResultMapping.Builder(property, column, javaTypeClass).jdbcType(jdbcType)
       .nestedQueryId(applyCurrentNamespace(nestedSelect, true))
       .nestedResultMapId(applyCurrentNamespace(nestedResultMap, true)).resultSet(resultSet)
       .typeHandler(typeHandlerInstance).flags(flags == null ? new ArrayList<>() : flags).composites(composites)
       .notNullColumns(parseMultipleColumnNames(notNullColumn)).columnPrefix(columnPrefix).foreignColumn(foreignColumn)
-      .lazy(lazy).build();
+      .lazy(lazy).build(configuration);
   }
 
   /**
@@ -365,8 +368,8 @@ public class MapperBuilderAssistant extends BaseBuilder {
       while (parser.hasMoreTokens()) {
         String property = parser.nextToken();
         String column = parser.nextToken();
-        ResultMapping complexResultMapping = new ResultMapping.Builder(configuration, property, column,
-          configuration.getTypeHandlerRegistry().getUnknownTypeHandler()).build();
+        ResultMapping complexResultMapping = new ResultMapping.Builder(property, column,
+          configuration.getTypeHandlerRegistry().getUnknownTypeHandler()).build(configuration);
         composites.add(complexResultMapping);
       }
     }
@@ -388,6 +391,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
     return javaType;
   }
 
+  @NotNull
   private Class<?> resolveParameterJavaType(Class<?> resultType, String property, Class<?> javaType,
                                             JdbcType jdbcType) {
     if (javaType == null) {

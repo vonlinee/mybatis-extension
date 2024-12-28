@@ -15,10 +15,6 @@
  */
 package org.mybatis.scripting.velocity;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.ibatis.builder.BaseBuilder;
 import org.apache.ibatis.builder.BuilderException;
 import org.apache.ibatis.builder.ParameterExpression;
@@ -31,6 +27,10 @@ import org.apache.ibatis.reflection.ReflectorFactory;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.JdbcType;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 public class ParameterMappingSourceParser {
 
   private static final String VALID_PROPERTIES = "javaType,jdbcType,mode,numericScale,resultMap,typeHandler,jdbcTypeName";
@@ -41,8 +41,7 @@ public class ParameterMappingSourceParser {
 
   public ParameterMappingSourceParser(Configuration configuration, String script, Class<?> parameterType) {
     ParameterMappingTokenHandler handler = new ParameterMappingTokenHandler(configuration, parameterType);
-    GenericTokenParser parser = new GenericTokenParser("@{", "}", handler);
-    this.sql = parser.parse(script);
+    this.sql = GenericTokenParser.parse(script, "@{", "}", handler);
     this.parameterMappingSources = handler.getParameterMappingSources();
   }
 
@@ -97,7 +96,7 @@ public class ParameterMappingSourceParser {
       } else {
         propertyType = Object.class;
       }
-      ParameterMapping.Builder builder = new ParameterMapping.Builder(this.configuration, property, propertyType);
+      ParameterMapping.Builder builder = new ParameterMapping.Builder(property, propertyType);
       if (jdbcType != null) {
         builder.jdbcType(resolveJdbcType(jdbcType));
       }
@@ -127,12 +126,13 @@ public class ParameterMappingSourceParser {
           throw new BuilderException("Expression based parameters are not supported yet");
         } else {
           throw new BuilderException("An invalid property '" + name + "' was found in mapping @{" + content
-              + "}.  Valid properties are " + VALID_PROPERTIES);
+            + "}.  Valid properties are " + VALID_PROPERTIES);
         }
       }
       if (typeHandlerAlias != null) {
         builder.typeHandler(resolveTypeHandler(javaType, typeHandlerAlias));
       }
+      builder.typeHandler(this.configuration);
       return builder.build();
     }
 
@@ -143,7 +143,7 @@ public class ParameterMappingSourceParser {
         throw ex;
       } catch (Exception ex) {
         throw new BuilderException("Parsing error was found in mapping @{" + content
-            + "}.  Check syntax #{property|(expression), var1=value1, var2=value2, ...} ", ex);
+          + "}.  Check syntax #{property|(expression), var1=value1, var2=value2, ...} ", ex);
       }
     }
 

@@ -15,11 +15,6 @@
  */
 package org.apache.ibatis.builder;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
 import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.parsing.GenericTokenParser;
@@ -28,6 +23,11 @@ import org.apache.ibatis.reflection.MetaClass;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.JdbcType;
+import org.mybatis.utils.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Clinton Begin
@@ -42,29 +42,15 @@ public class SqlSourceBuilder extends BaseBuilder {
 
   public SqlSource parse(String originalSql, Class<?> parameterType, Map<String, Object> additionalParameters) {
     ParameterMappingTokenHandler handler = new ParameterMappingTokenHandler(configuration, parameterType,
-        additionalParameters);
-    GenericTokenParser parser = new GenericTokenParser("#{", "}", handler);
+      additionalParameters);
     String sql;
     if (configuration.isShrinkWhitespacesInSql()) {
-      sql = parser.parse(removeExtraWhitespaces(originalSql));
+      sql = StringUtils.removeExtraWhitespaces(originalSql);
     } else {
-      sql = parser.parse(originalSql);
+      sql = originalSql;
     }
+    sql = GenericTokenParser.parse(sql, "#{", "}", handler);
     return new StaticSqlSource(configuration, sql, handler.getParameterMappings());
-  }
-
-  public static String removeExtraWhitespaces(String original) {
-    StringTokenizer tokenizer = new StringTokenizer(original);
-    StringBuilder builder = new StringBuilder();
-    boolean hasMoreTokens = tokenizer.hasMoreTokens();
-    while (hasMoreTokens) {
-      builder.append(tokenizer.nextToken());
-      hasMoreTokens = tokenizer.hasMoreTokens();
-      if (hasMoreTokens) {
-        builder.append(' ');
-      }
-    }
-    return builder.toString();
   }
 
   private static class ParameterMappingTokenHandler extends BaseBuilder implements TokenHandler {
@@ -74,7 +60,7 @@ public class SqlSourceBuilder extends BaseBuilder {
     private final MetaObject metaParameters;
 
     public ParameterMappingTokenHandler(Configuration configuration, Class<?> parameterType,
-        Map<String, Object> additionalParameters) {
+                                        Map<String, Object> additionalParameters) {
       super(configuration);
       this.parameterType = parameterType;
       this.metaParameters = configuration.newMetaObject(additionalParameters);
@@ -90,7 +76,12 @@ public class SqlSourceBuilder extends BaseBuilder {
       return "?";
     }
 
-    private ParameterMapping buildParameterMapping(String content) {
+    /**
+     * @param content xml content
+     * @return ParameterMapping
+     * @throws BuilderException xml content exist error
+     */
+    private ParameterMapping buildParameterMapping(String content) throws BuilderException {
       Map<String, String> propertiesMap = parseParameterMapping(content);
       String property = propertiesMap.get("property");
       Class<?> propertyType;
@@ -110,7 +101,7 @@ public class SqlSourceBuilder extends BaseBuilder {
           propertyType = Object.class;
         }
       }
-      ParameterMapping.Builder builder = new ParameterMapping.Builder(configuration, property, propertyType);
+      ParameterMapping.Builder builder = new ParameterMapping.Builder(property, propertyType);
       Class<?> javaType = propertyType;
       String typeHandlerAlias = null;
       for (Map.Entry<String, String> entry : propertiesMap.entrySet()) {
@@ -120,9 +111,9 @@ public class SqlSourceBuilder extends BaseBuilder {
           javaType = resolveClass(value);
           builder.javaType(javaType);
         } else if ("jdbcType".equals(name)) {
-          builder.jdbcType(resolveJdbcType(value));
+          builder.jdbcType(BaseBuilder.resolveJdbcType(value));
         } else if ("mode".equals(name)) {
-          builder.mode(resolveParameterMode(value));
+          builder.mode(BaseBuilder.resolveParameterMode(value));
         } else if ("numericScale".equals(name)) {
           builder.numericScale(Integer.valueOf(value));
         } else if ("resultMap".equals(name)) {
@@ -137,12 +128,13 @@ public class SqlSourceBuilder extends BaseBuilder {
           throw new BuilderException("Expression based parameters are not supported yet");
         } else {
           throw new BuilderException("An invalid property '" + name + "' was found in mapping #{" + content
-              + "}.  Valid properties are " + PARAMETER_PROPERTIES);
+            + "}.  Valid properties are " + PARAMETER_PROPERTIES);
         }
       }
       if (typeHandlerAlias != null) {
         builder.typeHandler(resolveTypeHandler(javaType, typeHandlerAlias));
       }
+      builder.typeHandler(configuration);
       return builder.build();
     }
 
@@ -153,7 +145,7 @@ public class SqlSourceBuilder extends BaseBuilder {
         throw ex;
       } catch (Exception ex) {
         throw new BuilderException("Parsing error was found in mapping #{" + content
-            + "}.  Check syntax #{property|(expression), var1=value1, var2=value2, ...} ", ex);
+          + "}.  Check syntax #{property|(expression), var1=value1, var2=value2, ...} ", ex);
       }
     }
   }

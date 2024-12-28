@@ -43,7 +43,7 @@ class MetaClassTest {
       MetaClass meta = MetaClass.forClass(RichType.class, reflectorFactory);
       meta.getGetterType("aString");
       org.junit.jupiter.api.Assertions.fail("should have thrown ReflectionException");
-    } catch (ReflectionException expected) {
+    } catch (ReflectionRuntimeException expected) {
       assertEquals(
           "There is no getter for property named \'aString\' in \'class org.apache.ibatis.domain.misc.RichType\'",
           expected.getMessage());

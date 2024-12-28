@@ -15,20 +15,7 @@
  */
 package org.apache.ibatis.executor;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javassist.util.proxy.Proxy;
-
-import javax.sql.DataSource;
-
 import org.apache.ibatis.BaseDataTest;
 import org.apache.ibatis.builder.StaticSqlSource;
 import org.apache.ibatis.cache.CacheKey;
@@ -48,6 +35,14 @@ import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import javax.sql.DataSource;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class BaseExecutorTest extends BaseDataTest {
   protected final Configuration config;
@@ -83,7 +78,7 @@ class BaseExecutorTest extends BaseDataTest {
       assertEquals(123456, author.getId());
       if (author.getId() != BatchExecutor.BATCH_UPDATE_RETURN_VALUE) {
         List<Author> authors = executor.query(selectStatement, author.getId(), RowBounds.DEFAULT,
-            Executor.NO_RESULT_HANDLER);
+          Executor.NO_RESULT_HANDLER);
         executor.rollback(true);
         assertEquals(1, authors.size());
         assertEquals(author.toString(), authors.get(0).toString());
@@ -154,7 +149,7 @@ class BaseExecutorTest extends BaseDataTest {
       assertTrue(-1 != author.getId());
       if (author.getId() != BatchExecutor.BATCH_UPDATE_RETURN_VALUE) {
         List<Author> authors = executor.query(selectStatement, author.getId(), RowBounds.DEFAULT,
-            Executor.NO_RESULT_HANDLER);
+          Executor.NO_RESULT_HANDLER);
         executor.rollback(true);
         assertEquals(1, authors.size());
         assertEquals(author.toString(), authors.get(0).toString());
@@ -255,7 +250,7 @@ class BaseExecutorTest extends BaseDataTest {
     try {
       MappedStatement selectStatement = ExecutorTestHelper.prepareSelectDiscriminatedPost(config);
       List<Map<String, String>> products = executor.query(selectStatement, null, RowBounds.DEFAULT,
-          Executor.NO_RESULT_HANDLER);
+        Executor.NO_RESULT_HANDLER);
       assertEquals(5, products.size());
       for (Map<String, String> m : products) {
         if ("IMAGES".equals(m.get("SECTION"))) {
@@ -278,7 +273,7 @@ class BaseExecutorTest extends BaseDataTest {
     try {
       MappedStatement selectStatement = ExecutorTestHelper.prepareSelectDiscriminatedPost(config);
       List<Map<String, String>> products = executor.query(selectStatement, null, new RowBounds(2, 2),
-          Executor.NO_RESULT_HANDLER);
+        Executor.NO_RESULT_HANDLER);
       assertEquals(2, products.size());
       for (Map<String, String> m : products) {
         if ("IMAGES".equals(m.get("SECTION"))) {
@@ -302,6 +297,7 @@ class BaseExecutorTest extends BaseDataTest {
       MappedStatement selectStatement = ExecutorTestHelper.prepareSelectTwoSetsOfAuthorsProc(config);
       List<List<Author>> authorSets = executor.query(selectStatement, new HashMap<String, Object>() {
         private static final long serialVersionUID = 1L;
+
         {
           put("id1", 101);
           put("id2", 102);
@@ -311,7 +307,7 @@ class BaseExecutorTest extends BaseDataTest {
       for (List<Author> authors : authorSets) {
         assertEquals(2, authors.size());
         for (Object author : authors) {
-          assertTrue(author instanceof Author);
+          assertInstanceOf(Author.class, author);
         }
       }
     } finally {
@@ -356,7 +352,7 @@ class BaseExecutorTest extends BaseDataTest {
       List<Post> posts = executor.query(selectPosts, 1, RowBounds.DEFAULT, Executor.NO_RESULT_HANDLER);
       executor.flushStatements();
       assertEquals(2, posts.size());
-      assertTrue(posts.get(1) instanceof Proxy);
+      assertInstanceOf(Proxy.class, posts.get(1));
       assertNotNull(posts.get(1).getBlog());
       assertEquals(1, posts.get(1).getBlog().getId());
       executor.rollback(true);
@@ -437,7 +433,7 @@ class BaseExecutorTest extends BaseDataTest {
     Executor executor = createExecutor(new JdbcTransaction(ds, null, false));
     try {
       MappedStatement selectStatement = ExecutorTestHelper
-          .prepareSelectOneAuthorMappedStatementWithConstructorResults(config);
+        .prepareSelectOneAuthorMappedStatementWithConstructorResults(config);
       List<Author> authors = executor.query(selectStatement, 102, RowBounds.DEFAULT, Executor.NO_RESULT_HANDLER);
       executor.flushStatements();
       executor.rollback(true);
@@ -482,19 +478,17 @@ class BaseExecutorTest extends BaseDataTest {
     TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
 
     MappedStatement mappedStatement = new MappedStatement.Builder(config, "testSelect",
-        new StaticSqlSource(config, "some select statement"), SqlCommandType.SELECT).build();
+      new StaticSqlSource(config, "some select statement"), SqlCommandType.SELECT).build();
 
     Object parameterObject = 1;
 
-    BoundSql boundSql = new BoundSql(config, "some select statement", new ArrayList<ParameterMapping>() {
+    BoundSql boundSql = new BoundSql(config, "some select statement", new ArrayList<>() {
       {
-        add(new ParameterMapping.Builder(config, "id", registry.getTypeHandler(int.class)).build());
+        add(new ParameterMapping.Builder("id", registry.getTypeHandler(int.class)).build(config));
       }
-    }, parameterObject) {
-      {
-        setAdditionalParameter("id", 2);
-      }
-    };
+    }, parameterObject);
+
+    boundSql.setAdditionalParameter("id", 2);
 
     Executor executor = createExecutor(new JdbcTransaction(ds, null, false));
     CacheKey cacheKey = executor.createCacheKey(mappedStatement, parameterObject, RowBounds.DEFAULT, boundSql);
@@ -514,13 +508,13 @@ class BaseExecutorTest extends BaseDataTest {
     TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
 
     MappedStatement mappedStatement = new MappedStatement.Builder(config, "testSelect",
-        new StaticSqlSource(config, "some select statement"), SqlCommandType.SELECT).build();
+      new StaticSqlSource(config, "some select statement"), SqlCommandType.SELECT).build();
 
     Object parameterObject = null;
 
-    BoundSql boundSql = new BoundSql(config, "some select statement", new ArrayList<ParameterMapping>() {
+    BoundSql boundSql = new BoundSql(config, "some select statement", new ArrayList<>() {
       {
-        add(new ParameterMapping.Builder(config, "id", registry.getTypeHandler(int.class)).build());
+        add(new ParameterMapping.Builder("id", registry.getTypeHandler(int.class)).build(config));
       }
     }, parameterObject);
 
@@ -542,13 +536,13 @@ class BaseExecutorTest extends BaseDataTest {
     TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
 
     MappedStatement mappedStatement = new MappedStatement.Builder(config, "testSelect",
-        new StaticSqlSource(config, "some select statement"), SqlCommandType.SELECT).build();
+      new StaticSqlSource(config, "some select statement"), SqlCommandType.SELECT).build();
 
     Object parameterObject = 1;
 
-    BoundSql boundSql = new BoundSql(config, "some select statement", new ArrayList<ParameterMapping>() {
+    BoundSql boundSql = new BoundSql(config, "some select statement", new ArrayList<>() {
       {
-        add(new ParameterMapping.Builder(config, "id", registry.getTypeHandler(int.class)).build());
+        add(new ParameterMapping.Builder("id", registry.getTypeHandler(int.class)).build(config));
       }
     }, parameterObject);
 
@@ -570,20 +564,20 @@ class BaseExecutorTest extends BaseDataTest {
     TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
 
     MappedStatement mappedStatement = new MappedStatement.Builder(config, "testSelect",
-        new StaticSqlSource(config, "some select statement"), SqlCommandType.SELECT).build();
+      new StaticSqlSource(config, "some select statement"), SqlCommandType.SELECT).build();
 
     Author parameterObject = new Author(-1, "cbegin", "******", "cbegin@nowhere.com", "N/A", Section.NEWS);
 
-    BoundSql boundSql = new BoundSql(config, "some select statement", new ArrayList<ParameterMapping>() {
+    BoundSql boundSql = new BoundSql(config, "some select statement", new ArrayList<>() {
       {
-        add(new ParameterMapping.Builder(config, "id", registry.getTypeHandler(int.class)).build());
-        add(new ParameterMapping.Builder(config, "username", registry.getTypeHandler(String.class)).build());
-        add(new ParameterMapping.Builder(config, "password", registry.getTypeHandler(String.class)).build());
-        add(new ParameterMapping.Builder(config, "email", registry.getTypeHandler(String.class)).build());
-        add(new ParameterMapping.Builder(config, "bio", registry.getTypeHandler(String.class))
-            .jdbcType(JdbcType.VARCHAR).build());
-        add(new ParameterMapping.Builder(config, "favouriteSection", registry.getTypeHandler(Section.class))
-            .jdbcType(JdbcType.VARCHAR).build());
+        add(new ParameterMapping.Builder("id", registry.getTypeHandler(int.class)).build(config));
+        add(new ParameterMapping.Builder("username", registry.getTypeHandler(String.class)).build(config));
+        add(new ParameterMapping.Builder("password", registry.getTypeHandler(String.class)).build(config));
+        add(new ParameterMapping.Builder("email", registry.getTypeHandler(String.class)).build(config));
+        add(new ParameterMapping.Builder("bio", registry.getTypeHandler(String.class))
+          .jdbcType(JdbcType.VARCHAR).build(config));
+        add(new ParameterMapping.Builder("favouriteSection", registry.getTypeHandler(Section.class))
+          .jdbcType(JdbcType.VARCHAR).build(config));
       }
     }, parameterObject);
 

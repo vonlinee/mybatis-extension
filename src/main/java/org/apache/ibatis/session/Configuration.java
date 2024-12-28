@@ -1066,7 +1066,7 @@ public class Configuration {
   }
 
   @NotNull
-  public DynamicContext createContext(Object parameterObject) {
+  public DynamicContext createContext(@Nullable Object parameterObject) {
     ContextMap bindings;
     if (parameterObject != null && !(parameterObject instanceof Map)) {
       MetaObject metaObject = this.newMetaObject(parameterObject);

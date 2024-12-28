@@ -31,8 +31,8 @@ class ResultMappingTest {
   @Test
   void shouldThrowErrorWhenBothResultMapAndNestedSelectAreSet() {
     Assertions.assertThrows(IllegalStateException.class, () -> {
-      new ResultMapping.Builder(configuration, "prop").nestedQueryId("nested query ID")
-          .nestedResultMapId("nested resultMap").build();
+      new ResultMapping.Builder("prop").nestedQueryId("nested query ID")
+        .nestedResultMapId("nested resultMap").build(configuration);
     });
   }
 
@@ -40,7 +40,7 @@ class ResultMappingTest {
   @Test
   void shouldFailWithAMissingColumnInNetstedSelect() {
     Assertions.assertThrows(IllegalStateException.class,
-        () -> new ResultMapping.Builder(configuration, "prop").nestedQueryId("nested query ID").build());
+      () -> new ResultMapping.Builder("prop").nestedQueryId("nested query ID").build(configuration));
   }
 
 }

@@ -15,18 +15,28 @@
  */
 package org.apache.ibatis.reflection;
 
-import java.util.Optional;
+import org.apache.ibatis.exceptions.PersistenceException;
 
 /**
- * @deprecated Since 3.5.0, Will remove this class at future(next major version up).
+ * @author Clinton Begin
  */
-@Deprecated
-public abstract class OptionalUtil {
+public class ReflectionRuntimeException extends PersistenceException {
 
-  public static Object ofNullable(Object value) {
-    return Optional.ofNullable(value);
+  private static final long serialVersionUID = 7642570221267566591L;
+
+  public ReflectionRuntimeException() {
   }
 
-  private OptionalUtil() {
+  public ReflectionRuntimeException(String message) {
+    super(message);
   }
+
+  public ReflectionRuntimeException(String message, Throwable cause) {
+    super(message, cause);
+  }
+
+  public ReflectionRuntimeException(Throwable cause) {
+    super(cause);
+  }
+
 }

@@ -18,7 +18,7 @@ package org.apache.ibatis.reflection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.apache.ibatis.util.MapUtil;
+import org.apache.ibatis.util.CollectionUtils;
 
 public class DefaultReflectorFactory implements ReflectorFactory {
   private boolean classCacheEnabled = true;
@@ -41,7 +41,7 @@ public class DefaultReflectorFactory implements ReflectorFactory {
   public Reflector findForClass(Class<?> type) {
     if (classCacheEnabled) {
       // synchronized (type) removed see issue #461
-      return MapUtil.computeIfAbsent(reflectorMap, type, Reflector::new);
+      return CollectionUtils.computeIfAbsent(reflectorMap, type, Reflector::new);
     }
     return new Reflector(type);
   }

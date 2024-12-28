@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import org.apache.ibatis.builder.SqlSourceBuilder;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.reflection.ArrayUtil;
+import org.mybatis.utils.StringUtils;
 
 /**
  * Base class for proxies to do logging.
@@ -119,7 +120,7 @@ public abstract class BaseJdbcLogger {
   }
 
   protected String removeExtraWhitespace(String original) {
-    return SqlSourceBuilder.removeExtraWhitespaces(original);
+    return StringUtils.removeExtraWhitespaces(original);
   }
 
   protected boolean isDebugEnabled() {

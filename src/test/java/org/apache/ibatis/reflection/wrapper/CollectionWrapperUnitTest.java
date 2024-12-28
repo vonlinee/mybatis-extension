@@ -15,16 +15,6 @@
  */
 package org.apache.ibatis.reflection.wrapper;
 
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.verify;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import org.apache.ibatis.reflection.MetaObject;
-import org.apache.ibatis.reflection.SystemMetaObject;
 import org.apache.ibatis.reflection.property.PropertyTokenizer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,9 +22,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
+
 /**
  * @author <a href="1181963012mw@gmail.com">mawen12</a>
- *
  * @see CollectionWrapper
  */
 @ExtendWith(MockitoExtension.class)
@@ -50,8 +47,7 @@ class CollectionWrapperUnitTest extends ObjectWrapperBaseTest {
 
   @BeforeEach
   void setup() {
-    MetaObject metaObject = SystemMetaObject.forObject(collection);
-    this.wrapper = new CollectionWrapper(metaObject, collection);
+    this.wrapper = new CollectionWrapper(collection);
   }
 
   @Test
@@ -118,7 +114,7 @@ class CollectionWrapperUnitTest extends ObjectWrapperBaseTest {
   @Override
   void shouldInstantiatePropertyValue() {
     assertThatExceptionOfType(UnsupportedOperationException.class)
-        .isThrownBy(() -> wrapper.instantiatePropertyValue("abc", tokenizer, null));
+      .isThrownBy(() -> wrapper.instantiatePropertyValue("abc", tokenizer, null));
   }
 
   @Test

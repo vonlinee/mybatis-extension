@@ -71,17 +71,15 @@ class ExecutorTestHelper {
         "INSERT INTO author (id,username,password,email,bio,favourite_section) values(?,?,?,?,?,?)"),
       SqlCommandType.INSERT).parameterMap(
       new ParameterMap.Builder("defaultParameterMap", Author.class, new ArrayList<>() {
-        private static final long serialVersionUID = 1L;
-
         {
-          add(new ParameterMapping.Builder(config, "id", registry.getTypeHandler(int.class)).build());
-          add(new ParameterMapping.Builder(config, "username", registry.getTypeHandler(String.class)).build());
-          add(new ParameterMapping.Builder(config, "password", registry.getTypeHandler(String.class)).build());
-          add(new ParameterMapping.Builder(config, "email", registry.getTypeHandler(String.class)).build());
-          add(new ParameterMapping.Builder(config, "bio", registry.getTypeHandler(String.class))
-            .jdbcType(JdbcType.VARCHAR).build());
-          add(new ParameterMapping.Builder(config, "favouriteSection", registry.getTypeHandler(Section.class))
-            .jdbcType(JdbcType.VARCHAR).build());
+          add(new ParameterMapping.Builder("id", registry.getTypeHandler(int.class)).build(config));
+          add(new ParameterMapping.Builder("username", registry.getTypeHandler(String.class)).build(config));
+          add(new ParameterMapping.Builder("password", registry.getTypeHandler(String.class)).build(config));
+          add(new ParameterMapping.Builder("email", registry.getTypeHandler(String.class)).build(config));
+          add(new ParameterMapping.Builder("bio", registry.getTypeHandler(String.class))
+            .jdbcType(JdbcType.VARCHAR).build(config));
+          add(new ParameterMapping.Builder("favouriteSection", registry.getTypeHandler(Section.class))
+            .jdbcType(JdbcType.VARCHAR).build(config));
         }
       }).build()).cache(authorCache).build();
   }
@@ -96,13 +94,13 @@ class ExecutorTestHelper {
         private static final long serialVersionUID = 1L;
 
         {
-          add(new ParameterMapping.Builder(config, "username", registry.getTypeHandler(String.class)).build());
-          add(new ParameterMapping.Builder(config, "password", registry.getTypeHandler(String.class)).build());
-          add(new ParameterMapping.Builder(config, "email", registry.getTypeHandler(String.class)).build());
-          add(new ParameterMapping.Builder(config, "bio", registry.getTypeHandler(String.class))
-            .jdbcType(JdbcType.VARCHAR).build());
-          add(new ParameterMapping.Builder(config, "favouriteSection", registry.getTypeHandler(Section.class))
-            .jdbcType(JdbcType.VARCHAR).build());
+          add(new ParameterMapping.Builder("username", registry.getTypeHandler(String.class)).build(config));
+          add(new ParameterMapping.Builder("password", registry.getTypeHandler(String.class)).build(config));
+          add(new ParameterMapping.Builder("email", registry.getTypeHandler(String.class)).build(config));
+          add(new ParameterMapping.Builder("bio", registry.getTypeHandler(String.class))
+            .jdbcType(JdbcType.VARCHAR).build(config));
+          add(new ParameterMapping.Builder("favouriteSection", registry.getTypeHandler(Section.class))
+            .jdbcType(JdbcType.VARCHAR).build(config));
         }
       }).build()).cache(authorCache).keyGenerator(Jdbc3KeyGenerator.INSTANCE).keyProperty("id").build();
   }
@@ -115,10 +113,10 @@ class ExecutorTestHelper {
         private static final long serialVersionUID = 1L;
 
         {
-          add(new ParameterMapping.Builder(config, "id", registry.getTypeHandler(int.class)).build());
-          add(new ParameterMapping.Builder(config, "username", registry.getTypeHandler(String.class)).build());
-          add(new ParameterMapping.Builder(config, "password", registry.getTypeHandler(String.class)).build());
-          add(new ParameterMapping.Builder(config, "email", registry.getTypeHandler(String.class)).build());
+          add(new ParameterMapping.Builder("id", registry.getTypeHandler(int.class)).build(config));
+          add(new ParameterMapping.Builder("username", registry.getTypeHandler(String.class)).build(config));
+          add(new ParameterMapping.Builder("password", registry.getTypeHandler(String.class)).build(config));
+          add(new ParameterMapping.Builder("email", registry.getTypeHandler(String.class)).build(config));
         }
       }).build()).cache(authorCache).build();
   }
@@ -132,12 +130,12 @@ class ExecutorTestHelper {
         private static final long serialVersionUID = 1L;
 
         {
-          add(new ParameterMapping.Builder(config, "username", registry.getTypeHandler(String.class)).build());
-          add(new ParameterMapping.Builder(config, "password", registry.getTypeHandler(String.class)).build());
-          add(new ParameterMapping.Builder(config, "email", registry.getTypeHandler(String.class)).build());
-          add(new ParameterMapping.Builder(config, "bio", registry.getTypeHandler(String.class))
-            .jdbcType(JdbcType.VARCHAR).build());
-          add(new ParameterMapping.Builder(config, "id", registry.getTypeHandler(int.class)).build());
+          add(new ParameterMapping.Builder("username", registry.getTypeHandler(String.class)).build(config));
+          add(new ParameterMapping.Builder("password", registry.getTypeHandler(String.class)).build(config));
+          add(new ParameterMapping.Builder("email", registry.getTypeHandler(String.class)).build(config));
+          add(new ParameterMapping.Builder("bio", registry.getTypeHandler(String.class))
+            .jdbcType(JdbcType.VARCHAR).build(config));
+          add(new ParameterMapping.Builder("id", registry.getTypeHandler(int.class)).build(config));
         }
       }).build()).cache(authorCache).build();
   }
@@ -147,10 +145,8 @@ class ExecutorTestHelper {
     return new MappedStatement.Builder(config, "deleteAuthor",
       new StaticSqlSource(config, "DELETE FROM author WHERE id = ?"), SqlCommandType.DELETE).parameterMap(
       new ParameterMap.Builder("defaultParameterMap", Author.class, new ArrayList<>() {
-        private static final long serialVersionUID = 1L;
-
         {
-          add(new ParameterMapping.Builder(config, "id", registry.getTypeHandler(int.class)).build());
+          add(new ParameterMapping.Builder("id", registry.getTypeHandler(int.class)).build(config));
         }
       }).build()).cache(authorCache).build();
   }
@@ -163,15 +159,15 @@ class ExecutorTestHelper {
         private static final long serialVersionUID = 1L;
 
         {
-          add(new ResultMapping.Builder(config, "id", "id", registry.getTypeHandler(int.class)).build());
-          add(new ResultMapping.Builder(config, "username", "username", registry.getTypeHandler(String.class))
-            .build());
-          add(new ResultMapping.Builder(config, "password", "password", registry.getTypeHandler(String.class))
-            .build());
-          add(new ResultMapping.Builder(config, "email", "email", registry.getTypeHandler(String.class)).build());
-          add(new ResultMapping.Builder(config, "bio", "bio", registry.getTypeHandler(String.class)).build());
-          add(new ResultMapping.Builder(config, "favouriteSection", "favourite_section",
-            registry.getTypeHandler(Section.class)).build());
+          add(new ResultMapping.Builder("id", "id", registry.getTypeHandler(int.class)).build(config));
+          add(new ResultMapping.Builder("username", "username", registry.getTypeHandler(String.class))
+            .build(config));
+          add(new ResultMapping.Builder("password", "password", registry.getTypeHandler(String.class))
+            .build(config));
+          add(new ResultMapping.Builder("email", "email", registry.getTypeHandler(String.class)).build(config));
+          add(new ResultMapping.Builder("bio", "bio", registry.getTypeHandler(String.class)).build(config));
+          add(new ResultMapping.Builder("favouriteSection", "favourite_section",
+            registry.getTypeHandler(Section.class)).build(config));
         }
       }).build();
 
@@ -181,7 +177,7 @@ class ExecutorTestHelper {
         private static final long serialVersionUID = 1L;
 
         {
-          add(new ParameterMapping.Builder(config, "id", registry.getTypeHandler(int.class)).build());
+          add(new ParameterMapping.Builder("id", registry.getTypeHandler(int.class)).build(config));
         }
       }).build()).resultMaps(new ArrayList<>() {
       private static final long serialVersionUID = 1L;
@@ -204,9 +200,9 @@ class ExecutorTestHelper {
             private static final long serialVersionUID = 1L;
 
             {
-              add(new ResultMapping.Builder(config, "favouriteSection", "favourite_section",
-                registry.getTypeHandler(Section.class)).build());
-              add(new ResultMapping.Builder(config, null, "not_exists", Object.class).build());
+              add(new ResultMapping.Builder("favouriteSection", "favourite_section",
+                registry.getTypeHandler(Section.class)).build(config));
+              add(new ResultMapping.Builder(null, "not_exists", Object.class).build(config));
             }
           }).build());
         }
@@ -221,7 +217,7 @@ class ExecutorTestHelper {
         private static final long serialVersionUID = 1L;
 
         {
-          add(new ParameterMapping.Builder(config, "id", registry.getTypeHandler(int.class)).build());
+          add(new ParameterMapping.Builder("id", registry.getTypeHandler(int.class)).build(config));
         }
       }).build()).resultMaps(new ArrayList<>() {
       private static final long serialVersionUID = 1L;
@@ -231,23 +227,21 @@ class ExecutorTestHelper {
           private static final long serialVersionUID = 1L;
 
           {
-            add(new ResultMapping.Builder(config, null, "id", registry.getTypeHandler(Integer.class))
+            add(new ResultMapping.Builder(null, "id", registry.getTypeHandler(Integer.class))
               .javaType(int.class).flags(new ArrayList<>() {
-                private static final long serialVersionUID = 1L;
-
                 {
                   add(ResultFlag.CONSTRUCTOR);
                 }
-              }).build());
-            add(new ResultMapping.Builder(config, "username", "username", registry.getTypeHandler(String.class))
-              .build());
-            add(new ResultMapping.Builder(config, "password", "password", registry.getTypeHandler(String.class))
-              .build());
-            add(new ResultMapping.Builder(config, "email", "email", registry.getTypeHandler(String.class))
-              .build());
-            add(new ResultMapping.Builder(config, "bio", "bio", registry.getTypeHandler(String.class)).build());
-            add(new ResultMapping.Builder(config, "favouriteSection", "favourite_section",
-              registry.getTypeHandler(Section.class)).build());
+              }).build(config));
+            add(new ResultMapping.Builder("username", "username", registry.getTypeHandler(String.class))
+              .build(config));
+            add(new ResultMapping.Builder("password", "password", registry.getTypeHandler(String.class))
+              .build(config));
+            add(new ResultMapping.Builder("email", "email", registry.getTypeHandler(String.class))
+              .build(config));
+            add(new ResultMapping.Builder("bio", "bio", registry.getTypeHandler(String.class)).build(config));
+            add(new ResultMapping.Builder("favouriteSection", "favourite_section",
+              registry.getTypeHandler(Section.class)).build(config));
           }
         }).build());
       }
@@ -263,8 +257,8 @@ class ExecutorTestHelper {
         private static final long serialVersionUID = 1L;
 
         {
-          add(new ParameterMapping.Builder(config, "id1", registry.getTypeHandler(int.class)).build());
-          add(new ParameterMapping.Builder(config, "id2", registry.getTypeHandler(int.class)).build());
+          add(new ParameterMapping.Builder("id1", registry.getTypeHandler(int.class)).build(config));
+          add(new ParameterMapping.Builder("id2", registry.getTypeHandler(int.class)).build(config));
         }
       }).build())
       .resultMaps(new ArrayList<>() {
@@ -276,15 +270,15 @@ class ExecutorTestHelper {
               private static final long serialVersionUID = 1L;
 
               {
-                add(new ResultMapping.Builder(config, "id", "id", registry.getTypeHandler(int.class)).build());
-                add(new ResultMapping.Builder(config, "username", "username",
-                  registry.getTypeHandler(String.class)).build());
-                add(new ResultMapping.Builder(config, "password", "password",
-                  registry.getTypeHandler(String.class)).build());
-                add(new ResultMapping.Builder(config, "email", "email", registry.getTypeHandler(String.class))
-                  .build());
-                add(new ResultMapping.Builder(config, "bio", "bio", registry.getTypeHandler(String.class))
-                  .build());
+                add(new ResultMapping.Builder("id", "id", registry.getTypeHandler(int.class)).build(config));
+                add(new ResultMapping.Builder("username", "username",
+                  registry.getTypeHandler(String.class)).build(config));
+                add(new ResultMapping.Builder("password", "password",
+                  registry.getTypeHandler(String.class)).build(config));
+                add(new ResultMapping.Builder("email", "email", registry.getTypeHandler(String.class))
+                  .build(config));
+                add(new ResultMapping.Builder("bio", "bio", registry.getTypeHandler(String.class))
+                  .build(config));
               }
             }).build();
           add(map);
@@ -302,15 +296,15 @@ class ExecutorTestHelper {
         private static final long serialVersionUID = 1L;
 
         {
-          add(new ParameterMapping.Builder(config, "id", registry.getTypeHandler(int.class)).build());
-          add(new ParameterMapping.Builder(config, "username", registry.getTypeHandler(String.class))
-            .jdbcType(JdbcType.VARCHAR).mode(ParameterMode.OUT).build());
-          add(new ParameterMapping.Builder(config, "password", registry.getTypeHandler(String.class))
-            .jdbcType(JdbcType.VARCHAR).mode(ParameterMode.OUT).build());
-          add(new ParameterMapping.Builder(config, "email", registry.getTypeHandler(String.class))
-            .jdbcType(JdbcType.VARCHAR).mode(ParameterMode.OUT).build());
-          add(new ParameterMapping.Builder(config, "bio", registry.getTypeHandler(String.class))
-            .jdbcType(JdbcType.VARCHAR).mode(ParameterMode.OUT).build());
+          add(new ParameterMapping.Builder("id", registry.getTypeHandler(int.class)).build());
+          add(new ParameterMapping.Builder("username", registry.getTypeHandler(String.class))
+            .jdbcType(JdbcType.VARCHAR).mode(ParameterMode.OUT).build(config));
+          add(new ParameterMapping.Builder("password", registry.getTypeHandler(String.class))
+            .jdbcType(JdbcType.VARCHAR).mode(ParameterMode.OUT).build(config));
+          add(new ParameterMapping.Builder("email", registry.getTypeHandler(String.class))
+            .jdbcType(JdbcType.VARCHAR).mode(ParameterMode.OUT).build(config));
+          add(new ParameterMapping.Builder("bio", registry.getTypeHandler(String.class))
+            .jdbcType(JdbcType.VARCHAR).mode(ParameterMode.OUT).build(config));
         }
       }).build())
       .resultMaps(new ArrayList<>()).cache(authorCache).build();
@@ -323,8 +317,8 @@ class ExecutorTestHelper {
         private static final long serialVersionUID = 1L;
 
         {
-          add(new ResultMapping.Builder(config, "subject", "subject", registry.getTypeHandler(String.class)).build());
-          add(new ResultMapping.Builder(config, "body", "body", registry.getTypeHandler(String.class)).build());
+          add(new ResultMapping.Builder("subject", "subject", registry.getTypeHandler(String.class)).build(config));
+          add(new ResultMapping.Builder("body", "body", registry.getTypeHandler(String.class)).build(config));
         }
       }).build();
     config.addResultMap(discriminatorResultMap);
@@ -337,12 +331,12 @@ class ExecutorTestHelper {
           private static final long serialVersionUID = 1L;
 
           {
-            add(new ResultMapping.Builder(config, "id", "id", registry.getTypeHandler(int.class)).build());
-            add(new ResultMapping.Builder(config, "blog_id", "blog_id", registry.getTypeHandler(int.class))
-              .build());
+            add(new ResultMapping.Builder("id", "id", registry.getTypeHandler(int.class)).build(config));
+            add(new ResultMapping.Builder("blog_id", "blog_id", registry.getTypeHandler(int.class))
+              .build(config));
           }
         }).discriminator(new Discriminator.Builder(
-          new ResultMapping.Builder(config, "section", "section", registry.getTypeHandler(String.class)).build(),
+          new ResultMapping.Builder("section", "section", registry.getTypeHandler(String.class)).build(config),
           new HashMap<>() {
             private static final long serialVersionUID = 1L;
 
@@ -383,14 +377,14 @@ class ExecutorTestHelper {
             private static final long serialVersionUID = 1L;
 
             {
-              add(new ResultMapping.Builder(config, "id", "id", registry.getTypeHandler(int.class)).build());
-              add(new ResultMapping.Builder(config, "username", "username", registry.getTypeHandler(String.class))
-                .build());
-              add(new ResultMapping.Builder(config, "password", "password", registry.getTypeHandler(String.class))
-                .build());
-              add(new ResultMapping.Builder(config, "email", "email", registry.getTypeHandler(String.class))
-                .build());
-              add(new ResultMapping.Builder(config, "bio", "bio", registry.getTypeHandler(String.class)).build());
+              add(new ResultMapping.Builder("id", "id", registry.getTypeHandler(int.class)).build(config));
+              add(new ResultMapping.Builder("username", "username", registry.getTypeHandler(String.class))
+                .build(config));
+              add(new ResultMapping.Builder("password", "password", registry.getTypeHandler(String.class))
+                .build(config));
+              add(new ResultMapping.Builder("email", "email", registry.getTypeHandler(String.class))
+                .build(config));
+              add(new ResultMapping.Builder("bio", "bio", registry.getTypeHandler(String.class)).build(config));
             }
           }).build());
         }
@@ -407,7 +401,7 @@ class ExecutorTestHelper {
         private static final long serialVersionUID = 1L;
 
         {
-          add(new ParameterMapping.Builder(config, "id", registry.getTypeHandler(int.class)).build());
+          add(new ParameterMapping.Builder("id", registry.getTypeHandler(int.class)).build(config));
         }
       }).build();
     final ResultMap resultMap = new ResultMap.Builder(config, "defaultResultMap", Blog.class,
@@ -415,33 +409,31 @@ class ExecutorTestHelper {
         private static final long serialVersionUID = 1L;
 
         {
-          add(new ResultMapping.Builder(config, "id", "id", registry.getTypeHandler(int.class))
+          add(new ResultMapping.Builder("id", "id", registry.getTypeHandler(int.class))
             .flags(new ArrayList<>() {
               private static final long serialVersionUID = 1L;
 
               {
                 add(ResultFlag.ID);
               }
-            }).build());
-          add(new ResultMapping.Builder(config, "title", "title", registry.getTypeHandler(String.class)).build());
-          add(new ResultMapping.Builder(config, "author.id", "author_id", registry.getTypeHandler(int.class))
-            .build());
-          add(new ResultMapping.Builder(config, "author.username", "username", registry.getTypeHandler(String.class))
-            .build());
-          add(new ResultMapping.Builder(config, "author.password", "password", registry.getTypeHandler(String.class))
-            .build());
-          add(new ResultMapping.Builder(config, "author.email", "email", registry.getTypeHandler(String.class))
-            .build());
-          add(new ResultMapping.Builder(config, "author.bio", "bio", registry.getTypeHandler(String.class)).build());
-          add(new ResultMapping.Builder(config, "posts", "id", registry.getTypeHandler(int.class))
-            .javaType(List.class).nestedQueryId("selectPostsForBlog").build());
+            }).build(config));
+          add(new ResultMapping.Builder("title", "title", registry.getTypeHandler(String.class)).build(config));
+          add(new ResultMapping.Builder("author.id", "author_id", registry.getTypeHandler(int.class))
+            .build(config));
+          add(new ResultMapping.Builder("author.username", "username", registry.getTypeHandler(String.class))
+            .build(config));
+          add(new ResultMapping.Builder("author.password", "password", registry.getTypeHandler(String.class))
+            .build(config));
+          add(new ResultMapping.Builder("author.email", "email", registry.getTypeHandler(String.class))
+            .build(config));
+          add(new ResultMapping.Builder("author.bio", "bio", registry.getTypeHandler(String.class)).build(config));
+          add(new ResultMapping.Builder("posts", "id", registry.getTypeHandler(int.class))
+            .javaType(List.class).nestedQueryId("selectPostsForBlog").build(config));
         }
       }).build();
 
     return new MappedStatement.Builder(config, "selectBlogById", sqlSource, SqlCommandType.SELECT)
       .parameterMap(parameterMap).resultMaps(new ArrayList<>() {
-        private static final long serialVersionUID = 1L;
-
         {
           add(resultMap);
         }
@@ -458,8 +450,8 @@ class ExecutorTestHelper {
         private static final long serialVersionUID = 1L;
 
         {
-          add(new ParameterMapping.Builder(config, "blogId", registry.getTypeHandler(int.class)).build());
-          add(new ParameterMapping.Builder(config, "authorId", registry.getTypeHandler(int.class)).build());
+          add(new ParameterMapping.Builder("blogId", registry.getTypeHandler(int.class)).build(config));
+          add(new ParameterMapping.Builder("authorId", registry.getTypeHandler(int.class)).build(config));
         }
       }).build();
     final ResultMap resultMap = new ResultMap.Builder(config, "defaultResultMap", Blog.class,
@@ -467,33 +459,31 @@ class ExecutorTestHelper {
         private static final long serialVersionUID = 1L;
 
         {
-          add(new ResultMapping.Builder(config, "id", "id", registry.getTypeHandler(int.class))
+          add(new ResultMapping.Builder("id", "id", registry.getTypeHandler(int.class))
             .flags(new ArrayList<>() {
               private static final long serialVersionUID = 1L;
 
               {
                 add(ResultFlag.ID);
               }
-            }).build());
-          add(new ResultMapping.Builder(config, "title", "title", registry.getTypeHandler(String.class)).build());
-          add(new ResultMapping.Builder(config, "author.id", "author_id", registry.getTypeHandler(int.class))
-            .build());
-          add(new ResultMapping.Builder(config, "author.username", "username", registry.getTypeHandler(String.class))
-            .build());
-          add(new ResultMapping.Builder(config, "author.password", "password", registry.getTypeHandler(String.class))
-            .build());
-          add(new ResultMapping.Builder(config, "author.email", "email", registry.getTypeHandler(String.class))
-            .build());
-          add(new ResultMapping.Builder(config, "author.bio", "bio", registry.getTypeHandler(String.class)).build());
-          add(new ResultMapping.Builder(config, "posts", "id", registry.getTypeHandler(int.class))
-            .javaType(List.class).nestedQueryId("selectPostsForBlog").build());
+            }).build(config));
+          add(new ResultMapping.Builder("title", "title", registry.getTypeHandler(String.class)).build(config));
+          add(new ResultMapping.Builder("author.id", "author_id", registry.getTypeHandler(int.class))
+            .build(config));
+          add(new ResultMapping.Builder("author.username", "username", registry.getTypeHandler(String.class))
+            .build(config));
+          add(new ResultMapping.Builder("author.password", "password", registry.getTypeHandler(String.class))
+            .build(config));
+          add(new ResultMapping.Builder("author.email", "email", registry.getTypeHandler(String.class))
+            .build(config));
+          add(new ResultMapping.Builder("author.bio", "bio", registry.getTypeHandler(String.class)).build(config));
+          add(new ResultMapping.Builder("posts", "id", registry.getTypeHandler(int.class))
+            .javaType(List.class).nestedQueryId("selectPostsForBlog").build(config));
         }
       }).build();
 
     return new MappedStatement.Builder(config, "selectBlogByIdAndAuthor", sqlSource, SqlCommandType.SELECT)
       .parameterMap(parameterMap).resultMaps(new ArrayList<>() {
-        private static final long serialVersionUID = 1L;
-
         {
           add(resultMap);
         }
@@ -513,7 +503,7 @@ class ExecutorTestHelper {
         private static final long serialVersionUID = 1L;
 
         {
-          add(new ParameterMapping.Builder(config, "id", registry.getTypeHandler(int.class)).build());
+          add(new ParameterMapping.Builder("id", registry.getTypeHandler(int.class)).build(config));
         }
       }).build();
     final ResultMap tagResultMap = new ResultMap.Builder(config, "tagResultMap", Tag.class,
@@ -521,33 +511,27 @@ class ExecutorTestHelper {
         private static final long serialVersionUID = 1L;
 
         {
-          add(new ResultMapping.Builder(config, "id", "tag_id", registry.getTypeHandler(int.class))
+          add(new ResultMapping.Builder("id", "tag_id", registry.getTypeHandler(int.class))
             .flags(new ArrayList<>() {
-              private static final long serialVersionUID = 1L;
-
               {
                 add(ResultFlag.ID);
               }
-            }).build());
-          add(new ResultMapping.Builder(config, "name", "tag_name", registry.getTypeHandler(String.class)).build());
+            }).build(config));
+          add(new ResultMapping.Builder("name", "tag_name", registry.getTypeHandler(String.class)).build(config));
         }
       }).build();
     final ResultMap commentResultMap = new ResultMap.Builder(config, "commentResultMap", Comment.class,
       new ArrayList<>() {
-        private static final long serialVersionUID = 1L;
-
         {
-          add(new ResultMapping.Builder(config, "id", "comment_id", registry.getTypeHandler(int.class))
+          add(new ResultMapping.Builder("id", "comment_id", registry.getTypeHandler(int.class))
             .flags(new ArrayList<>() {
-              private static final long serialVersionUID = 1L;
-
               {
                 add(ResultFlag.ID);
               }
-            }).build());
-          add(new ResultMapping.Builder(config, "name", "comment_name", registry.getTypeHandler(String.class))
-            .build());
-          add(new ResultMapping.Builder(config, "comment", "comment", registry.getTypeHandler(String.class)).build());
+            }).build(config));
+          add(new ResultMapping.Builder("name", "comment_name", registry.getTypeHandler(String.class))
+            .build(config));
+          add(new ResultMapping.Builder("comment", "comment", registry.getTypeHandler(String.class)).build(config));
         }
       }).build();
     config.addResultMap(tagResultMap);
@@ -557,30 +541,26 @@ class ExecutorTestHelper {
         private static final long serialVersionUID = 1L;
 
         {
-          add(new ResultMapping.Builder(config, "id", "id", registry.getTypeHandler(int.class))
+          add(new ResultMapping.Builder("id", "id", registry.getTypeHandler(int.class))
             .flags(new ArrayList<>() {
-              private static final long serialVersionUID = 1L;
-
               {
                 add(ResultFlag.ID);
               }
-            }).build());
-          add(new ResultMapping.Builder(config, "blog", "blog_id", registry.getTypeHandler(int.class))
-            .javaType(Blog.class).nestedQueryId("selectBlogById").build());
-          add(new ResultMapping.Builder(config, "createdOn", "created_on", registry.getTypeHandler(Date.class))
-            .build());
-          add(new ResultMapping.Builder(config, "section", "section", registry.getTypeHandler(Section.class))
-            .build());
-          add(new ResultMapping.Builder(config, "subject", "subject", registry.getTypeHandler(String.class)).build());
-          add(new ResultMapping.Builder(config, "body", "body", registry.getTypeHandler(String.class)).build());
-          add(new ResultMapping.Builder(config, "tags").nestedResultMapId(tagResultMap.getId()).build());
-          add(new ResultMapping.Builder(config, "comments").nestedResultMapId(commentResultMap.getId()).build());
+            }).build(config));
+          add(new ResultMapping.Builder("blog", "blog_id", registry.getTypeHandler(int.class))
+            .javaType(Blog.class).nestedQueryId("selectBlogById").build(config));
+          add(new ResultMapping.Builder("createdOn", "created_on", registry.getTypeHandler(Date.class))
+            .build(config));
+          add(new ResultMapping.Builder("section", "section", registry.getTypeHandler(Section.class))
+            .build(config));
+          add(new ResultMapping.Builder("subject", "subject", registry.getTypeHandler(String.class)).build(config));
+          add(new ResultMapping.Builder("body", "body", registry.getTypeHandler(String.class)).build(config));
+          add(new ResultMapping.Builder("tags").nestedResultMapId(tagResultMap.getId()).build(config));
+          add(new ResultMapping.Builder("comments").nestedResultMapId(commentResultMap.getId()).build(config));
         }
       }).build();
     return new MappedStatement.Builder(config, "selectPostsForBlog", sqlSource, SqlCommandType.SELECT)
       .parameterMap(parameterMap).resultMaps(new ArrayList<>() {
-        private static final long serialVersionUID = 1L;
-
         {
           add(postResultMap);
         }
@@ -599,23 +579,19 @@ class ExecutorTestHelper {
         private static final long serialVersionUID = 1L;
 
         {
-          add(new ParameterMapping.Builder(config, "id", registry.getTypeHandler(int.class)).build());
+          add(new ParameterMapping.Builder("id", registry.getTypeHandler(int.class)).build(config));
         }
       }).build();
     final ResultMap tagResultMap = new ResultMap.Builder(config, "tagResultMap", Tag.class,
       new ArrayList<>() {
-        private static final long serialVersionUID = 1L;
-
         {
-          add(new ResultMapping.Builder(config, "id", "tag_id", registry.getTypeHandler(int.class))
+          add(new ResultMapping.Builder("id", "tag_id", registry.getTypeHandler(int.class))
             .flags(new ArrayList<>() {
-              private static final long serialVersionUID = 1L;
-
               {
                 add(ResultFlag.ID);
               }
-            }).build());
-          add(new ResultMapping.Builder(config, "name", "tag_name", registry.getTypeHandler(String.class)).build());
+            }).build(config));
+          add(new ResultMapping.Builder("name", "tag_name", registry.getTypeHandler(String.class)).build(config));
         }
       }).build();
     final ResultMap commentResultMap = new ResultMap.Builder(config, "commentResultMap", Comment.class,
@@ -623,17 +599,15 @@ class ExecutorTestHelper {
         private static final long serialVersionUID = 1L;
 
         {
-          add(new ResultMapping.Builder(config, "id", "comment_id", registry.getTypeHandler(int.class))
+          add(new ResultMapping.Builder("id", "comment_id", registry.getTypeHandler(int.class))
             .flags(new ArrayList<>() {
-              private static final long serialVersionUID = 1L;
-
               {
                 add(ResultFlag.ID);
               }
-            }).build());
-          add(new ResultMapping.Builder(config, "name", "comment_name", registry.getTypeHandler(String.class))
-            .build());
-          add(new ResultMapping.Builder(config, "comment", "comment", registry.getTypeHandler(String.class)).build());
+            }).build(config));
+          add(new ResultMapping.Builder("name", "comment_name", registry.getTypeHandler(String.class))
+            .build(config));
+          add(new ResultMapping.Builder("comment", "comment", registry.getTypeHandler(String.class)).build(config));
         }
       }).build();
     config.addResultMap(tagResultMap);
@@ -642,29 +616,25 @@ class ExecutorTestHelper {
       private static final long serialVersionUID = 1L;
 
       {
-        add(new ResultMapping.Builder(config, "id", "id", registry.getTypeHandler(int.class))
+        add(new ResultMapping.Builder("id", "id", registry.getTypeHandler(int.class))
           .flags(new ArrayList<>() {
-            private static final long serialVersionUID = 1L;
-
             {
               add(ResultFlag.ID);
             }
-          }).build());
-        add(new ResultMapping.Builder(config, "blog", "blog_id", registry.getTypeHandler(int.class))
-          .javaType(Blog.class).nestedQueryId("selectBlogById").build());
-        add(new ResultMapping.Builder(config, "createdOn", "created_on", registry.getTypeHandler(Date.class)).build());
-        add(new ResultMapping.Builder(config, "section", "section", registry.getTypeHandler(Section.class)).build());
-        add(new ResultMapping.Builder(config, "subject", "subject", registry.getTypeHandler(String.class)).build());
-        add(new ResultMapping.Builder(config, "body", "body", registry.getTypeHandler(String.class)).build());
-        add(new ResultMapping.Builder(config, "tags").nestedResultMapId(tagResultMap.getId()).build());
-        add(new ResultMapping.Builder(config, "comments").nestedResultMapId(commentResultMap.getId()).build());
+          }).build(config));
+        add(new ResultMapping.Builder("blog", "blog_id", registry.getTypeHandler(int.class))
+          .javaType(Blog.class).nestedQueryId("selectBlogById").build(config));
+        add(new ResultMapping.Builder("createdOn", "created_on", registry.getTypeHandler(Date.class)).build(config));
+        add(new ResultMapping.Builder("section", "section", registry.getTypeHandler(Section.class)).build(config));
+        add(new ResultMapping.Builder("subject", "subject", registry.getTypeHandler(String.class)).build(config));
+        add(new ResultMapping.Builder("body", "body", registry.getTypeHandler(String.class)).build(config));
+        add(new ResultMapping.Builder("tags").nestedResultMapId(tagResultMap.getId()).build(config));
+        add(new ResultMapping.Builder("comments").nestedResultMapId(commentResultMap.getId()).build(config));
       }
     }).build();
 
     return new MappedStatement.Builder(config, "selectPostsForBlog", sqlSource, SqlCommandType.SELECT)
       .parameterMap(parameterMap).resultMaps(new ArrayList<>() {
-        private static final long serialVersionUID = 1L;
-
         {
           add(postResultMap);
         }
@@ -680,26 +650,21 @@ class ExecutorTestHelper {
         + " LEFT OUTER JOIN comment c ON c.post_id = p.id" + " WHERE p.id = ?");
     final ParameterMap parameterMap = new ParameterMap.Builder("defaultParameterMap", Author.class,
       new ArrayList<>() {
-        private static final long serialVersionUID = 1L;
-
         {
-          add(new ParameterMapping.Builder(config, "id", registry.getTypeHandler(int.class)).build());
+          add(new ParameterMapping.Builder("id", registry.getTypeHandler(int.class)).build(config));
         }
       }).build();
     final ResultMap tagResultMap = new ResultMap.Builder(config, "tagResultMap", Tag.class,
       new ArrayList<>() {
-        private static final long serialVersionUID = 1L;
 
         {
-          add(new ResultMapping.Builder(config, "id", "tag_id", registry.getTypeHandler(int.class))
+          add(new ResultMapping.Builder("id", "tag_id", registry.getTypeHandler(int.class))
             .flags(new ArrayList<>() {
-              private static final long serialVersionUID = 1L;
-
               {
                 add(ResultFlag.ID);
               }
-            }).build());
-          add(new ResultMapping.Builder(config, "name", "tag_name", registry.getTypeHandler(String.class)).build());
+            }).build(config));
+          add(new ResultMapping.Builder("name", "tag_name", registry.getTypeHandler(String.class)).build(config));
         }
       }).build();
     final ResultMap commentResultMap = new ResultMap.Builder(config, "commentResultMap", Comment.class,
@@ -707,17 +672,15 @@ class ExecutorTestHelper {
         private static final long serialVersionUID = 1L;
 
         {
-          add(new ResultMapping.Builder(config, "id", "comment_id", registry.getTypeHandler(int.class))
+          add(new ResultMapping.Builder("id", "comment_id", registry.getTypeHandler(int.class))
             .flags(new ArrayList<>() {
-              private static final long serialVersionUID = 1L;
-
               {
                 add(ResultFlag.ID);
               }
-            }).build());
-          add(new ResultMapping.Builder(config, "name", "comment_name", registry.getTypeHandler(String.class))
-            .build());
-          add(new ResultMapping.Builder(config, "comment", "comment", registry.getTypeHandler(String.class)).build());
+            }).build(config));
+          add(new ResultMapping.Builder("name", "comment_name", registry.getTypeHandler(String.class))
+            .build(config));
+          add(new ResultMapping.Builder("comment", "comment", registry.getTypeHandler(String.class)).build(config));
         }
       }).build();
     config.addResultMap(tagResultMap);
@@ -727,34 +690,32 @@ class ExecutorTestHelper {
         private static final long serialVersionUID = 1L;
 
         {
-          add(new ResultMapping.Builder(config, "id", "id", registry.getTypeHandler(int.class))
+          add(new ResultMapping.Builder("id", "id", registry.getTypeHandler(int.class))
             .flags(new ArrayList<>() {
               private static final long serialVersionUID = 1L;
 
               {
                 add(ResultFlag.ID);
               }
-            }).build());
+            }).build(config));
 
-          add(new ResultMapping.Builder(config, "blog").nestedQueryId("selectBlogByIdAndAuthor")
+          add(new ResultMapping.Builder("blog").nestedQueryId("selectBlogByIdAndAuthor")
             .composites(new ArrayList<>() {
-              private static final long serialVersionUID = 1L;
-
               {
-                add(new ResultMapping.Builder(config, "authorId", "author_id", registry.getTypeHandler(int.class))
-                  .build());
-                add(new ResultMapping.Builder(config, "blogId", "blog_id", registry.getTypeHandler(int.class))
-                  .build());
+                add(new ResultMapping.Builder("authorId", "author_id", registry.getTypeHandler(int.class))
+                  .build(config));
+                add(new ResultMapping.Builder("blogId", "blog_id", registry.getTypeHandler(int.class))
+                  .build(config));
               }
-            }).build());
-          add(new ResultMapping.Builder(config, "createdOn", "created_on", registry.getTypeHandler(Date.class))
-            .build());
-          add(new ResultMapping.Builder(config, "section", "section", registry.getTypeHandler(Section.class))
-            .build());
-          add(new ResultMapping.Builder(config, "subject", "subject", registry.getTypeHandler(String.class)).build());
-          add(new ResultMapping.Builder(config, "body", "body", registry.getTypeHandler(String.class)).build());
-          add(new ResultMapping.Builder(config, "tags").nestedResultMapId(tagResultMap.getId()).build());
-          add(new ResultMapping.Builder(config, "comments").nestedResultMapId(commentResultMap.getId()).build());
+            }).build(config));
+          add(new ResultMapping.Builder("createdOn", "created_on", registry.getTypeHandler(Date.class))
+            .build(config));
+          add(new ResultMapping.Builder("section", "section", registry.getTypeHandler(Section.class))
+            .build(config));
+          add(new ResultMapping.Builder("subject", "subject", registry.getTypeHandler(String.class)).build(config));
+          add(new ResultMapping.Builder("body", "body", registry.getTypeHandler(String.class)).build(config));
+          add(new ResultMapping.Builder("tags").nestedResultMapId(tagResultMap.getId()).build(config));
+          add(new ResultMapping.Builder("comments").nestedResultMapId(commentResultMap.getId()).build(config));
         }
       }).build();
 
@@ -789,14 +750,14 @@ class ExecutorTestHelper {
         private static final long serialVersionUID = 1L;
 
         {
-          add(new ParameterMapping.Builder(config, "id", registry.getTypeHandler(Integer.class)).build());
-          add(new ParameterMapping.Builder(config, "username", registry.getTypeHandler(String.class)).build());
-          add(new ParameterMapping.Builder(config, "password", registry.getTypeHandler(String.class)).build());
-          add(new ParameterMapping.Builder(config, "email", registry.getTypeHandler(String.class)).build());
-          add(new ParameterMapping.Builder(config, "bio", registry.getTypeHandler(String.class))
-            .jdbcType(JdbcType.VARCHAR).build());
-          add(new ParameterMapping.Builder(config, "favouriteSection", registry.getTypeHandler(Section.class))
-            .jdbcType(JdbcType.VARCHAR).build());
+          add(new ParameterMapping.Builder("id", registry.getTypeHandler(Integer.class)).build(config));
+          add(new ParameterMapping.Builder("username", registry.getTypeHandler(String.class)).build(config));
+          add(new ParameterMapping.Builder("password", registry.getTypeHandler(String.class)).build(config));
+          add(new ParameterMapping.Builder("email", registry.getTypeHandler(String.class)).build(config));
+          add(new ParameterMapping.Builder("bio", registry.getTypeHandler(String.class))
+            .jdbcType(JdbcType.VARCHAR).build(config));
+          add(new ParameterMapping.Builder("favouriteSection", registry.getTypeHandler(Section.class))
+            .jdbcType(JdbcType.VARCHAR).build(config));
         }
       }).build()).cache(authorCache).keyGenerator(new SelectKeyGenerator(kms, true)).keyProperty("id").build();
   }

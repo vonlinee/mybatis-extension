@@ -15,19 +15,18 @@
  */
 package org.apache.ibatis.mapping;
 
-import java.sql.ResultSet;
-
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
+import org.jetbrains.annotations.NotNull;
+
+import java.sql.ResultSet;
 
 /**
  * @author Clinton Begin
  */
 public class ParameterMapping {
-
-  private Configuration configuration;
 
   private String property;
   private ParameterMode mode;
@@ -42,18 +41,16 @@ public class ParameterMapping {
   private ParameterMapping() {
   }
 
-  public static class Builder {
+  public static final class Builder {
     private final ParameterMapping parameterMapping = new ParameterMapping();
 
-    public Builder(Configuration configuration, String property, TypeHandler<?> typeHandler) {
-      parameterMapping.configuration = configuration;
+    public Builder(String property, TypeHandler<?> typeHandler) {
       parameterMapping.property = property;
       parameterMapping.typeHandler = typeHandler;
       parameterMapping.mode = ParameterMode.IN;
     }
 
-    public Builder(Configuration configuration, String property, Class<?> javaType) {
-      parameterMapping.configuration = configuration;
+    public Builder(String property, Class<?> javaType) {
       parameterMapping.property = property;
       parameterMapping.javaType = javaType;
       parameterMapping.mode = ParameterMode.IN;
@@ -100,17 +97,12 @@ public class ParameterMapping {
     }
 
     public ParameterMapping build() {
-      resolveTypeHandler();
       validate();
       return parameterMapping;
     }
 
     public ParameterMapping build(Configuration configuration) {
-      if (parameterMapping.typeHandler == null && parameterMapping.javaType != null) {
-        TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
-        parameterMapping.typeHandler = typeHandlerRegistry.getTypeHandler(parameterMapping.javaType,
-          parameterMapping.jdbcType);
-      }
+      typeHandler(configuration);
       validate();
       return parameterMapping;
     }
@@ -119,24 +111,23 @@ public class ParameterMapping {
       if (ResultSet.class.equals(parameterMapping.javaType)) {
         if (parameterMapping.resultMapId == null) {
           throw new IllegalStateException("Missing result map in property '" + parameterMapping.property + "'.  "
-              + "Parameters of type java.sql.ResultSet require a result map.");
+            + "Parameters of type java.sql.ResultSet require a result map.");
         }
       } else if (parameterMapping.typeHandler == null) {
         throw new IllegalStateException("Type handler was null on parameter mapping for property '"
-            + parameterMapping.property + "'. It was either not specified and/or could not be found for the javaType ("
-            + parameterMapping.javaType.getName() + ") : jdbcType (" + parameterMapping.jdbcType + ") combination.");
+          + parameterMapping.property + "'. It was either not specified and/or could not be found for the javaType ("
+          + parameterMapping.javaType.getName() + ") : jdbcType (" + parameterMapping.jdbcType + ") combination.");
       }
     }
 
-    private void resolveTypeHandler() {
+    public Builder typeHandler(Configuration configuration) {
       if (parameterMapping.typeHandler == null && parameterMapping.javaType != null) {
-        Configuration configuration = parameterMapping.configuration;
         TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
         parameterMapping.typeHandler = typeHandlerRegistry.getTypeHandler(parameterMapping.javaType,
-            parameterMapping.jdbcType);
+          parameterMapping.jdbcType);
       }
+      return this;
     }
-
   }
 
   public String getProperty() {
@@ -184,6 +175,7 @@ public class ParameterMapping {
    *
    * @return the type handler
    */
+  @NotNull
   public TypeHandler<?> getTypeHandler() {
     return typeHandler;
   }

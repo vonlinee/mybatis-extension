@@ -15,15 +15,17 @@
  */
 package org.apache.ibatis.mapping;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author Clinton Begin
@@ -49,27 +51,25 @@ public class ResultMapping {
   ResultMapping() {
   }
 
-  public static class Builder {
+  public static final class Builder {
     private final ResultMapping resultMapping = new ResultMapping();
 
-    public Builder(Configuration configuration, String property, String column, TypeHandler<?> typeHandler) {
-      this(configuration, property);
+    public Builder(String property, String column, TypeHandler<?> typeHandler) {
+      this(property);
       resultMapping.column = column;
       resultMapping.typeHandler = typeHandler;
     }
 
-    public Builder(Configuration configuration, String property, String column, Class<?> javaType) {
-      this(configuration, property);
+    public Builder(String property, String column, Class<?> javaType) {
+      this(property);
       resultMapping.column = column;
       resultMapping.javaType = javaType;
     }
 
-    public Builder(Configuration configuration, String property) {
-      resultMapping.configuration = configuration;
+    public Builder(String property) {
       resultMapping.property = property;
       resultMapping.flags = new ArrayList<>();
       resultMapping.composites = new ArrayList<>();
-      resultMapping.lazy = configuration.isLazyLoadingEnabled();
     }
 
     public Builder javaType(Class<?> javaType) {
@@ -133,10 +133,17 @@ public class ResultMapping {
     }
 
     public ResultMapping build() {
+      return build(this.resultMapping.configuration);
+    }
+
+    public ResultMapping build(@NotNull Configuration configuration) {
+      Objects.requireNonNull(configuration, "the configuration cannot be null");
       // lock down collections
       resultMapping.flags = Collections.unmodifiableList(resultMapping.flags);
       resultMapping.composites = Collections.unmodifiableList(resultMapping.composites);
-      resolveTypeHandler();
+      resultMapping.lazy = configuration.isLazyLoadingEnabled();
+
+      resolveTypeHandler(configuration);
       validate();
       return resultMapping;
     }
@@ -145,16 +152,16 @@ public class ResultMapping {
       // Issue #697: cannot define both nestedQueryId and nestedResultMapId
       if (resultMapping.nestedQueryId != null && resultMapping.nestedResultMapId != null) {
         throw new IllegalStateException(
-            "Cannot define both nestedQueryId and nestedResultMapId in property " + resultMapping.property);
+          "Cannot define both nestedQueryId and nestedResultMapId in property " + resultMapping.property);
       }
-      // Issue #5: there should be no mappings without typehandler
+      // Issue #5: there should be no mappings without type handler
       if (resultMapping.nestedQueryId == null && resultMapping.nestedResultMapId == null
-          && resultMapping.typeHandler == null) {
-        throw new IllegalStateException("No typehandler found for property " + resultMapping.property);
+        && resultMapping.typeHandler == null) {
+        throw new IllegalStateException("No type handler found for property " + resultMapping.property);
       }
-      // Issue #4 and GH #39: column is optional only in nested resultmaps but not in the rest
+      // Issue #4 and GH #39: column is optional only in nested result maps but not in the rest
       if (resultMapping.nestedResultMapId == null && resultMapping.column == null
-          && resultMapping.composites.isEmpty()) {
+        && resultMapping.composites.isEmpty()) {
         throw new IllegalStateException("Mapping is missing column attribute for property " + resultMapping.property);
       }
       if (resultMapping.getResultSet() != null) {
@@ -168,17 +175,17 @@ public class ResultMapping {
         }
         if (numColumns != numForeignColumns) {
           throw new IllegalStateException(
-              "There should be the same number of columns and foreignColumns in property " + resultMapping.property);
+            "There should be the same number of columns and foreignColumns in property " + resultMapping.property);
         }
       }
     }
 
-    private void resolveTypeHandler() {
+    private Builder resolveTypeHandler(@NotNull Configuration configuration) {
       if (resultMapping.typeHandler == null && resultMapping.javaType != null) {
-        Configuration configuration = resultMapping.configuration;
         TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
         resultMapping.typeHandler = typeHandlerRegistry.getTypeHandler(resultMapping.javaType, resultMapping.jdbcType);
       }
+      return this;
     }
 
     public Builder column(String column) {
@@ -287,24 +294,20 @@ public class ResultMapping {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("ResultMapping{");
-    // sb.append("configuration=").append(configuration); // configuration doesn't have a useful .toString()
-    sb.append("property='").append(property).append('\'');
-    sb.append(", column='").append(column).append('\'');
-    sb.append(", javaType=").append(javaType);
-    sb.append(", jdbcType=").append(jdbcType);
-    // sb.append(", typeHandler=").append(typeHandler); // typeHandler also doesn't have a useful .toString()
-    sb.append(", nestedResultMapId='").append(nestedResultMapId).append('\'');
-    sb.append(", nestedQueryId='").append(nestedQueryId).append('\'');
-    sb.append(", notNullColumns=").append(notNullColumns);
-    sb.append(", columnPrefix='").append(columnPrefix).append('\'');
-    sb.append(", flags=").append(flags);
-    sb.append(", composites=").append(composites);
-    sb.append(", resultSet='").append(resultSet).append('\'');
-    sb.append(", foreignColumn='").append(foreignColumn).append('\'');
-    sb.append(", lazy=").append(lazy);
-    sb.append('}');
-    return sb.toString();
+    return "ResultMapping{" + "property='" + property + '\'' +
+      ", column='" + column + '\'' +
+      ", javaType=" + javaType +
+      ", jdbcType=" + jdbcType +
+      ", nestedResultMapId='" + nestedResultMapId + '\'' +
+      ", nestedQueryId='" + nestedQueryId + '\'' +
+      ", notNullColumns=" + notNullColumns +
+      ", columnPrefix='" + columnPrefix + '\'' +
+      ", flags=" + flags +
+      ", composites=" + composites +
+      ", resultSet='" + resultSet + '\'' +
+      ", foreignColumn='" + foreignColumn + '\'' +
+      ", lazy=" + lazy +
+      '}';
   }
 
 }

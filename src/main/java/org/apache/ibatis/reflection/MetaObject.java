@@ -15,10 +15,6 @@
  */
 package org.apache.ibatis.reflection;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.ibatis.reflection.factory.ObjectFactory;
 import org.apache.ibatis.reflection.property.PropertyTokenizer;
 import org.apache.ibatis.reflection.wrapper.BeanWrapper;
@@ -26,6 +22,10 @@ import org.apache.ibatis.reflection.wrapper.CollectionWrapper;
 import org.apache.ibatis.reflection.wrapper.MapWrapper;
 import org.apache.ibatis.reflection.wrapper.ObjectWrapper;
 import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Clinton Begin
@@ -39,27 +39,33 @@ public class MetaObject {
   private final ReflectorFactory reflectorFactory;
 
   private MetaObject(Object object, ObjectFactory objectFactory, ObjectWrapperFactory objectWrapperFactory,
-      ReflectorFactory reflectorFactory) {
+                     ReflectorFactory reflectorFactory) {
     this.originalObject = object;
     this.objectFactory = objectFactory;
     this.objectWrapperFactory = objectWrapperFactory;
     this.reflectorFactory = reflectorFactory;
+    this.objectWrapper = initObjectWrapper(object);
+  }
 
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public ObjectWrapper initObjectWrapper(Object object) {
+    ObjectWrapper wrapper;
     if (object instanceof ObjectWrapper) {
-      this.objectWrapper = (ObjectWrapper) object;
+      wrapper = (ObjectWrapper) object;
     } else if (objectWrapperFactory.hasWrapperFor(object)) {
-      this.objectWrapper = objectWrapperFactory.getWrapperFor(this, object);
+      wrapper = objectWrapperFactory.getWrapperFor(this, object);
     } else if (object instanceof Map) {
-      this.objectWrapper = new MapWrapper(this, (Map) object);
+      wrapper = new MapWrapper(this, (Map) object);
     } else if (object instanceof Collection) {
-      this.objectWrapper = new CollectionWrapper(this, (Collection) object);
+      wrapper = new CollectionWrapper((Collection) object);
     } else {
-      this.objectWrapper = new BeanWrapper(this, object);
+      wrapper = new BeanWrapper(this, object);
     }
+    return wrapper;
   }
 
   public static MetaObject forObject(Object object, ObjectFactory objectFactory,
-      ObjectWrapperFactory objectWrapperFactory, ReflectorFactory reflectorFactory) {
+                                     ObjectWrapperFactory objectWrapperFactory, ReflectorFactory reflectorFactory) {
     if (object == null) {
       return SystemMetaObject.NULL_META_OBJECT;
     }
@@ -139,5 +145,4 @@ public class MetaObject {
   public <E> void addAll(List<E> list) {
     objectWrapper.addAll(list);
   }
-
 }

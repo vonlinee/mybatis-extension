@@ -33,7 +33,7 @@ class PropertyTokenizerTest {
     PropertyTokenizer tokenizer = new PropertyTokenizer(fullname);
 
     assertEquals("id", tokenizer.getIndexedName());
-    assertEquals("id", tokenizer.getName());
+    assertEquals("id", tokenizer.getPropertyName());
 
     assertNull(tokenizer.getChildren());
     assertNull(tokenizer.getIndex());
@@ -50,7 +50,7 @@ class PropertyTokenizerTest {
     PropertyTokenizer tokenizer = new PropertyTokenizer(fullname);
 
     assertEquals("person", tokenizer.getIndexedName());
-    assertEquals("person", tokenizer.getName());
+    assertEquals("person", tokenizer.getPropertyName());
     assertTrue(tokenizer.hasNext());
     assertEquals("id", tokenizer.getChildren());
 
@@ -66,7 +66,7 @@ class PropertyTokenizerTest {
     PropertyTokenizer tokenizer = new PropertyTokenizer(fullname);
 
     assertEquals("array[0]", tokenizer.getIndexedName());
-    assertEquals("array", tokenizer.getName());
+    assertEquals("array", tokenizer.getPropertyName());
     assertEquals("0", tokenizer.getIndex());
 
     assertFalse(tokenizer.hasNext());

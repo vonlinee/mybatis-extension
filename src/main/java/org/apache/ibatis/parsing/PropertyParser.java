@@ -54,8 +54,7 @@ public class PropertyParser {
 
   public static String parse(String string, Properties variables) {
     VariableTokenHandler handler = new VariableTokenHandler(variables);
-    GenericTokenParser parser = new GenericTokenParser("${", "}", handler);
-    return parser.parse(string);
+    return GenericTokenParser.parse(string, "${", "}", handler);
   }
 
   private static class VariableTokenHandler implements TokenHandler {

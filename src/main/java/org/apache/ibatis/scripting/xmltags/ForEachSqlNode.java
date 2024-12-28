@@ -16,6 +16,7 @@
 package org.apache.ibatis.scripting.xmltags;
 
 import org.apache.ibatis.parsing.GenericTokenParser;
+import org.apache.ibatis.parsing.TokenHandler;
 import org.apache.ibatis.scripting.ExpressionEvaluator;
 import org.jetbrains.annotations.NotNull;
 
@@ -155,15 +156,15 @@ public class ForEachSqlNode implements SqlNode {
 
     @Override
     public void appendSql(String sql) {
-      GenericTokenParser parser = new GenericTokenParser("#{", "}", content -> {
+      TokenHandler handler = content -> {
         String newContent = content.replaceFirst("^\\s*" + item + "(?![^.,:\\s])", itemizeItem(item, index));
         if (itemIndex != null && newContent.equals(content)) {
           newContent = content.replaceFirst("^\\s*" + itemIndex + "(?![^.,:\\s])", itemizeItem(itemIndex, index));
         }
         return "#{" + newContent + "}";
-      });
+      };
 
-      delegate.appendSql(parser.parse(sql));
+      delegate.appendSql(GenericTokenParser.parse(sql, "#{", "}", handler));
     }
 
     @Override

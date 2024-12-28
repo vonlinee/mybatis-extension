@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 import javax.sql.DataSource;
 
 import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.util.MapUtil;
+import org.apache.ibatis.util.CollectionUtils;
 
 /**
  * @author Clinton Begin
@@ -233,7 +233,7 @@ public class UnpooledDataSource implements DataSource {
 
   private void initializeDriver() throws SQLException {
     try {
-      MapUtil.computeIfAbsent(registeredDrivers, driver, x -> {
+      CollectionUtils.computeIfAbsent(registeredDrivers, driver, x -> {
         Class<?> driverType;
         try {
           if (driverClassLoader != null) {

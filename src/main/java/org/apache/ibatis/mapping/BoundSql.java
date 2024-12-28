@@ -62,7 +62,7 @@ public class BoundSql {
   }
 
   public boolean hasAdditionalParameter(String name) {
-    String paramName = new PropertyTokenizer(name).getName();
+    String paramName = PropertyTokenizer.getPropertyName(name);
     return additionalParameters.containsKey(paramName);
   }
 
@@ -72,9 +72,5 @@ public class BoundSql {
 
   public Object getAdditionalParameter(String name) {
     return metaParameters.getValue(name);
-  }
-
-  public Map<String, Object> getAdditionalParameters() {
-    return additionalParameters;
   }
 }

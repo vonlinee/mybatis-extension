@@ -255,12 +255,10 @@ public class XNode {
   public List<XNode> getChildren() {
     List<XNode> children = new ArrayList<>();
     NodeList nodeList = node.getChildNodes();
-    if (nodeList != null) {
-      for (int i = 0, n = nodeList.getLength(); i < n; i++) {
-        Node node = nodeList.item(i);
-        if (node.getNodeType() == Node.ELEMENT_NODE) {
-          children.add(new XNode(xpathParser, node, variables));
-        }
+    for (int i = 0, n = nodeList.getLength(); i < n; i++) {
+      Node node = nodeList.item(i);
+      if (node.getNodeType() == Node.ELEMENT_NODE) {
+        children.add(new XNode(xpathParser, node, variables));
       }
     }
     return children;
@@ -294,7 +292,7 @@ public class XNode {
     }
 
     NodeList nodeList = node.getChildNodes();
-    if (nodeList == null || nodeList.getLength() == 0) {
+    if (nodeList.getLength() == 0) {
       builder.append(" />\n");
     } else {
       builder.append(">\n");
@@ -305,7 +303,7 @@ public class XNode {
           new XNode(xpathParser, node, variables).buildToString(builder, indentLevel + 1);
         } else {
           String text = getBodyData(node).trim();
-          if (text.length() > 0) {
+          if (!text.isEmpty()) {
             indent(builder, indentLevel + 1).append(text).append("\n");
           }
         }

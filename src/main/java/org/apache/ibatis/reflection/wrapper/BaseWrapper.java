@@ -15,13 +15,13 @@
  */
 package org.apache.ibatis.reflection.wrapper;
 
-import java.util.List;
-import java.util.Map;
-
 import org.apache.ibatis.reflection.MetaObject;
-import org.apache.ibatis.reflection.ReflectionException;
+import org.apache.ibatis.reflection.ReflectionRuntimeException;
 import org.apache.ibatis.reflection.SystemMetaObject;
 import org.apache.ibatis.reflection.property.PropertyTokenizer;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Clinton Begin
@@ -36,16 +36,17 @@ public abstract class BaseWrapper implements ObjectWrapper {
   }
 
   protected Object resolveCollection(PropertyTokenizer prop, Object object) {
-    if ("".equals(prop.getName())) {
+    if ("".equals(prop.getPropertyName())) {
       return object;
     }
-    return metaObject.getValue(prop.getName());
+    return metaObject.getValue(prop.getPropertyName());
   }
 
+  @SuppressWarnings({"rawtypes"})
   protected Object getCollectionValue(PropertyTokenizer prop, Object collection) {
     if (collection == null) {
-      throw new ReflectionException("Cannot get the value '" + prop.getIndexedName() + "' because the property '"
-          + prop.getName() + "' is null.");
+      throw new ReflectionRuntimeException("Cannot get the value '" + prop.getIndexedName() + "' because the property '"
+        + prop.getPropertyName() + "' is null.");
     }
     if (collection instanceof Map) {
       return ((Map) collection).get(prop.getIndex());
@@ -72,15 +73,16 @@ public abstract class BaseWrapper implements ObjectWrapper {
     } else if (collection instanceof short[]) {
       return ((short[]) collection)[i];
     } else {
-      throw new ReflectionException("Cannot get the value '" + prop.getIndexedName() + "' because the property '"
-          + prop.getName() + "' is not Map, List or Array.");
+      throw new ReflectionRuntimeException("Cannot get the value '" + prop.getIndexedName() + "' because the property '"
+        + prop.getPropertyName() + "' is not Map, List or Array.");
     }
   }
 
+  @SuppressWarnings({"rawtypes", "unchecked"})
   protected void setCollectionValue(PropertyTokenizer prop, Object collection, Object value) {
     if (collection == null) {
-      throw new ReflectionException("Cannot set the value '" + prop.getIndexedName() + "' because the property '"
-          + prop.getName() + "' is null.");
+      throw new ReflectionRuntimeException("Cannot set the value '" + prop.getIndexedName() + "' because the property '"
+        + prop.getPropertyName() + "' is null.");
     }
     if (collection instanceof Map) {
       ((Map) collection).put(prop.getIndex(), value);
@@ -107,8 +109,8 @@ public abstract class BaseWrapper implements ObjectWrapper {
       } else if (collection instanceof short[]) {
         ((short[]) collection)[i] = (Short) value;
       } else {
-        throw new ReflectionException("Cannot set the value '" + prop.getIndexedName() + "' because the property '"
-            + prop.getName() + "' is not Map, List or Array.");
+        throw new ReflectionRuntimeException("Cannot set the value '" + prop.getIndexedName() + "' because the property '"
+          + prop.getPropertyName() + "' is not Map, List or Array.");
       }
     }
   }
@@ -128,7 +130,7 @@ public abstract class BaseWrapper implements ObjectWrapper {
         // don't instantiate child path if value is null
         return;
       }
-      metaValue = instantiatePropertyValue(null, new PropertyTokenizer(prop.getName()), metaObject.getObjectFactory());
+      metaValue = instantiatePropertyValue(null, new PropertyTokenizer(prop.getPropertyName()), metaObject.getObjectFactory());
     }
     metaValue.setValue(prop.getChildren(), value);
   }

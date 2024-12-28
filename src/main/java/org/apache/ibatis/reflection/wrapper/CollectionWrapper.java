@@ -29,7 +29,7 @@ public class CollectionWrapper implements ObjectWrapper {
 
   private final Collection<Object> object;
 
-  public CollectionWrapper(MetaObject metaObject, Collection<Object> object) {
+  public CollectionWrapper(Collection<Object> object) {
     this.object = object;
   }
 

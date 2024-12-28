@@ -15,12 +15,12 @@
  */
 package org.mybatis.scripting.velocity;
 
+import org.apache.ibatis.mapping.ParameterMapping;
+import org.apache.ibatis.session.Configuration;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.ibatis.mapping.ParameterMapping;
-import org.apache.ibatis.session.Configuration;
 
 public class ParameterMappingCollector {
 
@@ -33,7 +33,7 @@ public class ParameterMappingCollector {
   private String itemKey;
 
   public ParameterMappingCollector(ParameterMapping[] newParameterMappingSources, Map<String, Object> newContext,
-      Configuration newConfiguration) {
+                                   Configuration newConfiguration) {
     this.parameterMappingSources = newParameterMappingSources;
     this.context = newContext;
     this.configuration = newConfiguration;
@@ -63,14 +63,19 @@ public class ParameterMappingCollector {
   }
 
   private ParameterMapping itemize(ParameterMapping source, PropertyInfo var) {
-    StringBuilder sb = new StringBuilder().append("_RPTITEM_").append(this.uid++);
+    StringBuilder sb = new StringBuilder("_RPTITEM_").append(this.uid++);
     var.root = sb.toString();
     String propertyName = sb.append(var.path).toString();
-    ParameterMapping.Builder builder = new ParameterMapping.Builder(this.configuration, propertyName,
-        source.getJavaType());
-    builder.expression(source.getExpression()).jdbcType(source.getJdbcType()).jdbcTypeName(source.getJdbcTypeName())
-        .mode(source.getMode()).numericScale(source.getNumericScale()).resultMapId(source.getResultMapId())
-        .typeHandler(source.getTypeHandler());
+    ParameterMapping.Builder builder = new ParameterMapping.Builder(propertyName,
+      source.getJavaType());
+    builder.expression(source.getExpression())
+      .jdbcType(source.getJdbcType())
+      .jdbcTypeName(source.getJdbcTypeName())
+      .mode(source.getMode())
+      .numericScale(source.getNumericScale())
+      .resultMapId(source.getResultMapId())
+      .typeHandler(source.getTypeHandler());
+    builder.typeHandler(this.configuration);
     return builder.build();
   }
 

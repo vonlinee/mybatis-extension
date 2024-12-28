@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.ibatis.cache.decorators.TransactionalCache;
-import org.apache.ibatis.util.MapUtil;
+import org.apache.ibatis.util.CollectionUtils;
 
 /**
  * @author Clinton Begin
@@ -53,7 +53,7 @@ public class TransactionalCacheManager {
   }
 
   private TransactionalCache getTransactionalCache(Cache cache) {
-    return MapUtil.computeIfAbsent(transactionalCaches, cache, TransactionalCache::new);
+    return CollectionUtils.computeIfAbsent(transactionalCaches, cache, TransactionalCache::new);
   }
 
 }

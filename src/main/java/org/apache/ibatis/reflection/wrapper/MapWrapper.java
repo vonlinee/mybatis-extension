@@ -43,7 +43,7 @@ public class MapWrapper extends BaseWrapper {
     } else if (prop.getIndex() != null) {
       return getCollectionValue(prop, resolveCollection(prop, map));
     } else {
-      return map.get(prop.getName());
+      return map.get(prop.getPropertyName());
     }
   }
 
@@ -54,7 +54,7 @@ public class MapWrapper extends BaseWrapper {
     } else if (prop.getIndex() != null) {
       setCollectionValue(prop, resolveCollection(prop, map), value);
     } else {
-      map.put(prop.getName(), value);
+      map.put(prop.getPropertyName(), value);
     }
   }
 
@@ -118,7 +118,7 @@ public class MapWrapper extends BaseWrapper {
   public boolean hasGetter(String name) {
     PropertyTokenizer prop = new PropertyTokenizer(name);
     if (!prop.hasNext()) {
-      return map.containsKey(prop.getName());
+      return map.containsKey(prop.getPropertyName());
     }
     if (map.containsKey(prop.getIndexedName())) {
       MetaObject metaValue = metaObject.metaObjectForProperty(prop.getIndexedName());

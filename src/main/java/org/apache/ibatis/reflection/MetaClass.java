@@ -61,20 +61,20 @@ public class MetaClass {
   }
 
   public String[] getGetterNames() {
-    return reflector.getGetablePropertyNames();
+    return reflector.getGettablePropertyNames();
   }
 
   public String[] getSetterNames() {
-    return reflector.getSetablePropertyNames();
+    return reflector.getSettablePropertyNames();
   }
 
   public Class<?> getSetterType(String name) {
     PropertyTokenizer prop = new PropertyTokenizer(name);
     if (prop.hasNext()) {
-      MetaClass metaProp = metaClassForProperty(prop.getName());
+      MetaClass metaProp = metaClassForProperty(prop.getPropertyName());
       return metaProp.getSetterType(prop.getChildren());
     }
-    return reflector.getSetterType(prop.getName());
+    return reflector.getSetterType(prop.getPropertyName());
   }
 
   public Class<?> getGetterType(String name) {
@@ -93,9 +93,9 @@ public class MetaClass {
   }
 
   private Class<?> getGetterType(PropertyTokenizer prop) {
-    Class<?> type = reflector.getGetterType(prop.getName());
+    Class<?> type = reflector.getGetterType(prop.getPropertyName());
     if (prop.getIndex() != null && Collection.class.isAssignableFrom(type)) {
-      Type returnType = getGenericGetterType(prop.getName());
+      Type returnType = getGenericGetterType(prop.getPropertyName());
       if (returnType instanceof ParameterizedType) {
         Type[] actualTypeArguments = ((ParameterizedType) returnType).getActualTypeArguments();
         if (actualTypeArguments != null && actualTypeArguments.length == 1) {
@@ -135,10 +135,10 @@ public class MetaClass {
   public boolean hasSetter(String name) {
     PropertyTokenizer prop = new PropertyTokenizer(name);
     if (!prop.hasNext()) {
-      return reflector.hasSetter(prop.getName());
+      return reflector.hasSetter(prop.getPropertyName());
     }
-    if (reflector.hasSetter(prop.getName())) {
-      MetaClass metaProp = metaClassForProperty(prop.getName());
+    if (reflector.hasSetter(prop.getPropertyName())) {
+      MetaClass metaProp = metaClassForProperty(prop.getPropertyName());
       return metaProp.hasSetter(prop.getChildren());
     }
     return false;
@@ -147,9 +147,9 @@ public class MetaClass {
   public boolean hasGetter(String name) {
     PropertyTokenizer prop = new PropertyTokenizer(name);
     if (!prop.hasNext()) {
-      return reflector.hasGetter(prop.getName());
+      return reflector.hasGetter(prop.getPropertyName());
     }
-    if (reflector.hasGetter(prop.getName())) {
+    if (reflector.hasGetter(prop.getPropertyName())) {
       MetaClass metaProp = metaClassForProperty(prop);
       return metaProp.hasGetter(prop.getChildren());
     }
@@ -167,7 +167,7 @@ public class MetaClass {
   private StringBuilder buildProperty(String name, StringBuilder builder) {
     PropertyTokenizer prop = new PropertyTokenizer(name);
     if (prop.hasNext()) {
-      String propertyName = reflector.findPropertyName(prop.getName());
+      String propertyName = reflector.findPropertyName(prop.getPropertyName());
       if (propertyName != null) {
         builder.append(propertyName);
         builder.append(".");

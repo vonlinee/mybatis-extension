@@ -20,7 +20,7 @@ import java.util.List;
 import org.apache.ibatis.reflection.ExceptionUtil;
 import org.apache.ibatis.reflection.MetaClass;
 import org.apache.ibatis.reflection.MetaObject;
-import org.apache.ibatis.reflection.ReflectionException;
+import org.apache.ibatis.reflection.ReflectionRuntimeException;
 import org.apache.ibatis.reflection.SystemMetaObject;
 import org.apache.ibatis.reflection.factory.ObjectFactory;
 import org.apache.ibatis.reflection.invoker.Invoker;
@@ -138,22 +138,22 @@ public class BeanWrapper extends BaseWrapper {
   @Override
   public MetaObject instantiatePropertyValue(String name, PropertyTokenizer prop, ObjectFactory objectFactory) {
     MetaObject metaValue;
-    Class<?> type = getSetterType(prop.getName());
+    Class<?> type = getSetterType(prop.getPropertyName());
     try {
       Object newObject = objectFactory.create(type);
       metaValue = MetaObject.forObject(newObject, metaObject.getObjectFactory(), metaObject.getObjectWrapperFactory(),
           metaObject.getReflectorFactory());
       set(prop, newObject);
     } catch (Exception e) {
-      throw new ReflectionException("Cannot set value of property '" + name + "' because '" + name
-          + "' is null and cannot be instantiated on instance of " + type.getName() + ". Cause:" + e.toString(), e);
+      throw new ReflectionRuntimeException("Cannot set value of property '" + name + "' because '" + name
+          + "' is null and cannot be instantiated on instance of " + type.getName() + ". Cause:" + e, e);
     }
     return metaValue;
   }
 
   private Object getBeanProperty(PropertyTokenizer prop, Object object) {
     try {
-      Invoker method = metaClass.getGetInvoker(prop.getName());
+      Invoker method = metaClass.getGetInvoker(prop.getPropertyName());
       try {
         return method.invoke(object, NO_ARGUMENTS);
       } catch (Throwable t) {
@@ -162,14 +162,14 @@ public class BeanWrapper extends BaseWrapper {
     } catch (RuntimeException e) {
       throw e;
     } catch (Throwable t) {
-      throw new ReflectionException(
-          "Could not get property '" + prop.getName() + "' from " + object.getClass() + ".  Cause: " + t.toString(), t);
+      throw new ReflectionRuntimeException(
+          "Could not get property '" + prop.getPropertyName() + "' from " + object.getClass() + ".  Cause: " + t, t);
     }
   }
 
   private void setBeanProperty(PropertyTokenizer prop, Object object, Object value) {
     try {
-      Invoker method = metaClass.getSetInvoker(prop.getName());
+      Invoker method = metaClass.getSetInvoker(prop.getPropertyName());
       Object[] params = { value };
       try {
         method.invoke(object, params);
@@ -177,8 +177,8 @@ public class BeanWrapper extends BaseWrapper {
         throw ExceptionUtil.unwrapThrowable(t);
       }
     } catch (Throwable t) {
-      throw new ReflectionException("Could not set property '" + prop.getName() + "' of '" + object.getClass()
-          + "' with value '" + value + "' Cause: " + t.toString(), t);
+      throw new ReflectionRuntimeException("Could not set property '" + prop.getPropertyName() + "' of '" + object.getClass()
+          + "' with value '" + value + "' Cause: " + t, t);
     }
   }
 

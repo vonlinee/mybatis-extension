@@ -18,8 +18,6 @@ package org.apache.ibatis.scripting.xmltags;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.ibatis.session.Configuration;
-
 /**
  * @author Clinton Begin
  */

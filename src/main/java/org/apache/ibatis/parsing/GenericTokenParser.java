@@ -15,22 +15,25 @@
  */
 package org.apache.ibatis.parsing;
 
+import org.apache.ibatis.scripting.xmltags.DynamicCheckerTokenParser;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 /**
  * @author Clinton Begin
  */
 public class GenericTokenParser {
 
-  private final String openToken;
-  private final String closeToken;
-  private final TokenHandler handler;
-
-  public GenericTokenParser(String openToken, String closeToken, TokenHandler handler) {
-    this.openToken = openToken;
-    this.closeToken = closeToken;
-    this.handler = handler;
+  private GenericTokenParser() {
   }
 
-  public String parse(String text) {
+  public static boolean isDynamic(String text, String openToken, String closeToken) {
+    DynamicCheckerTokenParser checker = new DynamicCheckerTokenParser();
+    GenericTokenParser.parse(text, openToken, closeToken, checker);
+    return checker.isDynamic();
+  }
+
+  public static String parse(@Nullable String text, String openToken, String closeToken, @NotNull TokenHandler handler) {
     if (text == null || text.isEmpty()) {
       return "";
     }

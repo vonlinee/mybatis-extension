@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.apache.ibatis.reflection.DefaultReflectorFactory;
 import org.apache.ibatis.reflection.MetaObject;
-import org.apache.ibatis.reflection.ReflectionException;
+import org.apache.ibatis.reflection.ReflectionRuntimeException;
 import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
 import org.junit.jupiter.api.Test;
 
@@ -57,13 +57,13 @@ class BeanWrapperTest {
     try {
       metaObj.getValue("bean2List[0]");
       fail();
-    } catch (ReflectionException e) {
+    } catch (ReflectionRuntimeException e) {
       assertEquals("Cannot get the value 'bean2List[0]' because the property 'bean2List' is null.", e.getMessage());
     }
     try {
       metaObj.setValue("bean2List[0]", new Bean2());
       fail();
-    } catch (ReflectionException e) {
+    } catch (ReflectionRuntimeException e) {
       assertEquals("Cannot set the value 'bean2List[0]' because the property 'bean2List' is null.", e.getMessage());
     }
     assertTrue(metaObj.hasSetter("bean2List[0]"));
@@ -84,14 +84,14 @@ class BeanWrapperTest {
     try {
       metaObj.getValue("attrVal[0]");
       fail();
-    } catch (ReflectionException e) {
+    } catch (ReflectionRuntimeException e) {
       assertEquals("Cannot get the value 'attrVal[0]' because the property 'attrVal' is not Map, List or Array.",
           e.getMessage());
     }
     try {
       metaObj.setValue("attrVal[0]", "blur");
       fail();
-    } catch (ReflectionException e) {
+    } catch (ReflectionRuntimeException e) {
       assertEquals("Cannot set the value 'attrVal[0]' because the property 'attrVal' is not Map, List or Array.",
           e.getMessage());
     }
@@ -102,7 +102,7 @@ class BeanWrapperTest {
     try {
       metaObj.getValue("nums[0]");
       fail();
-    } catch (ReflectionException e) {
+    } catch (ReflectionRuntimeException e) {
       // pass
     }
     metaObj.setValue("nums", new Integer[] { 5, 6, 7 });
@@ -121,7 +121,7 @@ class BeanWrapperTest {
     try {
       metaObj.setValue("bean2.child.bean2", "bogus");
       fail();
-    } catch (ReflectionException e) {
+    } catch (ReflectionRuntimeException e) {
       // pass
     }
 
@@ -143,7 +143,7 @@ class BeanWrapperTest {
     try {
       metaObj.getValue("x");
       fail();
-    } catch (ReflectionException e) {
+    } catch (ReflectionRuntimeException e) {
       // pass
     }
     // assertEquals(Integer.class, metaObj.getSetterType("my_name"));

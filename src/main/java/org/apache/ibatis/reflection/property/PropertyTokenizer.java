@@ -15,6 +15,8 @@
  */
 package org.apache.ibatis.reflection.property;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Iterator;
 
 /**
@@ -26,13 +28,13 @@ public class PropertyTokenizer implements Iterator<PropertyTokenizer> {
   private String index;
   private final String children;
 
-  public PropertyTokenizer(String fullname) {
-    int delim = fullname.indexOf('.');
+  public PropertyTokenizer(@NotNull String fullName) {
+    int delim = fullName.indexOf('.');
     if (delim > -1) {
-      name = fullname.substring(0, delim);
-      children = fullname.substring(delim + 1);
+      name = fullName.substring(0, delim);
+      children = fullName.substring(delim + 1);
     } else {
-      name = fullname;
+      name = fullName;
       children = null;
     }
     indexedName = name;
@@ -43,7 +45,22 @@ public class PropertyTokenizer implements Iterator<PropertyTokenizer> {
     }
   }
 
-  public String getName() {
+  public static String getPropertyName(String fullName) {
+    String name;
+    int delim = fullName.indexOf('.');
+    if (delim > -1) {
+      name = fullName.substring(0, delim);
+    } else {
+      name = fullName;
+    }
+    delim = name.indexOf('[');
+    if (delim > -1) {
+      name = name.substring(0, delim);
+    }
+    return name;
+  }
+
+  public String getPropertyName() {
     return name;
   }
 
@@ -72,6 +89,6 @@ public class PropertyTokenizer implements Iterator<PropertyTokenizer> {
   @Override
   public void remove() {
     throw new UnsupportedOperationException(
-        "Remove is not supported, as it has no meaning in the context of properties.");
+      "Remove is not supported, as it has no meaning in the context of properties.");
   }
 }

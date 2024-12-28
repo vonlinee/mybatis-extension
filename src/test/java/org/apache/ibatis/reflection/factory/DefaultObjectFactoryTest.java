@@ -27,7 +27,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.ibatis.reflection.ReflectionException;
+import org.apache.ibatis.reflection.ReflectionRuntimeException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -56,7 +56,7 @@ class DefaultObjectFactoryTest {
           Collections.singletonList("foo"));
       Assertions.fail("Should have thrown ReflectionException");
     } catch (Exception e) {
-      Assertions.assertTrue(e instanceof ReflectionException, "Should be ReflectionException");
+      Assertions.assertTrue(e instanceof ReflectionRuntimeException, "Should be ReflectionException");
       Assertions.assertTrue(e.getMessage().contains("(String)"), "Should not have trailing commas in types list");
       Assertions.assertTrue(e.getMessage().contains("(foo)"), "Should not have trailing commas in values list");
     }

@@ -15,37 +15,9 @@
  */
 package org.apache.ibatis.binding;
 
-import static com.googlecode.catchexception.apis.BDDCatchException.caughtException;
-import static com.googlecode.catchexception.apis.BDDCatchException.when;
-import static org.assertj.core.api.BDDAssertions.then;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import javassist.util.proxy.Proxy;
-
-import javax.sql.DataSource;
-
 import net.sf.cglib.proxy.Factory;
-
 import org.apache.ibatis.BaseDataTest;
-import org.apache.ibatis.binding.MapperProxy.MapperMethodInvoker;
 import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.domain.blog.Author;
 import org.apache.ibatis.domain.blog.Blog;
@@ -66,6 +38,22 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+import javax.sql.DataSource;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import static com.googlecode.catchexception.apis.BDDCatchException.caughtException;
+import static com.googlecode.catchexception.apis.BDDCatchException.when;
+import static org.assertj.core.api.BDDAssertions.then;
+import static org.junit.jupiter.api.Assertions.*;
 
 class BindingTest {
   private static SqlSessionFactory sqlSessionFactory;
@@ -108,6 +96,7 @@ class BindingTest {
       BoundAuthorMapper mapper = session.getMapper(BoundAuthorMapper.class);
       List<Post> posts = mapper.findPostsInList(new ArrayList<Integer>() {
         private static final long serialVersionUID = 1L;
+
         {
           add(1);
           add(3);
@@ -123,7 +112,7 @@ class BindingTest {
   void shouldFindPostsInArray() {
     try (SqlSession session = sqlSessionFactory.openSession()) {
       BoundAuthorMapper mapper = session.getMapper(BoundAuthorMapper.class);
-      Integer[] params = { 1, 3, 5 };
+      Integer[] params = {1, 3, 5};
       List<Post> posts = mapper.findPostsInArray(params);
       assertEquals(3, posts.size());
       session.rollback();
@@ -160,10 +149,10 @@ class BindingTest {
         Author author = new Author(-1, "cbegin", "******", "cbegin@nowhere.com", "N/A", Section.NEWS);
         when(() -> mapper.insertAuthorInvalidSelectKey(author));
         then(caughtException()).isInstanceOf(PersistenceException.class)
-            .hasMessageContaining("### The error may exist in org/apache/ibatis/binding/BoundAuthorMapper.xml"
-                + System.lineSeparator()
-                + "### The error may involve org.apache.ibatis.binding.BoundAuthorMapper.insertAuthorInvalidSelectKey!selectKey"
-                + System.lineSeparator() + "### The error occurred while executing a query");
+          .hasMessageContaining("### The error may exist in org/apache/ibatis/binding/BoundAuthorMapper.xml"
+            + System.lineSeparator()
+            + "### The error may involve org.apache.ibatis.binding.BoundAuthorMapper.insertAuthorInvalidSelectKey!selectKey"
+            + System.lineSeparator() + "### The error occurred while executing a query");
       } finally {
         session.rollback();
       }
@@ -178,9 +167,9 @@ class BindingTest {
         Author author = new Author(-1, "cbegin", "******", "cbegin@nowhere.com", "N/A", Section.NEWS);
         when(() -> mapper.insertAuthorInvalidInsert(author));
         then(caughtException()).isInstanceOf(PersistenceException.class).hasMessageContaining(
-            "### The error may exist in org/apache/ibatis/binding/BoundAuthorMapper.xml" + System.lineSeparator()
-                + "### The error may involve org.apache.ibatis.binding.BoundAuthorMapper.insertAuthorInvalidInsert"
-                + System.lineSeparator() + "### The error occurred while executing an update");
+          "### The error may exist in org/apache/ibatis/binding/BoundAuthorMapper.xml" + System.lineSeparator()
+            + "### The error may involve org.apache.ibatis.binding.BoundAuthorMapper.insertAuthorInvalidInsert"
+            + System.lineSeparator() + "### The error occurred while executing an update");
       } finally {
         session.rollback();
       }
@@ -400,7 +389,8 @@ class BindingTest {
   }
 
   @Disabled
-  @Test // issue #480 and #101
+  @Test
+    // issue #480 and #101
   void shouldExecuteBoundSelectBlogUsingConstructorWithResultMapCollection() {
     try (SqlSession session = sqlSessionFactory.openSession()) {
       BoundBlogMapper mapper = session.getMapper(BoundBlogMapper.class);
@@ -432,6 +422,7 @@ class BindingTest {
       BoundBlogMapper mapper = session.getMapper(BoundBlogMapper.class);
       Map<String, Object> blog = mapper.selectBlogAsMap(new HashMap<String, Object>() {
         private static final long serialVersionUID = 1L;
+
         {
           put("id", 1);
         }
@@ -550,7 +541,8 @@ class BindingTest {
     }
   }
 
-  @Test // Decided that maps are dynamic so no existent params do not fail
+  @Test
+    // Decided that maps are dynamic so no existent params do not fail
   void shouldFailWhenSelectingOneBlogWithNonExistentNestedParam() {
     try (SqlSession session = sqlSessionFactory.openSession()) {
       BoundBlogMapper mapper = session.getMapper(BoundBlogMapper.class);
@@ -599,7 +591,7 @@ class BindingTest {
       // Mapper methods we will call later:
       final Method selectBlog = BoundBlogMapper.class.getMethod("selectBlog", Integer.TYPE);
       final Method selectBlogByIdUsingConstructor = BoundBlogMapper.class.getMethod("selectBlogByIdUsingConstructor",
-          Integer.TYPE);
+        Integer.TYPE);
 
       // Call mapper method and verify it is cached:
       mapper.selectBlog(1);

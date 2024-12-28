@@ -22,6 +22,7 @@ import org.apache.ibatis.parsing.XNode;
 import org.apache.ibatis.scripting.ExpressionEvaluator;
 import org.apache.ibatis.scripting.defaults.RawSqlSource;
 import org.apache.ibatis.session.Configuration;
+import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -29,22 +30,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * @author Clinton Begin
  */
 public class XMLScriptBuilder extends BaseBuilder {
 
-  private final XNode context;
   private boolean isDynamic;
-  private final Class<?> parameterType;
   private final Map<String, NodeHandler> nodeHandlerMap = new HashMap<>();
 
-  public XMLScriptBuilder(Configuration configuration, XNode context, Class<?> parameterType) {
+  public XMLScriptBuilder(Configuration configuration) {
     super(configuration);
-    this.context = context;
-    this.parameterType = parameterType;
     initNodeHandlerMap(configuration);
   }
 
@@ -52,15 +48,18 @@ public class XMLScriptBuilder extends BaseBuilder {
     nodeHandlerMap.put("trim", new TrimHandler());
     nodeHandlerMap.put("where", new WhereHandler());
     nodeHandlerMap.put("set", new SetHandler());
-    nodeHandlerMap.put("foreach", new ForEachHandler());
-    nodeHandlerMap.put("if", new IfHandler());
+
+    ExpressionEvaluator evaluator = configuration.getSingleton(ExpressionEvaluator.class);
+
+    nodeHandlerMap.put("foreach", new ForEachHandler(evaluator, configuration.isNullableOnForEach()));
+    nodeHandlerMap.put("if", new IfHandler(evaluator));
     nodeHandlerMap.put("choose", new ChooseHandler());
-    nodeHandlerMap.put("when", new IfHandler());
+    nodeHandlerMap.put("when", new IfHandler(evaluator));
     nodeHandlerMap.put("otherwise", new OtherwiseHandler());
     nodeHandlerMap.put("bind", new BindHandler(configuration.getSingleton(ExpressionEvaluator.class)));
   }
 
-  public SqlSource parseScriptNode() {
+  public SqlSource parseScriptNode(XNode context, Class<?> parameterType) {
     MixedSqlNode rootSqlNode = parseDynamicTags(context);
     SqlSource sqlSource;
     if (isDynamic) {
@@ -71,7 +70,7 @@ public class XMLScriptBuilder extends BaseBuilder {
     return sqlSource;
   }
 
-  protected MixedSqlNode parseDynamicTags(XNode node) {
+  public MixedSqlNode parseDynamicTags(XNode node) {
     List<SqlNode> contents = new ArrayList<>();
     NodeList children = node.getNode().getChildNodes();
 
@@ -167,8 +166,14 @@ public class XMLScriptBuilder extends BaseBuilder {
   }
 
   private class ForEachHandler implements NodeHandler {
-    public ForEachHandler() {
-      // Prevent Synthetic Access
+
+    @NotNull
+    private final ExpressionEvaluator evaluator;
+    boolean nullableOnForeach;
+
+    public ForEachHandler(@NotNull ExpressionEvaluator evaluator, boolean nullableOnForeach) {
+      this.evaluator = evaluator;
+      this.nullableOnForeach = nullableOnForeach;
     }
 
     @Override
@@ -182,28 +187,28 @@ public class XMLScriptBuilder extends BaseBuilder {
       String close = nodeToHandle.getStringAttribute("close");
       String separator = nodeToHandle.getStringAttribute("separator");
 
-      boolean nullableOnForeach = Optional.ofNullable(nullable).orElseGet(configuration::isNullableOnForEach);
+      if (nullable == null) {
+        nullable = this.nullableOnForeach;
+      }
 
-      ExpressionEvaluator evaluator = configuration.getSingleton(ExpressionEvaluator.class);
-
-      ForEachSqlNode forEachSqlNode = new ForEachSqlNode(evaluator, mixedSqlNode, collection, nullableOnForeach, index, item,
-        open, close, separator);
+      ForEachSqlNode forEachSqlNode = new ForEachSqlNode(evaluator, mixedSqlNode, collection, nullable, index, item, open, close, separator);
       targetContents.add(forEachSqlNode);
     }
   }
 
   private class IfHandler implements NodeHandler {
-    public IfHandler() {
+
+    ExpressionEvaluator evaluator;
+
+    public IfHandler(ExpressionEvaluator evaluator) {
       // Prevent Synthetic Access
+      this.evaluator = evaluator;
     }
 
     @Override
     public void handleNode(XNode nodeToHandle, List<SqlNode> targetContents) {
       MixedSqlNode mixedSqlNode = parseDynamicTags(nodeToHandle);
       String test = nodeToHandle.getStringAttribute("test");
-
-      ExpressionEvaluator evaluator = configuration.getSingleton(ExpressionEvaluator.class);
-
       IfSqlNode ifSqlNode = new IfSqlNode(evaluator, mixedSqlNode, test);
       targetContents.add(ifSqlNode);
     }
@@ -236,8 +241,7 @@ public class XMLScriptBuilder extends BaseBuilder {
       targetContents.add(chooseSqlNode);
     }
 
-    private void handleWhenOtherwiseNodes(XNode chooseSqlNode, List<SqlNode> ifSqlNodes,
-                                          List<SqlNode> defaultSqlNodes) {
+    private void handleWhenOtherwiseNodes(XNode chooseSqlNode, List<SqlNode> ifSqlNodes, List<SqlNode> defaultSqlNodes) {
       List<XNode> children = chooseSqlNode.getChildren();
       for (XNode child : children) {
         String nodeName = child.getNode().getNodeName();
