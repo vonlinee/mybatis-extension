@@ -105,11 +105,21 @@ public class ParameterMapping {
       return parameterMapping;
     }
 
+    public ParameterMapping build(Configuration configuration) {
+      if (parameterMapping.typeHandler == null && parameterMapping.javaType != null) {
+        TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
+        parameterMapping.typeHandler = typeHandlerRegistry.getTypeHandler(parameterMapping.javaType,
+          parameterMapping.jdbcType);
+      }
+      validate();
+      return parameterMapping;
+    }
+
     private void validate() {
       if (ResultSet.class.equals(parameterMapping.javaType)) {
         if (parameterMapping.resultMapId == null) {
-          throw new IllegalStateException("Missing resultmap in property '" + parameterMapping.property + "'.  "
-              + "Parameters of type java.sql.ResultSet require a resultmap.");
+          throw new IllegalStateException("Missing result map in property '" + parameterMapping.property + "'.  "
+              + "Parameters of type java.sql.ResultSet require a result map.");
         }
       } else if (parameterMapping.typeHandler == null) {
         throw new IllegalStateException("Type handler was null on parameter mapping for property '"
@@ -207,18 +217,14 @@ public class ParameterMapping {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("ParameterMapping{");
-    // sb.append("configuration=").append(configuration); // configuration doesn't have a useful .toString()
-    sb.append("property='").append(property).append('\'');
-    sb.append(", mode=").append(mode);
-    sb.append(", javaType=").append(javaType);
-    sb.append(", jdbcType=").append(jdbcType);
-    sb.append(", numericScale=").append(numericScale);
-    // sb.append(", typeHandler=").append(typeHandler); // typeHandler also doesn't have a useful .toString()
-    sb.append(", resultMapId='").append(resultMapId).append('\'');
-    sb.append(", jdbcTypeName='").append(jdbcTypeName).append('\'');
-    sb.append(", expression='").append(expression).append('\'');
-    sb.append('}');
-    return sb.toString();
+    return "ParameterMapping{" + "property='" + property + '\'' +
+      ", mode=" + mode +
+      ", javaType=" + javaType +
+      ", jdbcType=" + jdbcType +
+      ", numericScale=" + numericScale +
+      ", resultMapId='" + resultMapId + '\'' +
+      ", jdbcTypeName='" + jdbcTypeName + '\'' +
+      ", expression='" + expression + '\'' +
+      '}';
   }
 }

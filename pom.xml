@@ -32,7 +32,7 @@
 
   <name>mybatis</name>
   <description>The MyBatis SQL mapper framework makes it easier to use a relational database with object-oriented
-    applications. MyBatis couples objects with stored procedures or SQL statements using a XML descriptor or
+    applications. MyBatis couples objects with stored procedures or SQL statements using an XML descriptor or
     annotations. Simplicity is the biggest advantage of the MyBatis data mapper over object relational mapping
     tools.</description>
   <url>https://www.mybatis.org/mybatis-3/</url>
@@ -139,7 +139,7 @@
     <testcontainers.version>1.20.4</testcontainers.version>
 
     <!-- Add slow test groups here and annotate classes similar to @Tag('groupName'). -->
-    <!-- Excluded groups are ran on github ci, to force here, pass -d"excludedGroups=" -->
+    <!-- Excluded groups are ran on GitHub ci, to force here, pass -d"excludedGroups=" -->
     <excludedGroups>TestcontainersTests</excludedGroups>
 
     <!-- Automatic Module Name -->
@@ -168,6 +168,17 @@
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
+    <dependency>
+      <groupId>org.apache.velocity</groupId>
+      <artifactId>velocity-engine-core</artifactId>
+      <version>2.4.1</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.persistence</groupId>
+      <artifactId>jakarta.persistence-api</artifactId>
+      <version>3.2.0</version>
+    </dependency>
+
     <dependency>
       <groupId>org.javassist</groupId>
       <artifactId>javassist</artifactId>
@@ -249,12 +260,6 @@
       <groupId>org.mockito</groupId>
       <artifactId>mockito-junit-jupiter</artifactId>
       <version>${mockito.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.velocity</groupId>
-      <artifactId>velocity-engine-core</artifactId>
-      <version>2.4.1</version>
       <scope>test</scope>
     </dependency>
     <!-- postgresql driver is required to run the refcursor tests -->
