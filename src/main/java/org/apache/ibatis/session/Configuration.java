@@ -844,14 +844,6 @@ public class Configuration {
     return mappedStatements.values();
   }
 
-  /**
-   * @deprecated call {@link #parsePendingStatements(boolean)}
-   */
-  @Deprecated
-  public Collection<XMLStatementBuilder> getIncompleteStatements() {
-    return incompleteStatements;
-  }
-
   public void addIncompleteStatement(XMLStatementBuilder incompleteStatement) {
     incompleteStatementsLock.lock();
     try {
@@ -861,14 +853,6 @@ public class Configuration {
     }
   }
 
-  /**
-   * @deprecated call {@link #parsePendingCacheRefs(boolean)}
-   */
-  @Deprecated
-  public Collection<CacheRefResolver> getIncompleteCacheRefs() {
-    return incompleteCacheRefs;
-  }
-
   public void addIncompleteCacheRef(CacheRefResolver incompleteCacheRef) {
     incompleteCacheRefsLock.lock();
     try {
@@ -876,14 +860,6 @@ public class Configuration {
     } finally {
       incompleteCacheRefsLock.unlock();
     }
-  }
-
-  /**
-   * @deprecated call {@link #parsePendingResultMaps(boolean)}
-   */
-  @Deprecated
-  public Collection<ResultMapResolver> getIncompleteResultMaps() {
-    return incompleteResultMaps;
   }
 
   public void addIncompleteResultMap(ResultMapResolver resultMapResolver) {
@@ -902,14 +878,6 @@ public class Configuration {
     } finally {
       incompleteMethodsLock.unlock();
     }
-  }
-
-  /**
-   * @deprecated call {@link #parsePendingMethods(boolean)}
-   */
-  @Deprecated
-  public Collection<MethodResolver> getIncompleteMethods() {
-    return incompleteMethods;
   }
 
   public MappedStatement getMappedStatement(String id) {
@@ -971,10 +939,14 @@ public class Configuration {
    * are added as it provides fail-fast statement validation.
    */
   protected void buildAllStatements() {
-    parsePendingResultMaps(true);
-    parsePendingCacheRefs(true);
-    parsePendingStatements(true);
+    parsePending(true);
     parsePendingMethods(true);
+  }
+
+  public void parsePending(boolean reportUnresolved) {
+    parsePendingResultMaps(reportUnresolved);
+    parsePendingCacheRefs(reportUnresolved);
+    parsePendingStatements(reportUnresolved);
   }
 
   public void parsePendingMethods(boolean reportUnresolved) {

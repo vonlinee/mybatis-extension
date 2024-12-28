@@ -182,6 +182,14 @@
       <optional>true</optional>
     </dependency>
 
+    <!-- Compile dependencies -->
+    <dependency>
+      <groupId>org.jetbrains</groupId>
+      <artifactId>annotations</artifactId>
+      <version>26.0.1</version>
+      <scope>compile</scope>
+    </dependency>
+
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
@@ -366,6 +374,8 @@
               <version>${byte-buddy.version}</version>
             </path>
           </annotationProcessorPaths>
+            <source>16</source>
+            <target>16</target>
         </configuration>
       </plugin>
       <plugin>

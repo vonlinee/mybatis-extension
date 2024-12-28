@@ -94,7 +94,7 @@ public class ResultLoaderMap {
 
   public void loadAll() throws SQLException {
     final Set<String> methodNameSet = loaderMap.keySet();
-    String[] methodNames = methodNameSet.toArray(new String[methodNameSet.size()]);
+    String[] methodNames = methodNameSet.toArray(new String[0]);
     for (String methodName : methodNames) {
       load(methodName);
     }
@@ -116,11 +116,11 @@ public class ResultLoaderMap {
      */
     private static final String FACTORY_METHOD = "getConfiguration";
     /**
-     * Object to check whether we went through serialization..
+     * Object to check whether we went through serialization.
      */
     private final transient Object serializationCheck = new Object();
     /**
-     * Meta object which sets loaded properties.
+     * MetaObject which sets loaded properties.
      */
     private transient MetaObject metaResultObject;
     /**
@@ -176,7 +176,7 @@ public class ResultLoaderMap {
 
     public void load() throws SQLException {
       /*
-       * These field should not be null unless the loadpair was serialized. Yet in that case this method should not be
+       * These field should not be null unless the LoadPair was serialized. Yet in that case this method should not be
        * called.
        */
       if (this.metaResultObject == null) {
@@ -266,7 +266,7 @@ public class ResultLoaderMap {
             + (configurationObject == null ? "null" : configurationObject.getClass()) + "].");
       }
 
-      return Configuration.class.cast(configurationObject);
+      return (Configuration) configurationObject;
     }
 
     private Log getLogger() {
@@ -300,7 +300,7 @@ public class ResultLoaderMap {
 
     @Override
     protected <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds,
-        ResultHandler resultHandler, BoundSql boundSql) throws SQLException {
+        ResultHandler<?> resultHandler, BoundSql boundSql) throws SQLException {
       throw new UnsupportedOperationException("Not supported.");
     }
 

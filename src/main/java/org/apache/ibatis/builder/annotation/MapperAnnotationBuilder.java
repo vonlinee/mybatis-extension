@@ -159,9 +159,10 @@ public class MapperAnnotationBuilder {
         }
       }
       if (inputStream != null) {
-        XMLMapperBuilder xmlParser = new XMLMapperBuilder(inputStream, assistant.getConfiguration(), xmlResource,
+        XMLMapperBuilder xmlParser = new XMLMapperBuilder(assistant.getConfiguration(), xmlResource,
             configuration.getSqlFragments(), type.getName());
-        xmlParser.parse();
+        xmlParser.parse(inputStream, configuration.getVariables());
+        configuration.parsePending(false);
       }
     }
   }
@@ -346,13 +347,15 @@ public class MapperAnnotationBuilder {
         }
       }
 
-      assistant.addMappedStatement(mappedStatementId, sqlSource, statementType, sqlCommandType, fetchSize, timeout,
-          // ParameterMapID
-          null, parameterTypeClass, resultMapId, getReturnType(method, type), resultSetType, flushCache, useCache,
-          // TODO gcode issue #577
-          false, keyGenerator, keyProperty, keyColumn, statementAnnotation.getDatabaseId(), languageDriver,
-          // ResultSets
-          options != null ? nullOrEmpty(options.resultSets()) : null, statementAnnotation.isDirtySelect());
+      MappedStatement mappedStatement = assistant.addMappedStatement(mappedStatementId, sqlSource, statementType, sqlCommandType, fetchSize, timeout,
+        // ParameterMapID
+        null, parameterTypeClass, resultMapId, getReturnType(method, type), resultSetType, flushCache, useCache,
+        // TODO gcode issue #577
+        false, keyGenerator, keyProperty, keyColumn, statementAnnotation.getDatabaseId(), languageDriver,
+        // ResultSets
+        options != null ? nullOrEmpty(options.resultSets()) : null, statementAnnotation.isDirtySelect());
+
+      configuration.addMappedStatement(mappedStatement);
     });
   }
 
@@ -558,9 +561,11 @@ public class MapperAnnotationBuilder {
     SqlSource sqlSource = buildSqlSource(selectKeyAnnotation, parameterTypeClass, languageDriver, null);
     SqlCommandType sqlCommandType = SqlCommandType.SELECT;
 
-    assistant.addMappedStatement(id, sqlSource, statementType, sqlCommandType, fetchSize, timeout, parameterMap,
-        parameterTypeClass, resultMap, resultTypeClass, resultSetTypeEnum, flushCache, useCache, false, keyGenerator,
-        keyProperty, keyColumn, databaseId, languageDriver, null, false);
+    MappedStatement mappedStatement = assistant.addMappedStatement(id, sqlSource, statementType, sqlCommandType, fetchSize, timeout, parameterMap,
+      parameterTypeClass, resultMap, resultTypeClass, resultSetTypeEnum, flushCache, useCache, false, keyGenerator,
+      keyProperty, keyColumn, databaseId, languageDriver, null, false);
+
+    configuration.addMappedStatement(mappedStatement);
 
     id = assistant.applyCurrentNamespace(id, false);
 

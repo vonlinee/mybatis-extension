@@ -71,8 +71,7 @@ public final class MappedStatement {
       mappedStatement.sqlSource = sqlSource;
       mappedStatement.statementType = StatementType.PREPARED;
       mappedStatement.resultSetType = ResultSetType.DEFAULT;
-      mappedStatement.parameterMap = new ParameterMap.Builder(configuration, "defaultParameterMap", null,
-          new ArrayList<>()).build();
+      mappedStatement.parameterMap = new ParameterMap.Builder("defaultParameterMap").build();
       mappedStatement.resultMaps = new ArrayList<>();
       mappedStatement.sqlCommandType = sqlCommandType;
       mappedStatement.keyGenerator = configuration.isUseGeneratedKeys() && SqlCommandType.INSERT.equals(sqlCommandType)
@@ -338,7 +337,7 @@ public final class MappedStatement {
   }
 
   private static String[] delimitedStringToArray(String in) {
-    if (in == null || in.trim().length() == 0) {
+    if (in == null || in.trim().isEmpty()) {
       return null;
     }
     return in.split(",");

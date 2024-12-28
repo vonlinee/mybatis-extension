@@ -36,10 +36,10 @@ class XmlMapperBuilderTest {
     Configuration configuration = new Configuration();
     String resource = "org/apache/ibatis/builder/xsd/AuthorMapper.xml";
     try (InputStream inputStream = Resources.getResourceAsStream(resource)) {
-      XMLMapperBuilder builder = new XMLMapperBuilder(inputStream, configuration, resource,
+      XMLMapperBuilder builder = new XMLMapperBuilder(configuration, resource,
           configuration.getSqlFragments());
-      builder.parse();
-
+      builder.parse(inputStream, configuration.getVariables());
+      configuration.parsePending(false);
       MappedStatement mappedStatement = configuration.getMappedStatement("selectWithOptions");
       Assertions.assertEquals(Integer.valueOf(200), mappedStatement.getFetchSize());
       Assertions.assertEquals(Integer.valueOf(10), mappedStatement.getTimeout());
@@ -47,8 +47,6 @@ class XmlMapperBuilderTest {
       Assertions.assertEquals(ResultSetType.SCROLL_SENSITIVE, mappedStatement.getResultSetType());
       Assertions.assertFalse(mappedStatement.isFlushCacheRequired());
       Assertions.assertFalse(mappedStatement.isUseCache());
-    } finally {
-      // System.clearProperty(XPathParser.KEY_USE_XSD);
     }
   }
 
