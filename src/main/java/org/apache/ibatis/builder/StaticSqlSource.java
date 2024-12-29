@@ -23,6 +23,8 @@ import org.apache.ibatis.session.Configuration;
 import java.util.List;
 
 /**
+ * there is no dynamic element
+ *
  * @author Clinton Begin
  */
 public class StaticSqlSource implements SqlSource {

@@ -100,8 +100,7 @@ public class VelocitySqlSource implements SqlSource {
     }
 
     public String next(Object prop) {
-      StringBuilder sb = new StringBuilder();
-      String name = sb.append(PREFIX).append("_ITEM").append("_").append(count++).toString();
+      String name = PREFIX + "_ITEM" + "_" + count++;
       bindings.put(name, prop);
       return name;
     }

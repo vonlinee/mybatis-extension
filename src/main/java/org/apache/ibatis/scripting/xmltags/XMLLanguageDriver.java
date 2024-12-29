@@ -36,13 +36,14 @@ public class XMLLanguageDriver implements LanguageDriver {
 
   @Override
   public ParameterHandler createParameterHandler(MappedStatement mappedStatement, Object parameterObject,
-      BoundSql boundSql) {
+                                                 BoundSql boundSql) {
     return new DefaultParameterHandler(mappedStatement, parameterObject, boundSql);
   }
 
   @Override
   public SqlSource createSqlSource(Configuration configuration, XNode script, Class<?> parameterType) {
-    XMLScriptBuilder builder = new XMLScriptBuilder(configuration);
+    ExpressionEvaluator evaluator = configuration.getSingleton(ExpressionEvaluator.class);
+    XMLScriptBuilder builder = new XMLScriptBuilder(evaluator, false, configuration);
     return builder.parseScriptNode(script, parameterType);
   }
 

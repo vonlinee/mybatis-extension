@@ -22,9 +22,6 @@ public class TooManyResultsException extends PersistenceException {
 
   private static final long serialVersionUID = 8935197089745865786L;
 
-  public TooManyResultsException() {
-  }
-
   public TooManyResultsException(String message) {
     super(message);
   }

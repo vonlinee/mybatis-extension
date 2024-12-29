@@ -72,7 +72,7 @@ class BeanWrapperUnitTest extends ObjectWrapperBaseTest {
   @Test
   void shouldGetWhichContainsIndex() {
     richType.setRichList(Arrays.asList(1L, "abc"));
-    richType.setRichMap(new HashMap<String, Object>() {
+    richType.setRichMap(new HashMap<>() {
       {
         put("key1", "value1");
         put("key2", "value2");

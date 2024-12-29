@@ -37,26 +37,31 @@ import java.util.Map;
 public class XMLScriptBuilder extends BaseBuilder {
 
   private boolean isDynamic;
+  private final boolean nullableOnForEach;
+
+  @NotNull
+  private final ExpressionEvaluator evaluator;
+
   private final Map<String, NodeHandler> nodeHandlerMap = new HashMap<>();
 
-  public XMLScriptBuilder(Configuration configuration) {
+  public XMLScriptBuilder(@NotNull ExpressionEvaluator evaluator, boolean nullableOnForEach, Configuration configuration) {
     super(configuration);
-    initNodeHandlerMap(configuration);
-  }
-
-  private void initNodeHandlerMap(Configuration configuration) {
+    this.nullableOnForEach = nullableOnForEach;
+    this.evaluator = evaluator;
     nodeHandlerMap.put("trim", new TrimHandler());
     nodeHandlerMap.put("where", new WhereHandler());
     nodeHandlerMap.put("set", new SetHandler());
 
-    ExpressionEvaluator evaluator = configuration.getSingleton(ExpressionEvaluator.class);
-
-    nodeHandlerMap.put("foreach", new ForEachHandler(evaluator, configuration.isNullableOnForEach()));
+    nodeHandlerMap.put("foreach", new ForEachHandler(evaluator, this.nullableOnForEach));
     nodeHandlerMap.put("if", new IfHandler(evaluator));
     nodeHandlerMap.put("choose", new ChooseHandler());
     nodeHandlerMap.put("when", new IfHandler(evaluator));
     nodeHandlerMap.put("otherwise", new OtherwiseHandler());
-    nodeHandlerMap.put("bind", new BindHandler(configuration.getSingleton(ExpressionEvaluator.class)));
+    nodeHandlerMap.put("bind", new BindHandler(evaluator));
+  }
+
+  public boolean isNullableOnForEach() {
+    return nullableOnForEach;
   }
 
   public SqlSource parseScriptNode(XNode context, Class<?> parameterType) {
@@ -73,8 +78,6 @@ public class XMLScriptBuilder extends BaseBuilder {
   public MixedSqlNode parseDynamicTags(XNode node) {
     List<SqlNode> contents = new ArrayList<>();
     NodeList children = node.getNode().getChildNodes();
-
-    ExpressionEvaluator evaluator = configuration.getSingleton(ExpressionEvaluator.class);
 
     for (int i = 0; i < children.getLength(); i++) {
       XNode child = node.newXNode(children.item(i));
@@ -101,6 +104,10 @@ public class XMLScriptBuilder extends BaseBuilder {
   }
 
   private interface NodeHandler {
+
+    @NotNull
+    String getId();
+
     void handleNode(XNode nodeToHandle, List<SqlNode> targetContents);
   }
 
@@ -111,6 +118,11 @@ public class XMLScriptBuilder extends BaseBuilder {
     public BindHandler(ExpressionEvaluator evaluator) {
       // Prevent Synthetic Access
       this.evaluator = evaluator;
+    }
+
+    @Override
+    public @NotNull String getId() {
+      return "bind";
     }
 
     @Override
@@ -125,6 +137,11 @@ public class XMLScriptBuilder extends BaseBuilder {
   private class TrimHandler implements NodeHandler {
     public TrimHandler() {
       // Prevent Synthetic Access
+    }
+
+    @Override
+    public @NotNull String getId() {
+      return "trim";
     }
 
     @Override
@@ -145,6 +162,11 @@ public class XMLScriptBuilder extends BaseBuilder {
     }
 
     @Override
+    public @NotNull String getId() {
+      return "where";
+    }
+
+    @Override
     public void handleNode(XNode nodeToHandle, List<SqlNode> targetContents) {
       MixedSqlNode mixedSqlNode = parseDynamicTags(nodeToHandle);
       WhereSqlNode where = new WhereSqlNode(mixedSqlNode);
@@ -155,6 +177,11 @@ public class XMLScriptBuilder extends BaseBuilder {
   private class SetHandler implements NodeHandler {
     public SetHandler() {
       // Prevent Synthetic Access
+    }
+
+    @Override
+    public @NotNull String getId() {
+      return "set";
     }
 
     @Override
@@ -174,6 +201,11 @@ public class XMLScriptBuilder extends BaseBuilder {
     public ForEachHandler(@NotNull ExpressionEvaluator evaluator, boolean nullableOnForeach) {
       this.evaluator = evaluator;
       this.nullableOnForeach = nullableOnForeach;
+    }
+
+    @Override
+    public @NotNull String getId() {
+      return "foreach";
     }
 
     @Override
@@ -206,6 +238,11 @@ public class XMLScriptBuilder extends BaseBuilder {
     }
 
     @Override
+    public @NotNull String getId() {
+      return "if";
+    }
+
+    @Override
     public void handleNode(XNode nodeToHandle, List<SqlNode> targetContents) {
       MixedSqlNode mixedSqlNode = parseDynamicTags(nodeToHandle);
       String test = nodeToHandle.getStringAttribute("test");
@@ -220,6 +257,11 @@ public class XMLScriptBuilder extends BaseBuilder {
     }
 
     @Override
+    public @NotNull String getId() {
+      return "otherwise";
+    }
+
+    @Override
     public void handleNode(XNode nodeToHandle, List<SqlNode> targetContents) {
       MixedSqlNode mixedSqlNode = parseDynamicTags(nodeToHandle);
       targetContents.add(mixedSqlNode);
@@ -229,6 +271,11 @@ public class XMLScriptBuilder extends BaseBuilder {
   private class ChooseHandler implements NodeHandler {
     public ChooseHandler() {
       // Prevent Synthetic Access
+    }
+
+    @Override
+    public @NotNull String getId() {
+      return "choose";
     }
 
     @Override

@@ -198,12 +198,12 @@ public class XPathParser {
   }
 
   public List<XNode> evalNodes(Object root, String expression) {
-    List<XNode> xnodes = new ArrayList<>();
+    List<XNode> xNodes = new ArrayList<>();
     NodeList nodes = (NodeList) evaluate(expression, root, XPathConstants.NODESET);
     for (int i = 0; i < nodes.getLength(); i++) {
-      xnodes.add(new XNode(this, nodes.item(i), variables));
+      xNodes.add(new XNode(this, nodes.item(i), variables));
     }
-    return xnodes;
+    return xNodes;
   }
 
   public XNode evalNode(String expression) {
@@ -241,22 +241,7 @@ public class XPathParser {
 
       DocumentBuilder builder = factory.newDocumentBuilder();
       builder.setEntityResolver(entityResolver);
-      builder.setErrorHandler(new ErrorHandler() {
-        @Override
-        public void error(SAXParseException exception) throws SAXException {
-          throw exception;
-        }
-
-        @Override
-        public void fatalError(SAXParseException exception) throws SAXException {
-          throw exception;
-        }
-
-        @Override
-        public void warning(SAXParseException exception) throws SAXException {
-          // NOP
-        }
-      });
+      builder.setErrorHandler(new IgnoreWarnErrorHandler());
       return builder.parse(inputSource);
     } catch (Exception e) {
       throw new BuilderException("Error creating document instance.  Cause: " + e, e);
@@ -271,4 +256,20 @@ public class XPathParser {
     this.xpath = factory.newXPath();
   }
 
+  static class IgnoreWarnErrorHandler implements ErrorHandler {
+    @Override
+    public void error(SAXParseException exception) throws SAXException {
+      throw exception;
+    }
+
+    @Override
+    public void fatalError(SAXParseException exception) throws SAXException {
+      throw exception;
+    }
+
+    @Override
+    public void warning(SAXParseException exception) throws SAXException {
+      // NOP
+    }
+  }
 }

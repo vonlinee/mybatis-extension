@@ -21,7 +21,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -30,6 +29,7 @@ import java.nio.file.FileSystemException;
 import java.nio.file.InvalidPathException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
@@ -140,7 +140,8 @@ public class DefaultVFS extends VFS {
             if (log.isDebugEnabled()) {
               log.debug("Listing " + url);
             }
-            children = Arrays.asList(file.list());
+            String[] list = file.list();
+            children = list == null ? Collections.emptyList() : Arrays.asList(list);
           }
         }
 
@@ -278,11 +279,7 @@ public class DefaultVFS extends VFS {
 
       // File name might be URL-encoded
       if (!file.exists()) {
-        try {
-          file = new File(URLEncoder.encode(jarUrl.toString(), StandardCharsets.UTF_8.name()));
-        } catch (UnsupportedEncodingException e) {
-          throw new RuntimeException("Unsupported encoding?  UTF-8?  That's impossible.");
-        }
+        file = new File(URLEncoder.encode(jarUrl.toString(), StandardCharsets.UTF_8));
       }
 
       if (file.exists()) {
@@ -323,7 +320,7 @@ public class DefaultVFS extends VFS {
    * @param url
    *          The URL of the resource to test.
    *
-   * @return true, if is jar
+   * @return true, if is a jar
    */
   protected boolean isJar(URL url) {
     return isJar(url, new byte[JAR_MAGIC.length]);
@@ -338,7 +335,7 @@ public class DefaultVFS extends VFS {
    *          A buffer into which the first few bytes of the resource are read. The buffer must be at least the size of
    *          {@link #JAR_MAGIC}. (The same buffer may be reused for multiple calls as an optimization.)
    *
-   * @return true, if is jar
+   * @return true, if is a jar
    */
   protected boolean isJar(URL url, byte[] buffer) {
     try (InputStream is = url.openStream()) {

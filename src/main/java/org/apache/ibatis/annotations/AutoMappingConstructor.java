@@ -1,5 +1,5 @@
 /*
- *    Copyright 2009-2022 the original author or authors.
+ *    Copyright 2009-2023 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package org.apache.ibatis.lang;
+package org.apache.ibatis.annotations;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -22,12 +22,35 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * The marker annotation that indicate a constructor for automatic mapping.
  * <p>
- * Indicates that the element uses Java 8 API.
- * </p>
+ * <b>How to use:</b>
+ *
+ * <pre>
+ * public class User {
+ *
+ *   private int id;
+ *   private String name;
+ *
+ *   public User(int id) {
+ *     this.id = id;
+ *   }
+ *
+ *   &#064;AutoMappingConstructor
+ *   public User(int id, String name) {
+ *     this.id = id;
+ *     this.name = name;
+ *   }
+ *   // ...
+ * }
+ * </pre>
+ *
+ * @author Tim Chen
+ *
+ * @since 3.4.3
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.METHOD, ElementType.FIELD })
-public @interface UsesJava8 {
+@Target({ ElementType.CONSTRUCTOR })
+public @interface AutoMappingConstructor {
 }

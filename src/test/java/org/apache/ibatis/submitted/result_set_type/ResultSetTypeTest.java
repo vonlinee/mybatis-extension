@@ -22,7 +22,7 @@ import java.util.function.Function;
 import org.apache.ibatis.BaseDataTest;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.jdbc.ScriptRunner;
-import org.apache.ibatis.session.RowBounds;
+import org.apache.ibatis.session.Pagination;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
@@ -53,29 +53,29 @@ class ResultSetTypeTest {
 
   @Test
   void testWithStatement() {
-    test(mapper -> mapper.getUserWithStatementAndUnset(new RowBounds(5, 3)), 0);
-    test(mapper -> mapper.getUserWithStatementAndDefault(new RowBounds(4, 3)), 1);
-    test(mapper -> mapper.getUserWithStatementAndForwardOnly(new RowBounds(3, 3)), 2);
-    test(mapper -> mapper.getUserWithStatementAndScrollInsensitive(new RowBounds(2, 2)), 2);
-    test(mapper -> mapper.getUserWithStatementAndScrollSensitive(new RowBounds(1, 1)), 1);
+    test(mapper -> mapper.getUserWithStatementAndUnset(Pagination.of(5, 3)), 0);
+    test(mapper -> mapper.getUserWithStatementAndDefault(Pagination.of(4, 3)), 1);
+    test(mapper -> mapper.getUserWithStatementAndForwardOnly(Pagination.of(3, 3)), 2);
+    test(mapper -> mapper.getUserWithStatementAndScrollInsensitive(Pagination.of(2, 2)), 2);
+    test(mapper -> mapper.getUserWithStatementAndScrollSensitive(Pagination.of(1, 1)), 1);
   }
 
   @Test
   void testWithPrepared() {
-    test(mapper -> mapper.getUserWithPreparedAndUnset(new RowBounds(5, 3)), 0);
-    test(mapper -> mapper.getUserWithPreparedAndDefault(new RowBounds(4, 3)), 1);
-    test(mapper -> mapper.getUserWithPreparedAndForwardOnly(new RowBounds(3, 3)), 2);
-    test(mapper -> mapper.getUserWithPreparedAndScrollInsensitive(new RowBounds(2, 2)), 2);
-    test(mapper -> mapper.getUserWithPreparedAndScrollSensitive(new RowBounds(1, 1)), 1);
+    test(mapper -> mapper.getUserWithPreparedAndUnset(Pagination.of(5, 3)), 0);
+    test(mapper -> mapper.getUserWithPreparedAndDefault(Pagination.of(4, 3)), 1);
+    test(mapper -> mapper.getUserWithPreparedAndForwardOnly(Pagination.of(3, 3)), 2);
+    test(mapper -> mapper.getUserWithPreparedAndScrollInsensitive(Pagination.of(2, 2)), 2);
+    test(mapper -> mapper.getUserWithPreparedAndScrollSensitive(Pagination.of(1, 1)), 1);
   }
 
   @Test
   void testWithCallable() {
-    test(mapper -> mapper.getUserWithCallableAndUnset(new RowBounds(5, 3)), 0);
-    test(mapper -> mapper.getUserWithCallableAndDefault(new RowBounds(4, 3)), 1);
-    test(mapper -> mapper.getUserWithCallableAndForwardOnly(new RowBounds(3, 3)), 2);
-    test(mapper -> mapper.getUserWithCallableAndScrollInsensitive(new RowBounds(2, 2)), 2);
-    test(mapper -> mapper.getUserWithCallableAndScrollSensitive(new RowBounds(1, 1)), 1);
+    test(mapper -> mapper.getUserWithCallableAndUnset(Pagination.of(5, 3)), 0);
+    test(mapper -> mapper.getUserWithCallableAndDefault(Pagination.of(4, 3)), 1);
+    test(mapper -> mapper.getUserWithCallableAndForwardOnly(Pagination.of(3, 3)), 2);
+    test(mapper -> mapper.getUserWithCallableAndScrollInsensitive(Pagination.of(2, 2)), 2);
+    test(mapper -> mapper.getUserWithCallableAndScrollSensitive(Pagination.of(1, 1)), 1);
   }
 
   private void test(Function<Mapper, List<User>> usersSupplier, int expectedSize) {

@@ -15,20 +15,20 @@
  */
 package org.apache.ibatis.reflection;
 
-import static com.googlecode.catchexception.apis.BDDCatchException.caughtException;
-import static com.googlecode.catchexception.apis.BDDCatchException.when;
-import static org.assertj.core.api.BDDAssertions.then;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.apache.ibatis.jdbc.Entity;
+import org.apache.ibatis.reflection.invoker.Invoker;
+import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.ibatis.reflection.invoker.Invoker;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import static com.googlecode.catchexception.apis.BDDCatchException.caughtException;
+import static com.googlecode.catchexception.apis.BDDCatchException.when;
+import static org.assertj.core.api.BDDAssertions.then;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ReflectorTest {
 
@@ -53,23 +53,19 @@ class ReflectorTest {
     Assertions.assertFalse(reflector.hasGetter("class"));
   }
 
-  interface Entity<T> {
-    T getId();
-
-    void setId(T id);
-  }
 
   static abstract class AbstractEntity implements Entity<Long> {
 
     private Long id;
 
     @Override
+    @NotNull
     public Long getId() {
       return id;
     }
 
     @Override
-    public void setId(Long id) {
+    public void setId(@NotNull Long id) {
       this.id = id;
     }
   }
@@ -225,12 +221,12 @@ class ReflectorTest {
     assertTrue(String.class.equals(paramType) || Integer.class.equals(paramType) || boolean.class.equals(paramType));
 
     Invoker ambiguousInvoker = reflector.getSetInvoker("prop2");
-    Object[] param = String.class.equals(paramType) ? new String[] { "x" } : new Integer[] { 1 };
+    Object[] param = String.class.equals(paramType) ? new String[]{"x"} : new Integer[]{1};
     when(() -> ambiguousInvoker.invoke(new BeanClass(), param));
     then(caughtException()).isInstanceOf(ReflectionRuntimeException.class)
-        .hasMessageMatching("Ambiguous setters defined for property 'prop2' in class '"
-            + BeanClass.class.getName().replace("$", "\\$")
-            + "' with types '(java.lang.String|java.lang.Integer|boolean)' and '(java.lang.String|java.lang.Integer|boolean)'\\.");
+      .hasMessageMatching("Ambiguous setters defined for property 'prop2' in class '"
+        + BeanClass.class.getName().replace("$", "\\$")
+        + "' with types '(java.lang.String|java.lang.Integer|boolean)' and '(java.lang.String|java.lang.Integer|boolean)'\\.");
   }
 
   @Test
@@ -260,17 +256,17 @@ class ReflectorTest {
 
     assertEquals(Integer.class, reflector.getGetterType("prop1"));
     Invoker getInvoker = reflector.getGetInvoker("prop1");
-    assertEquals(Integer.valueOf(1), getInvoker.invoke(new BeanClass(), null));
+    assertEquals(1, getInvoker.invoke(new BeanClass(), null));
 
     Class<?> paramType = reflector.getGetterType("prop2");
     assertEquals(int.class, paramType);
 
     Invoker ambiguousInvoker = reflector.getGetInvoker("prop2");
-    when(() -> ambiguousInvoker.invoke(new BeanClass(), new Integer[] { 1 }));
+    when(() -> ambiguousInvoker.invoke(new BeanClass(), new Integer[]{1}));
     then(caughtException()).isInstanceOf(ReflectionRuntimeException.class)
-        .hasMessageContaining("Illegal overloaded getter method with ambiguous type for property 'prop2' in class '"
-            + BeanClass.class.getName()
-            + "'. This breaks the JavaBeans specification and can cause unpredictable results.");
+      .hasMessageContaining("Illegal overloaded getter method with ambiguous type for property 'prop2' in class '"
+        + BeanClass.class.getName()
+        + "'. This breaks the JavaBeans specification and can cause unpredictable results.");
   }
 
   @Test
@@ -300,7 +296,7 @@ class ReflectorTest {
 
     assertEquals(Integer.class, reflector.getGetterType("prop1"));
     Invoker getInvoker = reflector.getGetInvoker("prop1");
-    assertEquals(Integer.valueOf(1), getInvoker.invoke(new BeanClass(), null));
+    assertEquals(1, getInvoker.invoke(new BeanClass(), null));
 
     Class<?> returnType = reflector.getGetterType("prop2");
     assertTrue(Integer.class.equals(returnType) || boolean.class.equals(returnType));
@@ -308,9 +304,9 @@ class ReflectorTest {
     Invoker ambiguousInvoker = reflector.getGetInvoker("prop2");
     when(() -> ambiguousInvoker.invoke(new BeanClass(), null));
     then(caughtException()).isInstanceOf(ReflectionRuntimeException.class)
-        .hasMessageContaining("Illegal overloaded getter method with ambiguous type for property 'prop2' in class '"
-            + BeanClass.class.getName()
-            + "'. This breaks the JavaBeans specification and can cause unpredictable results.");
+      .hasMessageContaining("Illegal overloaded getter method with ambiguous type for property 'prop2' in class '"
+        + BeanClass.class.getName()
+        + "'. This breaks the JavaBeans specification and can cause unpredictable results.");
   }
 
   @Test
@@ -335,15 +331,15 @@ class ReflectorTest {
   }
 
   @Test
-  void shouldIgnoreBestMatchSetterIfGetterIsAmbiguous() throws Exception {
+  void shouldIgnoreBestMatchSetterIfGetterIsAmbiguous() {
     @SuppressWarnings("unused")
     class Bean {
       public Integer isBool() {
-        return Integer.valueOf(1);
+        return 1;
       }
 
       public Integer getBool() {
-        return Integer.valueOf(2);
+        return 2;
       }
 
       public void setBool(boolean bool) {
@@ -355,11 +351,11 @@ class ReflectorTest {
     ReflectorFactory reflectorFactory = new DefaultReflectorFactory();
     Reflector reflector = reflectorFactory.findForClass(Bean.class);
     Class<?> paramType = reflector.getSetterType("bool");
-    Object[] param = boolean.class.equals(paramType) ? new Boolean[] { true } : new Integer[] { 1 };
+    Object[] param = boolean.class.equals(paramType) ? new Boolean[]{true} : new Integer[]{1};
     Invoker ambiguousInvoker = reflector.getSetInvoker("bool");
     when(() -> ambiguousInvoker.invoke(new Bean(), param));
     then(caughtException()).isInstanceOf(ReflectionRuntimeException.class).hasMessageMatching(
-        "Ambiguous setters defined for property 'bool' in class '" + Bean.class.getName().replace("$", "\\$")
-            + "' with types '(java.lang.Integer|boolean)' and '(java.lang.Integer|boolean)'\\.");
+      "Ambiguous setters defined for property 'bool' in class '" + Bean.class.getName().replace("$", "\\$")
+        + "' with types '(java.lang.Integer|boolean)' and '(java.lang.Integer|boolean)'\\.");
   }
 }

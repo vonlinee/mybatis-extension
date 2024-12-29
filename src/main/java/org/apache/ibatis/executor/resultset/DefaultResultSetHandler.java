@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import org.apache.ibatis.annotations.AutomapConstructor;
+import org.apache.ibatis.annotations.AutoMappingConstructor;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.binding.MapperMethod.ParamMap;
 import org.apache.ibatis.cache.CacheKey;
@@ -89,16 +89,16 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   private final ObjectFactory objectFactory;
   private final ReflectorFactory reflectorFactory;
 
-  // nested resultmaps
+  // nested result maps
   private final Map<CacheKey, Object> nestedResultObjects = new HashMap<>();
   private final Map<String, Object> ancestorObjects = new HashMap<>();
   private Object previousRowValue;
 
-  // multiple resultsets
+  // multiple result sets
   private final Map<String, ResultMapping> nextResultMaps = new HashMap<>();
   private final Map<CacheKey, List<PendingRelation>> pendingRelations = new HashMap<>();
 
-  // Cached Automappings
+  // Cached AutoMappings
   private final Map<String, List<UnMappedColumnAutoMapping>> autoMappingsCache = new HashMap<>();
   private final Map<String, List<String>> constructorAutoMappingColumns = new HashMap<>();
 
@@ -171,13 +171,13 @@ public class DefaultResultSetHandler implements ResultSetHandler {
       final ResultSetWrapper rsw = new ResultSetWrapper(rs, configuration);
       if (this.resultHandler == null) {
         final DefaultResultHandler resultHandler = new DefaultResultHandler(objectFactory);
-        handleRowValues(rsw, resultMap, resultHandler, new RowBounds(), null);
+        handleRowValues(rsw, resultMap, resultHandler, RowBounds.DEFAULT, null);
         metaParam.setValue(parameterMapping.getProperty(), resultHandler.getResultList());
       } else {
-        handleRowValues(rsw, resultMap, resultHandler, new RowBounds(), null);
+        handleRowValues(rsw, resultMap, resultHandler, RowBounds.DEFAULT, null);
       }
     } finally {
-      // issue #228 (close resultsets)
+      // issue #228 (close result sets)
       closeResultSet(rs);
     }
   }
@@ -244,12 +244,12 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   private ResultSetWrapper getFirstResultSet(Statement stmt) throws SQLException {
     ResultSet rs = stmt.getResultSet();
     while (rs == null) {
-      // move forward to get the first resultset in case the driver
-      // doesn't return the resultset as the first result (HSQLDB)
+      // move forward to get the first result set in case the driver
+      // doesn't return the result set as the first result (HSQLDB)
       if (stmt.getMoreResults()) {
         rs = stmt.getResultSet();
       } else if (stmt.getUpdateCount() == -1) {
-        // no more results. Must be no resultset
+        // no more results. Must be no result set
         break;
       }
     }
@@ -276,16 +276,6 @@ public class DefaultResultSetHandler implements ResultSetHandler {
       // Intentionally ignored.
     }
     return null;
-  }
-
-  private void closeResultSet(ResultSet rs) {
-    try {
-      if (rs != null) {
-        rs.close();
-      }
-    } catch (SQLException e) {
-      // ignore
-    }
   }
 
   private void cleanUpAfterHandlingResultSet() {
@@ -416,7 +406,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         foundValues = applyAutomaticMappings(rsw, resultMap, metaObject, columnPrefix) || foundValues;
       }
       foundValues = applyPropertyMappings(rsw, resultMap, metaObject, lazyLoader, columnPrefix) || foundValues;
-      foundValues = lazyLoader.size() > 0 || foundValues;
+      foundValues = !lazyLoader.isEmpty() || foundValues;
       rowValue = foundValues || configuration.isReturnInstanceForEmptyRow() ? rowValue : null;
     }
     return rowValue;
@@ -449,7 +439,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         foundValues = applyNestedResultMappings(rsw, resultMap, metaObject, columnPrefix, combinedKey, true)
             || foundValues;
         ancestorObjects.remove(resultMapId);
-        foundValues = lazyLoader.size() > 0 || foundValues;
+        foundValues = !lazyLoader.isEmpty() || foundValues;
         rowValue = foundValues || configuration.isReturnInstanceForEmptyRow() ? rowValue : null;
       }
       if (combinedKey != CacheKey.NULL_CACHE_KEY) {
@@ -735,7 +725,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
       return Optional.of(constructors[0]);
     }
     Optional<Constructor<?>> annotated = Arrays.stream(constructors)
-        .filter(x -> x.isAnnotationPresent(AutomapConstructor.class)).reduce((x, y) -> {
+        .filter(x -> x.isAnnotationPresent(AutoMappingConstructor.class)).reduce((x, y) -> {
           throw new ExecutorException("@AutomapConstructor should be used in only one constructor.");
         });
     if (annotated.isPresent()) {
@@ -996,7 +986,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   }
 
   private String prependPrefix(String columnName, String prefix) {
-    if (columnName == null || columnName.length() == 0 || prefix == null || prefix.length() == 0) {
+    if (columnName == null || columnName.isEmpty() || prefix == null || prefix.isEmpty()) {
       return columnName;
     }
     return prefix + columnName;

@@ -15,7 +15,6 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
-import org.apache.ibatis.session.Configuration;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

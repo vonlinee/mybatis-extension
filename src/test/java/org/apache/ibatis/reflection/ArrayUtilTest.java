@@ -53,7 +53,7 @@ class ArrayUtilTest {
   }
 
   @Test
-  void testequals() {
+  void testEquals() {
     assertTrue(ArrayUtil.equals(new long[] { 1 }, new long[] { 1 }));
     assertTrue(ArrayUtil.equals(new int[] { 1 }, new int[] { 1 }));
     assertTrue(ArrayUtil.equals(new short[] { 1 }, new short[] { 1 }));

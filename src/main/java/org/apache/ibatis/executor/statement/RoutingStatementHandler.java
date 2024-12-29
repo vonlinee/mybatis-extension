@@ -15,11 +15,6 @@
  */
 package org.apache.ibatis.executor.statement;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.List;
-
 import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.executor.ExecutorException;
@@ -29,6 +24,11 @@ import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
+
 /**
  * @author Clinton Begin
  */
@@ -36,9 +36,8 @@ public class RoutingStatementHandler implements StatementHandler {
 
   private final StatementHandler delegate;
 
-  public RoutingStatementHandler(Executor executor, MappedStatement ms, Object parameter, RowBounds rowBounds,
-      ResultHandler resultHandler, BoundSql boundSql) {
-
+  public <T> RoutingStatementHandler(Executor executor, MappedStatement ms, Object parameter, RowBounds rowBounds,
+                                     ResultHandler<T> resultHandler, BoundSql boundSql) {
     switch (ms.getStatementType()) {
       case STATEMENT:
         delegate = new SimpleStatementHandler(executor, ms, parameter, rowBounds, resultHandler, boundSql);
@@ -52,7 +51,6 @@ public class RoutingStatementHandler implements StatementHandler {
       default:
         throw new ExecutorException("Unknown statement type: " + ms.getStatementType());
     }
-
   }
 
   @Override
@@ -76,7 +74,7 @@ public class RoutingStatementHandler implements StatementHandler {
   }
 
   @Override
-  public <E> List<E> query(Statement statement, ResultHandler resultHandler) throws SQLException {
+  public <E> List<E> query(Statement statement, ResultHandler<E> resultHandler) throws SQLException {
     return delegate.query(statement, resultHandler);
   }
 

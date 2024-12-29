@@ -80,7 +80,7 @@ public @interface CacheNamespace {
   int size() default 1024;
 
   /**
-   * Returns whether use read/write cache.
+   * Returns whether you use read/write cache.
    *
    * @return {@code true} if use read/write cache; {@code false} if otherwise
    */

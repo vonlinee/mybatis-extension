@@ -23,9 +23,9 @@ public class EnumWrapper extends HashMap<String, Integer> {
 
   public EnumWrapper(Class<?> e) {
     if (e.isEnum()) {
-      Object[] consts = e.getEnumConstants();
-      for (int i = 0; i < consts.length; i++) {
-        put(consts[i].toString(), i);
+      Object[] constants = e.getEnumConstants();
+      for (int i = 0; i < constants.length; i++) {
+        put(constants[i].toString(), i);
       }
     } else {
       throw new IllegalArgumentException("Supplied argument is not an enum class");

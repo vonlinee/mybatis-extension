@@ -58,7 +58,7 @@ public @interface Options {
   }
 
   /**
-   * Returns whether use the 2nd cache feature if assigned the cache.
+   * Returns whether you use the 2nd cache feature if assigned the cache.
    *
    * @return {@code true} if use; {@code false} if otherwise
    */
@@ -100,7 +100,7 @@ public @interface Options {
   int timeout() default -1;
 
   /**
-   * Returns whether use the generated keys feature supported by JDBC 3.0
+   * Returns whether you use the generated keys feature supported by JDBC 3.0
    *
    * @return {@code true} if use; {@code false} if otherwise
    */

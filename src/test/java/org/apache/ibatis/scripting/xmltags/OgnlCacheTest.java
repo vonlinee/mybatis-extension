@@ -42,9 +42,7 @@ class OgnlCacheTest {
     List<Future<Object>> futures = new ArrayList<>();
     context.put("data", new DataClass());
     ExecutorService executor = Executors.newCachedThreadPool();
-    IntStream.range(0, run).forEach(i -> {
-      futures.add(executor.submit(() -> OgnlCache.getValue("data.id", context)));
-    });
+    IntStream.range(0, run).forEach(i -> futures.add(executor.submit(() -> OgnlCache.getValue("data.id", context))));
     for (int i = 0; i < run; i++) {
       assertNotNull(futures.get(i).get());
     }
@@ -52,7 +50,7 @@ class OgnlCacheTest {
   }
 
   @Test
-  void issue2609() throws Exception {
+  void issue2609() {
     Map<String, Object> context = new HashMap<>();
     context.put("d1", java.sql.Date.valueOf("2022-01-01"));
     context.put("d2", java.sql.Date.valueOf("2022-01-02"));

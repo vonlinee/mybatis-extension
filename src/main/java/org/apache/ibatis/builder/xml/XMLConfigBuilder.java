@@ -170,8 +170,8 @@ public class XMLConfigBuilder extends BaseBuilder {
     if (value == null) {
       return;
     }
-    String[] clazzes = value.split(",");
-    for (String clazz : clazzes) {
+    String[] classes = value.split(",");
+    for (String clazz : classes) {
       if (!clazz.isEmpty()) {
         @SuppressWarnings("unchecked")
         Class<? extends VFS> vfsImpl = (Class<? extends VFS>) Resources.classForName(clazz);

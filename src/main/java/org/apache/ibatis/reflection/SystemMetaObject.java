@@ -41,5 +41,4 @@ public final class SystemMetaObject {
     return MetaObject.forObject(object, DEFAULT_OBJECT_FACTORY, DEFAULT_OBJECT_WRAPPER_FACTORY,
         new DefaultReflectorFactory());
   }
-
 }

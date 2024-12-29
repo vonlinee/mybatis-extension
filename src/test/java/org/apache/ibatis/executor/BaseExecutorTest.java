@@ -28,6 +28,7 @@ import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.mapping.SqlCommandType;
 import org.apache.ibatis.session.Configuration;
+import org.apache.ibatis.session.Pagination;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.transaction.Transaction;
 import org.apache.ibatis.transaction.jdbc.JdbcTransaction;
@@ -272,7 +273,7 @@ class BaseExecutorTest extends BaseDataTest {
     Executor executor = createExecutor(new JdbcTransaction(ds, null, false));
     try {
       MappedStatement selectStatement = ExecutorTestHelper.prepareSelectDiscriminatedPost(config);
-      List<Map<String, String>> products = executor.query(selectStatement, null, new RowBounds(2, 2),
+      List<Map<String, String>> products = executor.query(selectStatement, null, Pagination.of(2, 2),
         Executor.NO_RESULT_HANDLER);
       assertEquals(2, products.size());
       for (Map<String, String> m : products) {

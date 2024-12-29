@@ -52,11 +52,8 @@ public abstract class AbstractSQL<T> {
   /**
    * Sets the.
    *
-   * @param sets
-   *          the sets
-   *
+   * @param sets the sets
    * @return the t
-   *
    * @since 3.4.2
    */
   public T SET(String... sets) {
@@ -79,11 +76,8 @@ public abstract class AbstractSQL<T> {
   /**
    * Into columns.
    *
-   * @param columns
-   *          the columns
-   *
+   * @param columns the columns
    * @return the t
-   *
    * @since 3.4.2
    */
   public T INTO_COLUMNS(String... columns) {
@@ -94,11 +88,8 @@ public abstract class AbstractSQL<T> {
   /**
    * Into values.
    *
-   * @param values
-   *          the values
-   *
+   * @param values the values
    * @return the t
-   *
    * @since 3.4.2
    */
   public T INTO_VALUES(String... values) {
@@ -116,11 +107,8 @@ public abstract class AbstractSQL<T> {
   /**
    * Select.
    *
-   * @param columns
-   *          the columns
-   *
+   * @param columns the columns
    * @return the t
-   *
    * @since 3.4.2
    */
   public T SELECT(String... columns) {
@@ -138,11 +126,8 @@ public abstract class AbstractSQL<T> {
   /**
    * Select distinct.
    *
-   * @param columns
-   *          the columns
-   *
+   * @param columns the columns
    * @return the t
-   *
    * @since 3.4.2
    */
   public T SELECT_DISTINCT(String... columns) {
@@ -165,11 +150,8 @@ public abstract class AbstractSQL<T> {
   /**
    * From.
    *
-   * @param tables
-   *          the tables
-   *
+   * @param tables the tables
    * @return the t
-   *
    * @since 3.4.2
    */
   public T FROM(String... tables) {
@@ -185,11 +167,8 @@ public abstract class AbstractSQL<T> {
   /**
    * Join.
    *
-   * @param joins
-   *          the joins
-   *
+   * @param joins the joins
    * @return the t
-   *
    * @since 3.4.2
    */
   public T JOIN(String... joins) {
@@ -205,11 +184,8 @@ public abstract class AbstractSQL<T> {
   /**
    * Inner join.
    *
-   * @param joins
-   *          the joins
-   *
+   * @param joins the joins
    * @return the t
-   *
    * @since 3.4.2
    */
   public T INNER_JOIN(String... joins) {
@@ -225,11 +201,8 @@ public abstract class AbstractSQL<T> {
   /**
    * Left outer join.
    *
-   * @param joins
-   *          the joins
-   *
+   * @param joins the joins
    * @return the t
-   *
    * @since 3.4.2
    */
   public T LEFT_OUTER_JOIN(String... joins) {
@@ -245,11 +218,8 @@ public abstract class AbstractSQL<T> {
   /**
    * Right outer join.
    *
-   * @param joins
-   *          the joins
-   *
+   * @param joins the joins
    * @return the t
-   *
    * @since 3.4.2
    */
   public T RIGHT_OUTER_JOIN(String... joins) {
@@ -265,11 +235,8 @@ public abstract class AbstractSQL<T> {
   /**
    * Outer join.
    *
-   * @param joins
-   *          the joins
-   *
+   * @param joins the joins
    * @return the t
-   *
    * @since 3.4.2
    */
   public T OUTER_JOIN(String... joins) {
@@ -286,11 +253,8 @@ public abstract class AbstractSQL<T> {
   /**
    * Where.
    *
-   * @param conditions
-   *          the conditions
-   *
+   * @param conditions the conditions
    * @return the t
-   *
    * @since 3.4.2
    */
   public T WHERE(String... conditions) {
@@ -317,11 +281,8 @@ public abstract class AbstractSQL<T> {
   /**
    * Group by.
    *
-   * @param columns
-   *          the columns
-   *
+   * @param columns the columns
    * @return the t
-   *
    * @since 3.4.2
    */
   public T GROUP_BY(String... columns) {
@@ -338,11 +299,8 @@ public abstract class AbstractSQL<T> {
   /**
    * Having.
    *
-   * @param conditions
-   *          the conditions
-   *
+   * @param conditions the conditions
    * @return the t
-   *
    * @since 3.4.2
    */
   public T HAVING(String... conditions) {
@@ -359,11 +317,8 @@ public abstract class AbstractSQL<T> {
   /**
    * Order by.
    *
-   * @param columns
-   *          the columns
-   *
+   * @param columns the columns
    * @return the t
-   *
    * @since 3.4.2
    */
   public T ORDER_BY(String... columns) {
@@ -374,13 +329,9 @@ public abstract class AbstractSQL<T> {
   /**
    * Set the limit variable string(e.g. {@code "#{limit}"}).
    *
-   * @param variable
-   *          a limit variable string
-   *
+   * @param variable a limit variable string
    * @return a self instance
-   *
    * @see #OFFSET(String)
-   *
    * @since 3.5.2
    */
   public T LIMIT(String variable) {
@@ -392,13 +343,9 @@ public abstract class AbstractSQL<T> {
   /**
    * Set the limit value.
    *
-   * @param value
-   *          an offset value
-   *
+   * @param value an offset value
    * @return a self instance
-   *
    * @see #OFFSET(long)
-   *
    * @since 3.5.2
    */
   public T LIMIT(int value) {
@@ -408,13 +355,9 @@ public abstract class AbstractSQL<T> {
   /**
    * Set the offset variable string(e.g. {@code "#{offset}"}).
    *
-   * @param variable
-   *          a offset variable string
-   *
+   * @param variable a offset variable string
    * @return a self instance
-   *
    * @see #LIMIT(String)
-   *
    * @since 3.5.2
    */
   public T OFFSET(String variable) {
@@ -426,13 +369,9 @@ public abstract class AbstractSQL<T> {
   /**
    * Set the offset value.
    *
-   * @param value
-   *          an offset value
-   *
+   * @param value an offset value
    * @return a self instance
-   *
    * @see #LIMIT(int)
-   *
    * @since 3.5.2
    */
   public T OFFSET(long value) {
@@ -442,13 +381,9 @@ public abstract class AbstractSQL<T> {
   /**
    * Set the fetch first rows variable string(e.g. {@code "#{fetchFirstRows}"}).
    *
-   * @param variable
-   *          a fetch first rows variable string
-   *
+   * @param variable a fetch first rows variable string
    * @return a self instance
-   *
    * @see #OFFSET_ROWS(String)
-   *
    * @since 3.5.2
    */
   public T FETCH_FIRST_ROWS_ONLY(String variable) {
@@ -460,13 +395,9 @@ public abstract class AbstractSQL<T> {
   /**
    * Set the fetch first rows value.
    *
-   * @param value
-   *          a fetch first rows value
-   *
+   * @param value a fetch first rows value
    * @return a self instance
-   *
    * @see #OFFSET_ROWS(long)
-   *
    * @since 3.5.2
    */
   public T FETCH_FIRST_ROWS_ONLY(int value) {
@@ -476,13 +407,9 @@ public abstract class AbstractSQL<T> {
   /**
    * Set the offset rows variable string(e.g. {@code "#{offset}"}).
    *
-   * @param variable
-   *          a offset rows variable string
-   *
+   * @param variable an offset rows variable string
    * @return a self instance
-   *
    * @see #FETCH_FIRST_ROWS_ONLY(String)
-   *
    * @since 3.5.2
    */
   public T OFFSET_ROWS(String variable) {
@@ -494,13 +421,9 @@ public abstract class AbstractSQL<T> {
   /**
    * Set the offset rows value.
    *
-   * @param value
-   *          an offset rows value
-   *
+   * @param value an offset rows value
    * @return a self instance
-   *
    * @see #FETCH_FIRST_ROWS_ONLY(int)
-   *
    * @since 3.5.2
    */
   public T OFFSET_ROWS(long value) {
@@ -511,7 +434,6 @@ public abstract class AbstractSQL<T> {
    * used to add a new inserted row while do multi-row insert.
    *
    * @return the t
-   *
    * @since 3.5.2
    */
   public T ADD_ROW() {
@@ -531,15 +453,10 @@ public abstract class AbstractSQL<T> {
   /**
    * Apply sql phrases that provide by SQL consumer if condition is matches.
    *
-   * @param applyCondition
-   *          if {@code true} apply sql phrases
-   * @param sqlConsumer
-   *          a consumer that append sql phrase to SQL instance
-   *
+   * @param applyCondition if {@code true} apply sql phrases
+   * @param sqlConsumer    a consumer that append sql phrase to SQL instance
    * @return a self instance
-   *
    * @see #applyIf(BooleanSupplier, Consumer)
-   *
    * @since 3.5.15
    */
   public T applyIf(boolean applyCondition, Consumer<T> sqlConsumer) {
@@ -553,15 +470,10 @@ public abstract class AbstractSQL<T> {
   /**
    * Apply sql phrases that provide by SQL consumer if condition is matches.
    *
-   * @param applyConditionSupplier
-   *          if supplier return {@code true} apply sql phrases
-   * @param sqlConsumer
-   *          a consumer that append sql phrase to SQL instance
-   *
+   * @param applyConditionSupplier if supplier return {@code true} apply sql phrases
+   * @param sqlConsumer            a consumer that append sql phrase to SQL instance
    * @return a self instance
-   *
    * @see #applyIf(boolean, Consumer)
-   *
    * @since 3.5.15
    */
   public T applyIf(BooleanSupplier applyConditionSupplier, Consumer<T> sqlConsumer) {
@@ -571,16 +483,10 @@ public abstract class AbstractSQL<T> {
   /**
    * Apply sql phrases that provide by SQL consumer for iterable.
    *
-   * @param iterable
-   *          an iterable
-   * @param forEachSqlConsumer
-   *          a consumer that append sql phrase to SQL instance
-   *
+   * @param iterable           an iterable
+   * @param forEachSqlConsumer a consumer that append sql phrase to SQL instance
+   * @param <E>                element type of iterable
    * @return a self instance
-   *
-   * @param <E>
-   *          element type of iterable
-   *
    * @since 3.5.15
    */
   public <E> T applyForEach(Iterable<E> iterable, ForEachConsumer<T, E> forEachSqlConsumer) {
@@ -701,7 +607,7 @@ public abstract class AbstractSQL<T> {
     }
 
     private void sqlClause(SafeAppendable builder, String keyword, List<String> parts, String open, String close,
-        String conjunction) {
+                           String conjunction) {
       if (!parts.isEmpty()) {
         if (!builder.isEmpty()) {
           builder.append("\n");
@@ -808,11 +714,8 @@ public abstract class AbstractSQL<T> {
   /**
    * Consumer for 'forEach' operation.
    *
-   * @param <T>
-   *          SQL type
-   * @param <E>
-   *          Element type of iterable
-   *
+   * @param <T> SQL type
+   * @param <E> Element type of iterable
    * @since 3.5.15
    */
   public interface ForEachConsumer<T, E> {
@@ -820,12 +723,9 @@ public abstract class AbstractSQL<T> {
     /**
      * Accept an iterable element with index.
      *
-     * @param sql
-     *          SQL instance
-     * @param element
-     *          an iterable element
-     * @param elementIndex
-     *          an element index
+     * @param sql          SQL instance
+     * @param element      an iterable element
+     * @param elementIndex an element index
      */
     void accept(T sql, E element, int elementIndex);
 

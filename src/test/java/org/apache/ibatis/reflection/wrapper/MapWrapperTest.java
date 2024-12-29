@@ -15,7 +15,12 @@
  */
 package org.apache.ibatis.reflection.wrapper;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.apache.ibatis.reflection.DefaultReflectorFactory;
+import org.apache.ibatis.reflection.MetaObject;
+import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,14 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.reflection.DefaultReflectorFactory;
-import org.apache.ibatis.reflection.MetaObject;
-import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
-import org.apache.ibatis.reflection.factory.ObjectFactory;
-import org.apache.ibatis.reflection.property.PropertyTokenizer;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import static org.junit.jupiter.api.Assertions.*;
 
 class MapWrapperTest {
 
@@ -39,9 +37,9 @@ class MapWrapperTest {
     Map<String, Object> map = new LinkedHashMap<>();
     map.put("a", "100");
     map.put("b", null);
-    map.put("my_name", Integer.valueOf(200));
+    map.put("my_name", 200);
     MetaObject metaObj = MetaObject.forObject(map, new DefaultObjectFactory(), new DefaultObjectWrapperFactory(),
-        new DefaultReflectorFactory());
+      new DefaultReflectorFactory());
     assertFalse(metaObj.isCollection());
     assertTrue(metaObj.hasGetter("a"));
     assertTrue(metaObj.hasSetter("a"));
@@ -50,8 +48,8 @@ class MapWrapperTest {
     assertEquals("b", metaObj.findProperty("b", false));
     assertEquals("my_name", metaObj.findProperty("my_name", false));
     assertEquals("my_name", metaObj.findProperty("my_name", true));
-    assertArrayEquals(new String[] { "a", "b", "my_name" }, metaObj.getGetterNames());
-    assertArrayEquals(new String[] { "a", "b", "my_name" }, metaObj.getSetterNames());
+    assertArrayEquals(new String[]{"a", "b", "my_name"}, metaObj.getGetterNames());
+    assertArrayEquals(new String[]{"a", "b", "my_name"}, metaObj.getSetterNames());
     assertEquals(String.class, metaObj.getGetterType("a"));
     assertEquals(Object.class, metaObj.getGetterType("b"));
     assertEquals(Integer.class, metaObj.getGetterType("my_name"));
@@ -60,7 +58,7 @@ class MapWrapperTest {
     assertEquals(Integer.class, metaObj.getSetterType("my_name"));
     assertEquals("100", metaObj.getValue("a"));
     assertNull(metaObj.getValue("b"));
-    assertEquals(Integer.valueOf(200), metaObj.getValue("my_name"));
+    assertEquals(200, metaObj.getValue("my_name"));
     try {
       metaObj.add("x");
       fail();
@@ -73,8 +71,8 @@ class MapWrapperTest {
     } catch (UnsupportedOperationException e) {
       // pass
     }
-    metaObj.setValue("a", Long.valueOf(900L));
-    assertEquals(Long.valueOf(900L), map.get("a"));
+    metaObj.setValue("a", 900L);
+    assertEquals(900L, map.get("a"));
   }
 
   @Test
@@ -82,7 +80,7 @@ class MapWrapperTest {
     Map<String, Object> map = new HashMap<>();
     map.put("a", "100");
     MetaObject metaObj = MetaObject.forObject(map, new DefaultObjectFactory(), new DefaultObjectWrapperFactory(),
-        new DefaultReflectorFactory());
+      new DefaultReflectorFactory());
     assertEquals("anykey", metaObj.findProperty("anykey", false));
     assertFalse(metaObj.hasGetter("anykey"));
     assertFalse(metaObj.hasGetter("child.anykey"));
@@ -94,13 +92,13 @@ class MapWrapperTest {
     assertEquals(Object.class, metaObj.getSetterType("child.anykey"));
     assertNull(metaObj.getValue("anykey"));
 
-    metaObj.setValue("anykey", Integer.valueOf(200));
-    metaObj.setValue("child.anykey", Integer.valueOf(300));
+    metaObj.setValue("anykey", 200);
+    metaObj.setValue("child.anykey", 300);
     assertEquals(3, map.size());
-    assertEquals(Integer.valueOf(200), map.get("anykey"));
+    assertEquals(200, map.get("anykey"));
     @SuppressWarnings("unchecked")
     Map<String, Object> childMap = (Map<String, Object>) map.get("child");
-    assertEquals(Integer.valueOf(300), childMap.get("anykey"));
+    assertEquals(300, childMap.get("anykey"));
   }
 
   @Test
@@ -110,7 +108,7 @@ class MapWrapperTest {
     bean.setPropA("aaa");
     map.put("bean", bean);
     MetaObject metaObj = MetaObject.forObject(map, new DefaultObjectFactory(), new DefaultObjectWrapperFactory(),
-        new DefaultReflectorFactory());
+      new DefaultReflectorFactory());
     assertTrue(metaObj.hasGetter("bean.propA"));
     assertEquals(String.class, metaObj.getGetterType("bean.propA"));
     assertEquals(String.class, metaObj.getSetterType("bean.propA"));
@@ -151,7 +149,7 @@ class MapWrapperTest {
     List<String> list = Arrays.asList("a", "b", "c");
     map.put("list", list);
     MetaObject metaObj = MetaObject.forObject(map, new DefaultObjectFactory(), new DefaultObjectWrapperFactory(),
-        new DefaultReflectorFactory());
+      new DefaultReflectorFactory());
     assertEquals("b", metaObj.getValue("list[1]"));
 
     metaObj.setValue("list[2]", "x");
@@ -179,7 +177,7 @@ class MapWrapperTest {
     submap.put("c", "300");
     map.put("submap", submap);
     MetaObject metaObj = MetaObject.forObject(map, new DefaultObjectFactory(), new DefaultObjectWrapperFactory(),
-        new DefaultReflectorFactory());
+      new DefaultReflectorFactory());
     assertEquals("200", metaObj.getValue("submap[b]"));
 
     metaObj.setValue("submap[c]", "999");
@@ -196,55 +194,13 @@ class MapWrapperTest {
   }
 
   @ParameterizedTest
-  @CsvSource({ "abc[def]", "abc.def", "abc.def.ghi", "abc[d.ef].ghi" })
+  @CsvSource({"abc[def]", "abc.def", "abc.def.ghi", "abc[d.ef].ghi"})
   void testCustomMapWrapper(String key) {
     Map<String, Object> map = new HashMap<>();
     MetaObject metaObj = MetaObject.forObject(map, new DefaultObjectFactory(), new FlatMapWrapperFactory(),
-        new DefaultReflectorFactory());
+      new DefaultReflectorFactory());
     metaObj.setValue(key, "1");
     assertEquals("1", map.get(key));
     assertEquals("1", metaObj.getValue(key));
   }
-
-  static class FlatMapWrapperFactory implements ObjectWrapperFactory {
-    @Override
-    public boolean hasWrapperFor(Object object) {
-      return object instanceof Map;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public ObjectWrapper getWrapperFor(MetaObject metaObject, Object object) {
-      return new FlatMapWrapper(metaObject, (Map<String, Object>) object, metaObject.getObjectFactory());
-    }
-  }
-
-  static class FlatMapWrapper extends MapWrapper {
-    public FlatMapWrapper(MetaObject metaObject, Map<String, Object> map, ObjectFactory objectFactory) {
-      super(metaObject, map);
-    }
-
-    @Override
-    public Object get(PropertyTokenizer prop) {
-      String key;
-      if (prop.getChildren() == null) {
-        key = prop.getIndexedName();
-      } else {
-        key = prop.getIndexedName() + "." + prop.getChildren();
-      }
-      return map.get(key);
-    }
-
-    @Override
-    public void set(PropertyTokenizer prop, Object value) {
-      String key;
-      if (prop.getChildren() == null) {
-        key = prop.getIndexedName();
-      } else {
-        key = prop.getIndexedName() + "." + prop.getChildren();
-      }
-      map.put(key, value);
-    }
-  }
-
 }

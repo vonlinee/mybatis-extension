@@ -26,6 +26,7 @@ import javax.sql.DataSource;
 
 import org.apache.ibatis.session.TransactionIsolationLevel;
 import org.apache.ibatis.transaction.Transaction;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class JdbcTransactionFactoryTest {
@@ -38,7 +39,7 @@ class JdbcTransactionFactoryTest {
     Transaction transaction = factory.newTransaction(connection);
     transaction.getConnection();
     transaction.close();
-    assertTrue(connection.getAutoCommit());
+    Assertions.assertTrue(connection.getAutoCommit());
   }
 
   @Test
@@ -54,7 +55,7 @@ class JdbcTransactionFactoryTest {
     Transaction transaction = factory.newTransaction(ds, TransactionIsolationLevel.NONE, false);
     transaction.getConnection();
     transaction.close();
-    assertFalse(connection.getAutoCommit());
+    Assertions.assertFalse(connection.getAutoCommit());
   }
 
 }

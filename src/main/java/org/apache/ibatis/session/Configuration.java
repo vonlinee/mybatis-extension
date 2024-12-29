@@ -451,22 +451,6 @@ public class Configuration {
     this.aggressiveLazyLoading = aggressiveLazyLoading;
   }
 
-  /**
-   * @deprecated You can safely remove the call to this method as this option had no effect.
-   */
-  @Deprecated
-  public boolean isMultipleResultSetsEnabled() {
-    return true;
-  }
-
-  /**
-   * @deprecated You can safely remove the call to this method as this option had no effect.
-   */
-  @Deprecated
-  public void setMultipleResultSetsEnabled(boolean multipleResultSetsEnabled) {
-    // nop
-  }
-
   public Set<String> getLazyLoadTriggerMethods() {
     return lazyLoadTriggerMethods;
   }
@@ -701,15 +685,15 @@ public class Configuration {
     return (ParameterHandler) interceptorChain.pluginAll(parameterHandler);
   }
 
-  public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, RowBounds rowBounds,
-                                              ParameterHandler parameterHandler, ResultHandler resultHandler, BoundSql boundSql) {
+  public <T> ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, RowBounds rowBounds,
+                                              ParameterHandler parameterHandler, ResultHandler<T> resultHandler, BoundSql boundSql) {
     ResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, mappedStatement, parameterHandler,
       resultHandler, boundSql, rowBounds);
     return (ResultSetHandler) interceptorChain.pluginAll(resultSetHandler);
   }
 
-  public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement,
-                                              Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
+  public <T> StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement,
+                                              Object parameterObject, RowBounds rowBounds, ResultHandler<T> resultHandler, BoundSql boundSql) {
     StatementHandler statementHandler = new RoutingStatementHandler(executor, mappedStatement, parameterObject,
       rowBounds, resultHandler, boundSql);
     return (StatementHandler) interceptorChain.pluginAll(statementHandler);
@@ -1035,14 +1019,13 @@ public class Configuration {
   protected void checkGloballyForDiscriminatedNestedResultMaps(ResultMap rm) {
     if (rm.hasNestedResultMaps()) {
       final String resultMapId = rm.getId();
-      for (Object resultMapObject : resultMaps.values()) {
-        if (resultMapObject instanceof ResultMap) {
-          ResultMap entryResultMap = (ResultMap) resultMapObject;
-          if (!entryResultMap.hasNestedResultMaps() && entryResultMap.getDiscriminator() != null) {
-            Collection<String> discriminatedResultMapNames = entryResultMap.getDiscriminator().getDiscriminatorMap()
+      for (ResultMap resultMapObject : resultMaps.values()) {
+        if (resultMapObject != null) {
+          if (!resultMapObject.hasNestedResultMaps() && resultMapObject.getDiscriminator() != null) {
+            Collection<String> discriminatedResultMapNames = resultMapObject.getDiscriminator().getDiscriminatorMap()
               .values();
             if (discriminatedResultMapNames.contains(resultMapId)) {
-              entryResultMap.forceNestedResultMaps();
+              resultMapObject.forceNestedResultMaps();
             }
           }
         }
@@ -1121,7 +1104,7 @@ public class Configuration {
 
     @Override
     @SuppressWarnings("unchecked")
-    public V put(String key, V value) {
+    public V put(@NotNull String key, @NotNull V value) {
       if (containsKey(key)) {
         throw new IllegalArgumentException(name + " already contains key " + key
           + (conflictMessageProducer == null ? "" : conflictMessageProducer.apply(super.get(key), value)));

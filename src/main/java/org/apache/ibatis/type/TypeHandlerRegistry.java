@@ -61,6 +61,7 @@ public final class TypeHandlerRegistry {
 
   private static final Map<JdbcType, TypeHandler<?>> NULL_TYPE_HANDLER_MAP = Collections.emptyMap();
 
+  @SuppressWarnings("rawtypes")
   private Class<? extends TypeHandler> defaultEnumTypeHandler = EnumTypeHandler.class;
 
   /**
@@ -190,7 +191,7 @@ public final class TypeHandlerRegistry {
    *
    * @since 3.4.5
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "rawtypes"})
   public <T> void setDefaultEnumTypeHandler(Class<T> typeHandler) {
     this.defaultEnumTypeHandler = (Class<? extends TypeHandler>) typeHandler;
   }

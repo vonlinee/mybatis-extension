@@ -25,10 +25,12 @@ import java.util.List;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.jdbc.ScriptRunner;
+import org.apache.ibatis.session.Pagination;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -61,22 +63,22 @@ class ActualParamNameTest {
       // use actual name
       {
         long count = mapper.getUserCountUsingList(Arrays.asList(1, 2));
-        assertEquals(2, count);
+        Assertions.assertEquals(2, count);
       }
       // use 'collection' as alias
       {
         long count = mapper.getUserCountUsingListWithAliasIsCollection(Arrays.asList(1, 2));
-        assertEquals(2, count);
+        Assertions.assertEquals(2, count);
       }
       // use 'list' as alias
       {
         long count = mapper.getUserCountUsingListWithAliasIsList(Arrays.asList(1, 2));
-        assertEquals(2, count);
+        Assertions.assertEquals(2, count);
       }
       // use actual name #2693
       {
-        long count = mapper.getUserCountUsingList_RowBounds(new RowBounds(0, 5), Arrays.asList(1, 2));
-        assertEquals(2, count);
+        long count = mapper.getUserCountUsingList_RowBounds(Pagination.of(0, 5), Arrays.asList(1, 2));
+        Assertions.assertEquals(2, count);
       }
     }
   }
@@ -88,12 +90,12 @@ class ActualParamNameTest {
       // use actual name
       {
         long count = mapper.getUserCountUsingArray(1, 2);
-        assertEquals(2, count);
+        Assertions.assertEquals(2, count);
       }
       // use 'array' as alias
       {
         long count = mapper.getUserCountUsingArrayWithAliasArray(1, 2);
-        assertEquals(2, count);
+        Assertions.assertEquals(2, count);
       }
     }
   }

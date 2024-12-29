@@ -33,13 +33,10 @@ public class TypeParameterResolver {
   /**
    * Resolve field type.
    *
-   * @param field
-   *          the field
-   * @param srcType
-   *          the src type
-   *
+   * @param field   the field
+   * @param srcType the src type
    * @return The field type as {@link Type}. If it has type parameters in the declaration,<br>
-   *         they will be resolved to the actual runtime {@link Type}s.
+   * they will be resolved to the actual runtime {@link Type}s.
    */
   public static Type resolveFieldType(Field field, Type srcType) {
     Type fieldType = field.getGenericType();
@@ -50,13 +47,10 @@ public class TypeParameterResolver {
   /**
    * Resolve return type.
    *
-   * @param method
-   *          the method
-   * @param srcType
-   *          the src type
-   *
+   * @param method  the method
+   * @param srcType the src type
    * @return The return type of the method as {@link Type}. If it has type parameters in the declaration,<br>
-   *         they will be resolved to the actual runtime {@link Type}s.
+   * they will be resolved to the actual runtime {@link Type}s.
    */
   public static Type resolveReturnType(Method method, Type srcType) {
     Type returnType = method.getGenericReturnType();
@@ -67,14 +61,11 @@ public class TypeParameterResolver {
   /**
    * Resolve param types.
    *
-   * @param method
-   *          the method
-   * @param srcType
-   *          the src type
-   *
+   * @param method  the method
+   * @param srcType the src type
    * @return The parameter types of the method as an array of {@link Type}s. If they have type parameters in the
-   *         declaration,<br>
-   *         they will be resolved to the actual runtime {@link Type}s.
+   * declaration,<br>
+   * they will be resolved to the actual runtime {@link Type}s.
    */
   public static Type[] resolveParamTypes(Method method, Type srcType) {
     Type[] paramTypes = method.getGenericParameterTypes();
@@ -100,7 +91,7 @@ public class TypeParameterResolver {
   }
 
   private static Type resolveGenericArrayType(GenericArrayType genericArrayType, Type srcType,
-      Class<?> declaringClass) {
+                                              Class<?> declaringClass) {
     Type componentType = genericArrayType.getGenericComponentType();
     Type resolvedComponentType = null;
     if (componentType instanceof TypeVariable) {
@@ -117,7 +108,7 @@ public class TypeParameterResolver {
   }
 
   private static ParameterizedType resolveParameterizedType(ParameterizedType parameterizedType, Type srcType,
-      Class<?> declaringClass) {
+                                                            Class<?> declaringClass) {
     Class<?> rawType = (Class<?>) parameterizedType.getRawType();
     Type[] typeArgs = parameterizedType.getActualTypeArguments();
     Type[] args = new Type[typeArgs.length];
@@ -167,7 +158,7 @@ public class TypeParameterResolver {
       clazz = (Class<?>) parameterizedType.getRawType();
     } else {
       throw new IllegalArgumentException(
-          "The 2nd arg must be Class or ParameterizedType, but was: " + srcType.getClass());
+        "The 2nd arg must be Class or ParameterizedType, but was: " + srcType.getClass());
     }
 
     if (clazz == declaringClass) {
@@ -195,7 +186,7 @@ public class TypeParameterResolver {
   }
 
   private static Type scanSuperTypes(TypeVariable<?> typeVar, Type srcType, Class<?> declaringClass, Class<?> clazz,
-      Type superclass) {
+                                     Type superclass) {
     if (superclass instanceof ParameterizedType) {
       ParameterizedType parentAsType = (ParameterizedType) superclass;
       Class<?> parentAsClass = (Class<?>) parentAsType.getRawType();
@@ -221,7 +212,7 @@ public class TypeParameterResolver {
   }
 
   private static ParameterizedType translateParentTypeVars(ParameterizedType srcType, Class<?> srcClass,
-      ParameterizedType parentType) {
+                                                           ParameterizedType parentType) {
     Type[] parentTypeArgs = parentType.getActualTypeArguments();
     Type[] srcTypeArgs = srcType.getActualTypeArguments();
     TypeVariable<?>[] srcTypeVars = srcClass.getTypeParameters();
@@ -276,7 +267,7 @@ public class TypeParameterResolver {
     @Override
     public String toString() {
       return "ParameterizedTypeImpl [rawType=" + rawType + ", ownerType=" + ownerType + ", actualTypeArguments="
-          + Arrays.toString(actualTypeArguments) + "]";
+        + Arrays.toString(actualTypeArguments) + "]";
     }
   }
 

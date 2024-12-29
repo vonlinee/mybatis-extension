@@ -22,17 +22,16 @@ import java.util.Map;
 /**
  * @author Clinton Begin
  */
-public interface DynamicContext {
+public interface DynamicContext extends SqlNodeVisitor {
 
   String PARAMETER_OBJECT_KEY = "_parameter";
   String DATABASE_ID_KEY = "_databaseId";
+  String VALUE_KEY = "value";
 
   @NotNull
   Map<String, Object> getBindings();
 
   void bind(String name, Object value);
-
-  void appendSql(String sql);
 
   @NotNull
   String getSql();

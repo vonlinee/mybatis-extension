@@ -160,17 +160,17 @@ public class DefaultSqlSession implements SqlSession {
   }
 
   @Override
-  public void select(String statement, Object parameter, ResultHandler handler) {
+  public <T> void select(String statement, Object parameter, ResultHandler<T> handler) {
     select(statement, parameter, RowBounds.DEFAULT, handler);
   }
 
   @Override
-  public void select(String statement, ResultHandler handler) {
+  public <T> void select(String statement, ResultHandler<T> handler) {
     select(statement, null, RowBounds.DEFAULT, handler);
   }
 
   @Override
-  public void select(String statement, Object parameter, RowBounds rowBounds, ResultHandler handler) {
+  public <T> void select(String statement, Object parameter, RowBounds rowBounds, ResultHandler<T> handler) {
     selectList(statement, parameter, rowBounds, handler);
   }
 

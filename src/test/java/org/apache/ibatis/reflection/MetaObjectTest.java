@@ -262,7 +262,7 @@ class MetaObjectTest {
   @Test
   void shouldNotUseObjectWrapperFactoryByDefault() {
     MetaObject meta = SystemMetaObject.forObject(new Author());
-    assertTrue(!meta.getObjectWrapper().getClass().equals(CustomBeanWrapper.class));
+    assertNotEquals(meta.getObjectWrapper().getClass(), CustomBeanWrapper.class);
   }
 
   @Test

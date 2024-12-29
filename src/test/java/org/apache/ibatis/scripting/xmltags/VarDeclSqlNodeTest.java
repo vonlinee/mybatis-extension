@@ -61,7 +61,7 @@ class VarDeclSqlNodeTest extends SqlNodeTest {
 
   private static class Bean {
 
-    private String title;
+    private final String title;
 
     public Bean(String title) {
       this.title = title;

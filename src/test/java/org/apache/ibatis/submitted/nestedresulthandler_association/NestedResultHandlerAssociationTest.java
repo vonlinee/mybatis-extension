@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.ibatis.BaseDataTest;
 import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.Pagination;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -55,7 +56,7 @@ class NestedResultHandlerAssociationTest {
     Date targetMonth = fmt.parse("2014-01-01");
     final List<Account> accounts = new ArrayList<>();
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
-      sqlSession.select("collectPageByBirthMonth", targetMonth, new RowBounds(1, 2), context -> {
+      sqlSession.select("collectPageByBirthMonth", targetMonth, Pagination.of(1, 2), context -> {
         Account account = (Account) context.getResultObject();
         accounts.add(account);
       });

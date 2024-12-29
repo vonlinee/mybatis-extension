@@ -21,7 +21,7 @@ public class TrailingWildCardFormatter {
     if (val == null) {
       return "''";
     }
-    String param = val.toString().replaceAll("\'", "\''");
+    String param = val.toString().replaceAll("'", "''");
     return "'" + param + "%'";
   }
 

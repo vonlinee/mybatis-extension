@@ -317,8 +317,9 @@ public class MapperMethod {
       return resultHandlerIndex != null;
     }
 
-    public ResultHandler extractResultHandler(Object[] args) {
-      return hasResultHandler() ? (ResultHandler) args[resultHandlerIndex] : null;
+    @SuppressWarnings("unchecked")
+    public <T> ResultHandler<T> extractResultHandler(Object[] args) {
+      return hasResultHandler() ? (ResultHandler<T>) args[resultHandlerIndex] : null;
     }
 
     public Class<?> getReturnType() {

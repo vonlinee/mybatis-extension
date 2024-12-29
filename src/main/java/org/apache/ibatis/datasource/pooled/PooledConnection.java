@@ -29,7 +29,7 @@ import org.apache.ibatis.reflection.ExceptionUtil;
 class PooledConnection implements InvocationHandler {
 
   private static final String CLOSE = "close";
-  private static final Class<?>[] IFACES = { Connection.class };
+  private static final Class<?>[] INTERFACES = { Connection.class };
 
   private final int hashCode;
   private final PooledDataSource dataSource;
@@ -56,7 +56,7 @@ class PooledConnection implements InvocationHandler {
     this.createdTimestamp = System.currentTimeMillis();
     this.lastUsedTimestamp = System.currentTimeMillis();
     this.valid = true;
-    this.proxyConnection = (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), IFACES, this);
+    this.proxyConnection = (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), INTERFACES, this);
   }
 
   /**
@@ -259,7 +259,6 @@ class PooledConnection implements InvocationHandler {
     } catch (Throwable t) {
       throw ExceptionUtil.unwrapThrowable(t);
     }
-
   }
 
   private void checkConnection() throws SQLException {
@@ -267,5 +266,4 @@ class PooledConnection implements InvocationHandler {
       throw new SQLException("Error accessing PooledConnection. Connection is invalid.");
     }
   }
-
 }

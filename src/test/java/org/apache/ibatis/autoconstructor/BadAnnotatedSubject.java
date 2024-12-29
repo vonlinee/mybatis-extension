@@ -15,7 +15,7 @@
  */
 package org.apache.ibatis.autoconstructor;
 
-import org.apache.ibatis.annotations.AutomapConstructor;
+import org.apache.ibatis.annotations.AutoMappingConstructor;
 
 public class BadAnnotatedSubject {
   private final int id;
@@ -24,7 +24,7 @@ public class BadAnnotatedSubject {
   private final int height;
   private final int weight;
 
-  @AutomapConstructor
+  @AutoMappingConstructor
   public BadAnnotatedSubject(final int id, final String name, final int age, final int height, final int weight) {
     this.id = id;
     this.name = name;
@@ -33,7 +33,7 @@ public class BadAnnotatedSubject {
     this.weight = weight;
   }
 
-  @AutomapConstructor
+  @AutoMappingConstructor
   public BadAnnotatedSubject(final int id, final String name, final int age) {
     this.id = id;
     this.name = name;

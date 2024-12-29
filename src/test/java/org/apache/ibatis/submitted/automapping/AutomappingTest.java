@@ -153,7 +153,7 @@ class AutomappingTest {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       // no errors throw
       List<Book> books = mapper.getBooks();
-      Assertions.assertTrue(!books.isEmpty(), "should return results,no errors throw");
+      Assertions.assertFalse(books.isEmpty(), "should return results,no errors throw");
     }
   }
 

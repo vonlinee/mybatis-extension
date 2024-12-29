@@ -21,7 +21,7 @@ import java.util.Iterator;
 import org.apache.ibatis.BaseDataTest;
 import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.session.RowBounds;
+import org.apache.ibatis.session.Pagination;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
@@ -92,7 +92,7 @@ class CursorNestedTest {
   @Test
   void testCursorWithRowBound() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
-      Cursor<User> usersCursor = sqlSession.selectCursor("getAllUsers", null, new RowBounds(2, 1));
+      Cursor<User> usersCursor = sqlSession.selectCursor("getAllUsers", null, Pagination.of(2, 1));
 
       Iterator<User> iterator = usersCursor.iterator();
 

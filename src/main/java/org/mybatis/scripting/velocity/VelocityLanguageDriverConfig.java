@@ -128,7 +128,7 @@ public class VelocityLanguageDriverConfig {
   @Deprecated
   public void setUserDirectives(String... userDirectives) {
     log.warn(
-      "The 'userdirective' has been deprecated since 2.1.0. Please use the 'velocity-settings.runtime.custom_directives' or 'runtime.custom_directives'.");
+      "The 'user directive' has been deprecated since 2.1.0. Please use the 'velocity-settings.runtime.custom_directives' or 'runtime.custom_directives'.");
     this.userDirectives = userDirectives;
   }
 

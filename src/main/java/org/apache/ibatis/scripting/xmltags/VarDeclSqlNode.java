@@ -16,6 +16,7 @@
 package org.apache.ibatis.scripting.xmltags;
 
 import org.apache.ibatis.scripting.ExpressionEvaluator;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Frank D. Martinez [mnesarco]
@@ -24,9 +25,11 @@ public class VarDeclSqlNode implements SqlNode {
 
   private final String name;
   private final String expression;
+
+  @NotNull
   private final ExpressionEvaluator evaluator;
 
-  public VarDeclSqlNode(ExpressionEvaluator evaluator, String name, String exp) {
+  public VarDeclSqlNode(@NotNull ExpressionEvaluator evaluator, String name, String exp) {
     this.name = name;
     this.expression = exp;
     this.evaluator = evaluator;

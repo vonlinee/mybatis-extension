@@ -50,6 +50,7 @@ public class DefaultMapResultHandler<K, V> implements ResultHandler<V> {
     final V value = context.getResultObject();
     final MetaObject mo = MetaObject.forObject(value, objectFactory, objectWrapperFactory, reflectorFactory);
     // TODO is that assignment always true?
+    @SuppressWarnings("unchecked")
     final K key = (K) mo.getValue(mapKey);
     mappedResults.put(key, value);
   }

@@ -40,8 +40,8 @@ import org.apache.ibatis.type.JdbcType;
  */
 public class CallableStatementHandler extends BaseStatementHandler {
 
-  public CallableStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameter,
-      RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
+  public <T> CallableStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameter,
+      RowBounds rowBounds, ResultHandler<T> resultHandler, BoundSql boundSql) {
     super(executor, mappedStatement, parameter, rowBounds, resultHandler, boundSql);
   }
 
@@ -64,7 +64,7 @@ public class CallableStatementHandler extends BaseStatementHandler {
   }
 
   @Override
-  public <E> List<E> query(Statement statement, ResultHandler resultHandler) throws SQLException {
+  public <E> List<E> query(Statement statement, ResultHandler<E> resultHandler) throws SQLException {
     CallableStatement cs = (CallableStatement) statement;
     cs.execute();
     List<E> resultList = resultSetHandler.handleResultSets(cs);

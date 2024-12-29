@@ -24,6 +24,7 @@ import org.apache.ibatis.mapping.ResultMap;
 import org.apache.ibatis.mapping.ResultMapping;
 import org.apache.ibatis.mapping.SqlCommandType;
 import org.apache.ibatis.session.Configuration;
+import org.apache.ibatis.session.Pagination;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.type.TypeHandlerRegistry;
@@ -82,7 +83,7 @@ class DefaultResultSetHandlerTest2 {
     final ParameterHandler parameterHandler = null;
     final ResultHandler<?> resultHandler = null;
     final BoundSql boundSql = null;
-    final RowBounds rowBounds = new RowBounds(5, 1);
+    final RowBounds rowBounds = Pagination.of(5, 1);
     final DefaultResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, ms, parameterHandler,
       resultHandler, boundSql, rowBounds);
 
@@ -126,7 +127,7 @@ class DefaultResultSetHandlerTest2 {
     final ParameterHandler parameterHandler = null;
     final ResultHandler<?> resultHandler = null;
     final BoundSql boundSql = null;
-    final RowBounds rowBounds = new RowBounds(5, 1);
+    final RowBounds rowBounds = Pagination.of(5, 1);
     final DefaultResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, ms, parameterHandler,
       resultHandler, boundSql, rowBounds);
 

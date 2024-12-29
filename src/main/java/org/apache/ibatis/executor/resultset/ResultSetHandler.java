@@ -15,12 +15,13 @@
  */
 package org.apache.ibatis.executor.resultset;
 
+import org.apache.ibatis.cursor.Cursor;
+
 import java.sql.CallableStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
-
-import org.apache.ibatis.cursor.Cursor;
 
 /**
  * @author Clinton Begin
@@ -33,4 +34,13 @@ public interface ResultSetHandler {
 
   void handleOutputParameters(CallableStatement cs) throws SQLException;
 
+  default void closeResultSet(ResultSet rs) {
+    try {
+      if (rs != null) {
+        rs.close();
+      }
+    } catch (SQLException e) {
+      // ignore
+    }
+  }
 }

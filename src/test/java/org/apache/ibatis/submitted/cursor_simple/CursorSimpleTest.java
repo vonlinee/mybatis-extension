@@ -25,6 +25,7 @@ import java.util.NoSuchElementException;
 import org.apache.ibatis.BaseDataTest;
 import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.Pagination;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -133,7 +134,7 @@ class CursorSimpleTest {
   void testCursorWithRowBound() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       // RowBound starting at offset 1 and limiting to 2 items
-      Cursor<User> usersCursor = sqlSession.selectCursor("getAllUsers", null, new RowBounds(1, 3));
+      Cursor<User> usersCursor = sqlSession.selectCursor("getAllUsers", null, Pagination.of(1, 3));
 
       Iterator<User> iterator = usersCursor.iterator();
 
@@ -162,7 +163,7 @@ class CursorSimpleTest {
   void testCursorIteratorNoSuchElementExceptionWithHasNext() throws IOException {
 
     try (SqlSession sqlSession = sqlSessionFactory.openSession();
-        Cursor<User> usersCursor = sqlSession.selectCursor("getAllUsers", null, new RowBounds(1, 1))) {
+        Cursor<User> usersCursor = sqlSession.selectCursor("getAllUsers", null, Pagination.of(1, 1))) {
       try {
         Iterator<User> iterator = usersCursor.iterator();
 
@@ -183,7 +184,7 @@ class CursorSimpleTest {
   @Test
   void testCursorIteratorNoSuchElementExceptionNoHasNext() throws IOException {
     try (SqlSession sqlSession = sqlSessionFactory.openSession();
-        Cursor<User> usersCursor = sqlSession.selectCursor("getAllUsers", null, new RowBounds(1, 1))) {
+        Cursor<User> usersCursor = sqlSession.selectCursor("getAllUsers", null, Pagination.of(1, 1))) {
       try {
         Iterator<User> iterator = usersCursor.iterator();
         User user = iterator.next();
@@ -204,7 +205,7 @@ class CursorSimpleTest {
   void testCursorWithBadRowBound() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       // Trying to start at offset 10 (which does not exist, since there is only 4 items)
-      Cursor<User> usersCursor = sqlSession.selectCursor("getAllUsers", null, new RowBounds(10, 2));
+      Cursor<User> usersCursor = sqlSession.selectCursor("getAllUsers", null, Pagination.of(10, 2));
       Iterator<User> iterator = usersCursor.iterator();
 
       Assertions.assertFalse(iterator.hasNext());
@@ -392,7 +393,7 @@ class CursorSimpleTest {
   void shouldNullItemNotStopIteration() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
-      Cursor<User> cursor = mapper.getNullUsers(new RowBounds());
+      Cursor<User> cursor = mapper.getNullUsers(RowBounds.DEFAULT);
       Iterator<User> iterator = cursor.iterator();
 
       Assertions.assertFalse(cursor.isOpen());
@@ -441,7 +442,7 @@ class CursorSimpleTest {
   void shouldRowBoundsCountNullItem() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
-      Cursor<User> cursor = mapper.getNullUsers(new RowBounds(1, 2));
+      Cursor<User> cursor = mapper.getNullUsers(Pagination.of(1, 2));
       Iterator<User> iterator = cursor.iterator();
 
       Assertions.assertFalse(cursor.isOpen());

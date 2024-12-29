@@ -15,9 +15,6 @@
  */
 package org.apache.ibatis.reflection;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
@@ -38,6 +35,8 @@ import org.apache.ibatis.reflection.typeparam.Level0Mapper.Level0InnerMapper;
 import org.apache.ibatis.reflection.typeparam.Level1Mapper;
 import org.apache.ibatis.reflection.typeparam.Level2Mapper;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class TypeParameterResolverTest {
   @Test
@@ -77,7 +76,7 @@ class TypeParameterResolverTest {
     Class<?> clazz = Level1Mapper.class;
     Method method = clazz.getMethod("simpleSelectList");
     Type result = TypeParameterResolver.resolveReturnType(method, clazz);
-    assertTrue(result instanceof ParameterizedType);
+    assertInstanceOf(ParameterizedType.class, result);
     ParameterizedType paramType = (ParameterizedType) result;
     assertEquals(List.class, paramType.getRawType());
     assertEquals(1, paramType.getActualTypeArguments().length);
@@ -89,7 +88,7 @@ class TypeParameterResolverTest {
     Class<?> clazz = Level1Mapper.class;
     Method method = clazz.getMethod("simpleSelectMap");
     Type result = TypeParameterResolver.resolveReturnType(method, clazz);
-    assertTrue(result instanceof ParameterizedType);
+    assertInstanceOf(ParameterizedType.class, result);
     ParameterizedType paramType = (ParameterizedType) result;
     assertEquals(Map.class, paramType.getRawType());
     assertEquals(2, paramType.getActualTypeArguments().length);
@@ -102,11 +101,11 @@ class TypeParameterResolverTest {
     Class<?> clazz = Level1Mapper.class;
     Method method = clazz.getMethod("simpleSelectWildcard");
     Type result = TypeParameterResolver.resolveReturnType(method, clazz);
-    assertTrue(result instanceof ParameterizedType);
+    assertInstanceOf(ParameterizedType.class, result);
     ParameterizedType paramType = (ParameterizedType) result;
     assertEquals(List.class, paramType.getRawType());
     assertEquals(1, paramType.getActualTypeArguments().length);
-    assertTrue(paramType.getActualTypeArguments()[0] instanceof WildcardType);
+    assertInstanceOf(WildcardType.class, paramType.getActualTypeArguments()[0]);
     WildcardType wildcard = (WildcardType) paramType.getActualTypeArguments()[0];
     assertEquals(String.class, wildcard.getUpperBounds()[0]);
   }
@@ -116,7 +115,7 @@ class TypeParameterResolverTest {
     Class<?> clazz = Level1Mapper.class;
     Method method = clazz.getMethod("simpleSelectArray");
     Type result = TypeParameterResolver.resolveReturnType(method, clazz);
-    assertTrue(result instanceof Class);
+    assertInstanceOf(Class.class, result);
     Class<?> resultClass = (Class<?>) result;
     assertTrue(resultClass.isArray());
     assertEquals(String.class, resultClass.getComponentType());
@@ -127,7 +126,7 @@ class TypeParameterResolverTest {
     Class<?> clazz = Level1Mapper.class;
     Method method = clazz.getMethod("simpleSelectArrayOfArray");
     Type result = TypeParameterResolver.resolveReturnType(method, clazz);
-    assertTrue(result instanceof Class);
+    assertInstanceOf(Class.class, result);
     Class<?> resultClass = (Class<?>) result;
     assertTrue(resultClass.isArray());
     assertTrue(resultClass.getComponentType().isArray());
@@ -139,11 +138,11 @@ class TypeParameterResolverTest {
     Class<?> clazz = Level1Mapper.class;
     Method method = clazz.getMethod("simpleSelectTypeVar");
     Type result = TypeParameterResolver.resolveReturnType(method, clazz);
-    assertTrue(result instanceof ParameterizedType);
+    assertInstanceOf(ParameterizedType.class, result);
     ParameterizedType paramType = (ParameterizedType) result;
     assertEquals(Calculator.class, paramType.getRawType());
     assertEquals(1, paramType.getActualTypeArguments().length);
-    assertTrue(paramType.getActualTypeArguments()[0] instanceof WildcardType);
+    assertInstanceOf(WildcardType.class, paramType.getActualTypeArguments()[0]);
   }
 
   @Test
@@ -159,7 +158,7 @@ class TypeParameterResolverTest {
     Class<?> clazz = Level2Mapper.class;
     Method method = clazz.getMethod("selectCalculator", Calculator.class);
     Type result = TypeParameterResolver.resolveReturnType(method, clazz);
-    assertTrue(result instanceof ParameterizedType);
+    assertInstanceOf(ParameterizedType.class, result);
     ParameterizedType paramType = (ParameterizedType) result;
     assertEquals(Calculator.class, paramType.getRawType());
     assertEquals(1, paramType.getActualTypeArguments().length);
@@ -171,7 +170,7 @@ class TypeParameterResolverTest {
     Class<?> clazz = Level2Mapper.class;
     Method method = clazz.getMethod("selectCalculatorList");
     Type result = TypeParameterResolver.resolveReturnType(method, clazz);
-    assertTrue(result instanceof ParameterizedType);
+    assertInstanceOf(ParameterizedType.class, result);
     ParameterizedType paramTypeOuter = (ParameterizedType) result;
     assertEquals(List.class, paramTypeOuter.getRawType());
     assertEquals(1, paramTypeOuter.getActualTypeArguments().length);
@@ -201,7 +200,7 @@ class TypeParameterResolverTest {
     Class<?> clazz = Level1Mapper.class;
     Method method = clazz.getMethod("selectList", Object.class, Object.class);
     Type result = TypeParameterResolver.resolveReturnType(method, clazz);
-    assertTrue(result instanceof ParameterizedType);
+    assertInstanceOf(ParameterizedType.class, result);
     ParameterizedType type = (ParameterizedType) result;
     assertEquals(List.class, type.getRawType());
     assertEquals(1, type.getActualTypeArguments().length);
@@ -213,7 +212,7 @@ class TypeParameterResolverTest {
     Class<?> clazz = Level1Mapper.class;
     Method method = clazz.getMethod("selectArray", List[].class);
     Type result = TypeParameterResolver.resolveReturnType(method, clazz);
-    assertTrue(result instanceof Class);
+    assertInstanceOf(Class.class, result);
     Class<?> resultClass = (Class<?>) result;
     assertTrue(resultClass.isArray());
     assertEquals(String.class, resultClass.getComponentType());
@@ -224,9 +223,9 @@ class TypeParameterResolverTest {
     Class<?> clazz = Level2Mapper.class;
     Method method = clazz.getMethod("selectArrayOfArray");
     Type result = TypeParameterResolver.resolveReturnType(method, clazz);
-    assertTrue(result instanceof Class);
+    assertInstanceOf(Class.class, result);
     Class<?> resultClass = (Class<?>) result;
-    assertTrue(result instanceof Class);
+    assertInstanceOf(Class.class, result);
     assertTrue(resultClass.isArray());
     assertTrue(resultClass.getComponentType().isArray());
     assertEquals(String.class, resultClass.getComponentType().getComponentType());
@@ -237,9 +236,9 @@ class TypeParameterResolverTest {
     Class<?> clazz = Level2Mapper.class;
     Method method = clazz.getMethod("selectArrayOfList");
     Type result = TypeParameterResolver.resolveReturnType(method, clazz);
-    assertTrue(result instanceof GenericArrayType);
+    assertInstanceOf(GenericArrayType.class, result);
     GenericArrayType genericArrayType = (GenericArrayType) result;
-    assertTrue(genericArrayType.getGenericComponentType() instanceof ParameterizedType);
+    assertInstanceOf(ParameterizedType.class, genericArrayType.getGenericComponentType());
     ParameterizedType paramType = (ParameterizedType) genericArrayType.getGenericComponentType();
     assertEquals(List.class, paramType.getRawType());
     assertEquals(String.class, paramType.getActualTypeArguments()[0]);
@@ -250,11 +249,11 @@ class TypeParameterResolverTest {
     Class<?> clazz = Level2Mapper.class;
     Method method = clazz.getMethod("selectWildcardList");
     Type result = TypeParameterResolver.resolveReturnType(method, clazz);
-    assertTrue(result instanceof ParameterizedType);
+    assertInstanceOf(ParameterizedType.class, result);
     ParameterizedType type = (ParameterizedType) result;
     assertEquals(List.class, type.getRawType());
     assertEquals(1, type.getActualTypeArguments().length);
-    assertTrue(type.getActualTypeArguments()[0] instanceof WildcardType);
+    assertInstanceOf(WildcardType.class, type.getActualTypeArguments()[0]);
     WildcardType wildcard = (WildcardType) type.getActualTypeArguments()[0];
     assertEquals(0, wildcard.getLowerBounds().length);
     assertEquals(1, wildcard.getUpperBounds().length);
@@ -266,7 +265,7 @@ class TypeParameterResolverTest {
     Class<?> clazz = Level1Mapper.class;
     Method method = clazz.getMethod("selectMap");
     Type result = TypeParameterResolver.resolveReturnType(method, clazz);
-    assertTrue(result instanceof ParameterizedType);
+    assertInstanceOf(ParameterizedType.class, result);
     ParameterizedType paramType = (ParameterizedType) result;
     assertEquals(Map.class, paramType.getRawType());
     assertEquals(2, paramType.getActualTypeArguments().length);
@@ -279,7 +278,7 @@ class TypeParameterResolverTest {
     Class<?> clazz = Level2Mapper.class;
     Method method = clazz.getMethod("selectMap");
     Type result = TypeParameterResolver.resolveReturnType(method, clazz);
-    assertTrue(result instanceof ParameterizedType);
+    assertInstanceOf(ParameterizedType.class, result);
     ParameterizedType paramType = (ParameterizedType) result;
     assertEquals(Map.class, paramType.getRawType());
     assertEquals(2, paramType.getActualTypeArguments().length);
@@ -347,7 +346,7 @@ class TypeParameterResolverTest {
     Method method = clazz.getMethod("selectCalculator", Calculator.class);
     Type[] result = TypeParameterResolver.resolveParamTypes(method, clazz);
     assertEquals(1, result.length);
-    assertTrue(result[0] instanceof ParameterizedType);
+    assertInstanceOf(ParameterizedType.class, result[0]);
     ParameterizedType paramType = (ParameterizedType) result[0];
     assertEquals(Calculator.class, paramType.getRawType());
     assertEquals(1, paramType.getActualTypeArguments().length);
@@ -359,9 +358,9 @@ class TypeParameterResolverTest {
     Class<?> clazz = Level1Mapper.class;
     Method method = clazz.getMethod("selectArray", List[].class);
     Type[] result = TypeParameterResolver.resolveParamTypes(method, clazz);
-    assertTrue(result[0] instanceof GenericArrayType);
+    assertInstanceOf(GenericArrayType.class, result[0]);
     GenericArrayType genericArrayType = (GenericArrayType) result[0];
-    assertTrue(genericArrayType.getGenericComponentType() instanceof ParameterizedType);
+    assertInstanceOf(ParameterizedType.class, genericArrayType.getGenericComponentType());
     ParameterizedType paramType = (ParameterizedType) genericArrayType.getGenericComponentType();
     assertEquals(List.class, paramType.getRawType());
     assertEquals(String.class, paramType.getActualTypeArguments()[0]);
@@ -474,8 +473,8 @@ class TypeParameterResolverTest {
   }
 
   // @formatter:off
-  class AA {}
-  class BB {}
+  static class AA {}
+  static class BB {}
   interface IfaceA extends ParentIface<AA> {}
   interface IfaceB extends ParentIface<BB> {}
   interface ParentIface<T> {List<T> m();}

@@ -68,9 +68,9 @@ public class TextSqlNode implements SqlNode {
     public String handleToken(String content) {
       Object parameter = context.getBindings().get(DynamicContext.PARAMETER_OBJECT_KEY);
       if (parameter == null) {
-        context.getBindings().put("value", null);
+        context.getBindings().put(DynamicContext.VALUE_KEY, null);
       } else if (SimpleTypeRegistry.isSimpleType(parameter.getClass())) {
-        context.getBindings().put("value", parameter);
+        context.getBindings().put(DynamicContext.VALUE_KEY, parameter);
       }
       Object value = evaluator.getValue(content, context.getBindings());
       String srtValue = value == null ? "" : String.valueOf(value); // issue #274 return "" instead of "null"
@@ -84,6 +84,4 @@ public class TextSqlNode implements SqlNode {
       }
     }
   }
-
-
 }

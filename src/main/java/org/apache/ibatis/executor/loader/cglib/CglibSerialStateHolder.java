@@ -15,19 +15,18 @@
  */
 package org.apache.ibatis.executor.loader.cglib;
 
-import java.util.List;
-import java.util.Map;
-
 import org.apache.ibatis.executor.loader.AbstractSerialStateHolder;
 import org.apache.ibatis.executor.loader.ResultLoaderMap;
 import org.apache.ibatis.reflection.factory.ObjectFactory;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author Eduardo Macarron
- *
- * @deprecated Since 3.5.10, use Javassist instead.
+ * <p>
+ * Since 3.5.10, use Javassist instead.
  */
-@Deprecated
 class CglibSerialStateHolder extends AbstractSerialStateHolder {
 
   private static final long serialVersionUID = 8940388717901644661L;
@@ -36,14 +35,14 @@ class CglibSerialStateHolder extends AbstractSerialStateHolder {
   }
 
   public CglibSerialStateHolder(final Object userBean, final Map<String, ResultLoaderMap.LoadPair> unloadedProperties,
-      final ObjectFactory objectFactory, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
+                                final ObjectFactory objectFactory, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
     super(userBean, unloadedProperties, objectFactory, constructorArgTypes, constructorArgs);
   }
 
   @Override
   protected Object createDeserializationProxy(Object target, Map<String, ResultLoaderMap.LoadPair> unloadedProperties,
-      ObjectFactory objectFactory, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
+                                              ObjectFactory objectFactory, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
     return new CglibProxyFactory().createDeserializationProxy(target, unloadedProperties, objectFactory,
-        constructorArgTypes, constructorArgs);
+      constructorArgTypes, constructorArgs);
   }
 }

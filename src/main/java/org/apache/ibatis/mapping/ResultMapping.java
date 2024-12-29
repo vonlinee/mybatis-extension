@@ -32,7 +32,6 @@ import java.util.Set;
  */
 public class ResultMapping {
 
-  private Configuration configuration;
   private String property;
   private String column;
   private Class<?> javaType;
@@ -130,10 +129,6 @@ public class ResultMapping {
     public Builder lazy(boolean lazy) {
       resultMapping.lazy = lazy;
       return this;
-    }
-
-    public ResultMapping build() {
-      return build(this.resultMapping.configuration);
     }
 
     public ResultMapping build(@NotNull Configuration configuration) {

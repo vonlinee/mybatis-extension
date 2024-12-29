@@ -38,7 +38,7 @@ import org.apache.ibatis.session.Configuration;
 public abstract class BaseTypeHandler<T> extends TypeReference<T> implements TypeHandler<T> {
 
   /**
-   * @deprecated Since 3.5.0 - See https://github.com/mybatis/mybatis-3/issues/1203. This field will remove future.
+   * @deprecated Since 3.5.0 - See <a href="https://github.com/mybatis/mybatis-3/issues/1203">...</a>. This field will remove future.
    */
   @Deprecated
   protected Configuration configuration;
@@ -49,7 +49,7 @@ public abstract class BaseTypeHandler<T> extends TypeReference<T> implements Typ
    * @param c
    *          the new configuration
    *
-   * @deprecated Since 3.5.0 - See https://github.com/mybatis/mybatis-3/issues/1203. This property will remove future.
+   * @deprecated Since 3.5.0 - See <a href="https://github.com/mybatis/mybatis-3/issues/1203">...</a>. This property will remove future.
    */
   @Deprecated
   public void setConfiguration(Configuration c) {

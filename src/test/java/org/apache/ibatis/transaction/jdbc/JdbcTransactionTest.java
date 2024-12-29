@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 import javax.sql.DataSource;
 
 import org.apache.ibatis.session.TransactionIsolationLevel;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class JdbcTransactionTest {
@@ -49,6 +50,6 @@ class JdbcTransactionTest {
     transaction.commit();
     transaction.close();
 
-    assertEquals(resultAutoCommit, con.getAutoCommit());
+    Assertions.assertEquals(resultAutoCommit, con.getAutoCommit());
   }
 }
