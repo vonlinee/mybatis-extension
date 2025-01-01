@@ -15,13 +15,13 @@
  */
 package org.apache.ibatis.mapping;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.property.PropertyTokenizer;
 import org.apache.ibatis.session.Configuration;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * An actual SQL String got from an {@link SqlSource} after having processed any dynamic content. The SQL may have SQL
@@ -32,16 +32,37 @@ import org.apache.ibatis.session.Configuration;
  *
  * @author Clinton Begin
  */
-public class BoundSql {
+public class BoundSql implements SqlOperation {
 
+  /**
+   * sql文本
+   * SqlSource中包含的SQL处理动态内容之后的实际SQL语句，SQL中可能会包含?占位符，
+   * 也就是最终传递JDBC的SQL语句
+   */
   private final String sql;
+
+  /**
+   * 静态参数映射
+   */
   private final List<ParameterMapping> parameterMappings;
+
+  /**
+   * 运行时参数对象
+   */
   private final Object parameterObject;
+
+  /**
+   * 额外参数，也就是for loops、bind生成的
+   */
   private final Map<String, Object> additionalParameters;
+
+  /**
+   * 额外参数封装
+   */
   private final MetaObject metaParameters;
 
   public BoundSql(Configuration configuration, String sql, List<ParameterMapping> parameterMappings,
-      Object parameterObject) {
+                  Object parameterObject) {
     this.sql = sql;
     this.parameterMappings = parameterMappings;
     this.parameterObject = parameterObject;
@@ -53,10 +74,22 @@ public class BoundSql {
     return sql;
   }
 
+  @Override
+  public String getNativeSql() {
+    return sql;
+  }
+
+  @Override
+  public boolean isParameterized() {
+    return this.parameterMappings != null && !this.parameterMappings.isEmpty();
+  }
+
+  @Override
   public List<ParameterMapping> getParameterMappings() {
     return parameterMappings;
   }
 
+  @Override
   public Object getParameterObject() {
     return parameterObject;
   }

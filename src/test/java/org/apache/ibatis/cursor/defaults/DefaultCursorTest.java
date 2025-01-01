@@ -63,12 +63,11 @@ class DefaultCursorTest {
     final ResultMap rm = ms.getResultMaps().get(0);
 
     final Executor executor = null;
-    final ParameterHandler parameterHandler = null;
     final ResultHandler<?> resultHandler = null;
     final BoundSql boundSql = null;
     final RowBounds rowBounds = RowBounds.DEFAULT;
 
-    final DefaultResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, ms, parameterHandler,
+    final DefaultResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, ms,
       resultHandler, boundSql, rowBounds);
 
     when(rsmd.getColumnCount()).thenReturn(2);

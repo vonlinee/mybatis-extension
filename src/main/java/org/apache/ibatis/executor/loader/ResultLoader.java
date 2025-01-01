@@ -73,14 +73,16 @@ public class ResultLoader {
     return resultObject;
   }
 
+  @SuppressWarnings("unchecked")
   private <E> List<E> selectList() throws SQLException {
     Executor localExecutor = executor;
     if (Thread.currentThread().getId() != this.creatorThreadId || localExecutor.isClosed()) {
       localExecutor = newExecutor();
     }
     try {
-      return localExecutor.query(mappedStatement, parameterObject, RowBounds.DEFAULT, Executor.NO_RESULT_HANDLER,
-          cacheKey, boundSql);
+      List<?> list = localExecutor.query(mappedStatement, parameterObject, RowBounds.DEFAULT, Executor.NO_RESULT_HANDLER,
+        cacheKey, boundSql);
+      return (List<E>) list;
     } finally {
       if (localExecutor != executor) {
         localExecutor.close(false);

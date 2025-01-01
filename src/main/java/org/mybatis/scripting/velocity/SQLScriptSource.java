@@ -63,7 +63,5 @@ public class SQLScriptSource implements SqlSource {
     }
 
     return boundSql;
-
   }
-
 }

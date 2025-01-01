@@ -182,19 +182,6 @@ public final class MappedStatement {
       return this;
     }
 
-    /**
-     * Resul sets.
-     *
-     * @param resultSet the result set
-     * @return the builder
-     * @deprecated Use {@link #resultSets}
-     */
-    @Deprecated
-    public Builder resulSets(String resultSet) {
-      mappedStatement.resultSets = delimitedStringToArray(resultSet);
-      return this;
-    }
-
     public MappedStatement build() {
       assert mappedStatement.configuration != null;
       assert mappedStatement.id != null;
@@ -302,6 +289,8 @@ public final class MappedStatement {
   }
 
   /**
+   * 根据参数去掉所有动态内容
+   *
    * @param parameterObject the parameter object
    * @return sql
    */

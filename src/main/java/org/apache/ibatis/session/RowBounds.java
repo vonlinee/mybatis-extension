@@ -42,4 +42,29 @@ public interface RowBounds {
   int getOffset();
 
   int getLimit();
+
+  class PaginationRowBounds implements RowBounds {
+
+    int offset;
+    int limit;
+
+    public PaginationRowBounds(int offset, int limit) {
+      this.offset = offset;
+      this.limit = limit;
+    }
+
+    @Override
+    public int getOffset() {
+      return offset;
+    }
+
+    @Override
+    public int getLimit() {
+      return limit;
+    }
+  }
+
+  static RowBounds of(int offset, int limit) {
+    return new PaginationRowBounds(offset, limit);
+  }
 }

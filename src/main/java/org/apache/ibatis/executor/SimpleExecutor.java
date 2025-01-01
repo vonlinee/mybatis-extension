@@ -30,6 +30,7 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.transaction.Transaction;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Clinton Begin
@@ -41,7 +42,7 @@ public class SimpleExecutor extends BaseExecutor {
   }
 
   @Override
-  public int doUpdate(MappedStatement ms, Object parameter) throws SQLException {
+  public int doUpdate(@NotNull MappedStatement ms, Object parameter) throws SQLException {
     Statement stmt = null;
     try {
       Configuration configuration = ms.getConfiguration();
@@ -54,8 +55,8 @@ public class SimpleExecutor extends BaseExecutor {
   }
 
   @Override
-  public <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler<E> resultHandler,
-      BoundSql boundSql) throws SQLException {
+  public <E> List<E> doQuery(@NotNull MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler<E> resultHandler,
+                             BoundSql boundSql) throws SQLException {
     Statement stmt = null;
     try {
       Configuration configuration = ms.getConfiguration();
@@ -69,7 +70,7 @@ public class SimpleExecutor extends BaseExecutor {
   }
 
   @Override
-  protected <E> Cursor<E> doQueryCursor(MappedStatement ms, Object parameter, RowBounds rowBounds, BoundSql boundSql)
+  protected <E> Cursor<E> doQueryCursor(@NotNull MappedStatement ms, Object parameter, RowBounds rowBounds, BoundSql boundSql)
       throws SQLException {
     Configuration configuration = ms.getConfiguration();
     StatementHandler handler = configuration.newStatementHandler(wrapper, ms, parameter, rowBounds, null, boundSql);
@@ -85,9 +86,8 @@ public class SimpleExecutor extends BaseExecutor {
   }
 
   private Statement prepareStatement(StatementHandler handler, Log statementLog) throws SQLException {
-    Statement stmt;
     Connection connection = getConnection(statementLog);
-    stmt = handler.prepare(connection, transaction.getTimeout());
+    Statement stmt = handler.prepare(connection, transaction.getTimeout());
     handler.parameterize(stmt);
     return stmt;
   }

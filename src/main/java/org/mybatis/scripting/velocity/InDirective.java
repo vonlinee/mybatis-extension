@@ -179,10 +179,4 @@ public class InDirective extends RepeatDirective {
     clean(context, o, collector, savedItemKey);
     return true;
   }
-
-  @Override
-  public int getType() {
-    return BLOCK;
-  }
-
 }

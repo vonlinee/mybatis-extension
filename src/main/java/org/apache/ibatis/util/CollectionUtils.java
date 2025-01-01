@@ -15,6 +15,8 @@
  */
 package org.apache.ibatis.util;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.Map;
@@ -57,6 +59,7 @@ public class CollectionUtils {
   private CollectionUtils() {
   }
 
+  @NotNull
   public static <T> String join(Collection<T> collection, Function<T, String> mapper, String separator) {
     if (isEmpty(collection)) {
       return "";

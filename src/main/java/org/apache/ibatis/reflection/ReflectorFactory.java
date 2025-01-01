@@ -15,6 +15,11 @@
  */
 package org.apache.ibatis.reflection;
 
+/**
+ * we use this class to create a Reflector
+ *
+ * @see Reflector
+ */
 public interface ReflectorFactory {
 
   boolean isClassCacheEnabled();

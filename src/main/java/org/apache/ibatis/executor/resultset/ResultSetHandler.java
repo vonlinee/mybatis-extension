@@ -16,6 +16,7 @@
 package org.apache.ibatis.executor.resultset;
 
 import org.apache.ibatis.cursor.Cursor;
+import org.apache.ibatis.jdbc.JdbcUtils;
 
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
@@ -32,15 +33,14 @@ public interface ResultSetHandler {
 
   <E> Cursor<E> handleCursorResultSets(Statement stmt) throws SQLException;
 
-  void handleOutputParameters(CallableStatement cs) throws SQLException;
+  void handleOutputParameters(CallableStatement cs, Object parameterObject) throws SQLException;
 
+  /**
+   * close the result set
+   *
+   * @param rs result set
+   */
   default void closeResultSet(ResultSet rs) {
-    try {
-      if (rs != null) {
-        rs.close();
-      }
-    } catch (SQLException e) {
-      // ignore
-    }
+    JdbcUtils.closeSilently(rs);
   }
 }

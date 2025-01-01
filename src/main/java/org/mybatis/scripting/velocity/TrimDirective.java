@@ -21,20 +21,14 @@ import java.io.Writer;
 import java.util.Locale;
 
 import org.apache.velocity.context.InternalContextAdapter;
-import org.apache.velocity.runtime.directive.Directive;
 import org.apache.velocity.runtime.parser.node.ASTBlock;
 import org.apache.velocity.runtime.parser.node.Node;
 
-public class TrimDirective extends Directive {
+public class TrimDirective extends BlockDirective {
 
   @Override
   public String getName() {
     return "trim";
-  }
-
-  @Override
-  public final int getType() {
-    return BLOCK;
   }
 
   @Override
@@ -87,71 +81,6 @@ public class TrimDirective extends Directive {
       }
     }
     return true;
-  }
-
-  protected static final class Params {
-
-    String prefix = "";
-
-    String suffix = "";
-
-    FastLinkedList<String> prefixOverrides = new FastLinkedList<>();
-
-    FastLinkedList<String> suffixOverrides = new FastLinkedList<>();
-
-    String body = "";
-
-    int maxPrefixLength = 0;
-
-    int maxSuffixLength = 0;
-
-    int maxBody = 0;
-
-    public String getBody() {
-      return this.body;
-    }
-
-    public void setBody(String value) {
-      if (value == null) {
-        this.body = "";
-      } else {
-        this.body = value.trim();
-      }
-      this.maxBody = this.body.length();
-    }
-
-    public String getPrefix() {
-      return this.prefix;
-    }
-
-    public void setPrefix(String value) {
-      this.prefix = value;
-    }
-
-    public FastLinkedList<String> getPrefixOverrides() {
-      return this.prefixOverrides;
-    }
-
-    public void setPrefixOverrides(String list) {
-      this.maxPrefixLength = fromStringList(list, '|', this.prefixOverrides);
-    }
-
-    public FastLinkedList<String> getSuffixOverrides() {
-      return this.suffixOverrides;
-    }
-
-    public void setSuffixOverrides(String list) {
-      this.maxSuffixLength = fromStringList(list, '|', this.suffixOverrides);
-    }
-
-    public String getSuffix() {
-      return this.suffix;
-    }
-
-    public void setSuffix(String value) {
-      this.suffix = value;
-    }
-
   }
 
   protected Params getParams(final InternalContextAdapter context, final Node node) throws IOException {

@@ -112,7 +112,7 @@ class DefaultMetaObject implements MetaObject {
   }
 
   @Override
-  public boolean hasGetter(@NotNull String name) {
+  public boolean hasGetter(String name) {
     return objectWrapper.hasGetter(name);
   }
 

@@ -62,10 +62,18 @@ public class XMLStatementBuilder extends BaseBuilder {
     String nodeName = context.getNode().getNodeName();
     SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
     boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
+
+    // insert/delete/update后是否刷新缓存
     boolean flushCache = context.getBooleanAttribute("flushCache", !isSelect);
+    // select是否使用缓存
     boolean useCache = context.getBooleanAttribute("useCache", isSelect);
+
+    // 这个设置仅针对嵌套结果 select 语句适用：如果为 true，就是假设包含了嵌套结果集或是分组了，
+    // 这样的话当返回一个主结果行的时候，就不会发生有对前面结果集的引用的情况。这就使得在获取嵌套的结果集的时候不至于导致内存不够用。
+    // 默认值: false。我猜测这个属性为true的意思是查询的结果字段根据定义的嵌套resultMap进行了排序
     boolean resultOrdered = context.getBooleanAttribute("resultOrdered", false);
 
+    // 解析语句中包含的sql片段
     // Include Fragments before parsing
     XMLIncludeTransformer includeParser = new XMLIncludeTransformer(configuration, builderAssistant);
     includeParser.applyIncludes(context.getNode());
@@ -92,6 +100,8 @@ public class XMLStatementBuilder extends BaseBuilder {
     }
 
     SqlSource sqlSource = langDriver.createSqlSource(configuration, context, parameterTypeClass);
+
+    // CRUD语句的类型, 目前支持三种: prepare、硬编码、以及存储过程调用
     StatementType statementType = StatementType
       .valueOf(context.getStringAttribute("statementType", StatementType.PREPARED.toString()));
     Integer fetchSize = context.getIntAttribute("fetchSize");

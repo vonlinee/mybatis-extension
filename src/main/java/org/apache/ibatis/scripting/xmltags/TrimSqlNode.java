@@ -32,7 +32,15 @@ public class TrimSqlNode implements SqlNode {
   private final SqlNode contents;
   private final String prefix;
   private final String suffix;
+
+  /**
+   * 要trim多个文本的话,|分隔即可
+   */
   private final List<String> prefixesToOverride;
+
+  /**
+   * 要trim多个文本的话,|分隔即可
+   */
   private final List<String> suffixesToOverride;
 
   public TrimSqlNode(SqlNode contents, String prefix, String prefixesToOverride,

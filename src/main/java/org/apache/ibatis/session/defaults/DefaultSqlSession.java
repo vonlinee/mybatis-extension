@@ -15,14 +15,6 @@
  */
 package org.apache.ibatis.session.defaults;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.ibatis.binding.BindingException;
 import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.exceptions.ExceptionFactory;
@@ -38,6 +30,15 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The default implementation for {@link SqlSession}. Note that this class is not Thread-Safe.
@@ -50,6 +51,11 @@ public class DefaultSqlSession implements SqlSession {
   private final Executor executor;
 
   private final boolean autoCommit;
+
+  /**
+   * dirty主要用在非自动提交模式下，用于判断是否需要提交或回滚，
+   * 在强行提交模式下，如果dirty=true，则需要提交或者回滚，代表可能有pending的事务
+   */
   private boolean dirty;
   private List<Cursor<?>> cursorList;
 
@@ -77,11 +83,9 @@ public class DefaultSqlSession implements SqlSession {
       return list.get(0);
     }
     if (list.size() > 1) {
-      throw new TooManyResultsException(
-          "Expected one result (or null) to be returned by selectOne(), but found: " + list.size());
-    } else {
-      return null;
+      throw new TooManyResultsException("Expected one result (or null) to be returned by selectOne(), but found: " + list.size());
     }
+    return null;
   }
 
   @Override
@@ -98,7 +102,7 @@ public class DefaultSqlSession implements SqlSession {
   public <K, V> Map<K, V> selectMap(String statement, Object parameter, String mapKey, RowBounds rowBounds) {
     final List<? extends V> list = selectList(statement, parameter, rowBounds);
     final DefaultMapResultHandler<K, V> mapResultHandler = new DefaultMapResultHandler<>(mapKey,
-        configuration.getObjectFactory(), configuration.getObjectWrapperFactory(), configuration.getReflectorFactory());
+      configuration.getObjectFactory(), configuration.getObjectWrapperFactory(), configuration.getReflectorFactory());
     final DefaultResultContext<V> context = new DefaultResultContext<>();
     for (V o : list) {
       context.nextResultObject(o);
@@ -108,17 +112,17 @@ public class DefaultSqlSession implements SqlSession {
   }
 
   @Override
-  public <T> Cursor<T> selectCursor(String statement) {
+  public <T> Cursor<T> selectCursor(@NotNull String statement) {
     return selectCursor(statement, null);
   }
 
   @Override
-  public <T> Cursor<T> selectCursor(String statement, Object parameter) {
+  public <T> Cursor<T> selectCursor(@NotNull String statement, Object parameter) {
     return selectCursor(statement, parameter, RowBounds.DEFAULT);
   }
 
   @Override
-  public <T> Cursor<T> selectCursor(String statement, Object parameter, RowBounds rowBounds) {
+  public <T> Cursor<T> selectCursor(@NotNull String statement, Object parameter, RowBounds rowBounds) {
     try {
       MappedStatement ms = configuration.getMappedStatement(statement);
       dirty |= ms.isDirtySelect();
@@ -133,21 +137,21 @@ public class DefaultSqlSession implements SqlSession {
   }
 
   @Override
-  public <E> List<E> selectList(String statement) {
+  public <E> List<E> selectList(@NotNull String statement) {
     return this.selectList(statement, null);
   }
 
   @Override
-  public <E> List<E> selectList(String statement, Object parameter) {
+  public <E> List<E> selectList(@NotNull String statement, Object parameter) {
     return this.selectList(statement, parameter, RowBounds.DEFAULT);
   }
 
   @Override
-  public <E> List<E> selectList(String statement, Object parameter, RowBounds rowBounds) {
+  public <E> List<E> selectList(@NotNull String statement, Object parameter, RowBounds rowBounds) {
     return selectList(statement, parameter, rowBounds, Executor.NO_RESULT_HANDLER);
   }
 
-  private <E> List<E> selectList(String statement, Object parameter, RowBounds rowBounds, ResultHandler<?> handler) {
+  private <E> List<E> selectList(@NotNull String statement, Object parameter, RowBounds rowBounds, ResultHandler<?> handler) {
     try {
       MappedStatement ms = configuration.getMappedStatement(statement);
       dirty |= ms.isDirtySelect();
@@ -316,17 +320,15 @@ public class DefaultSqlSession implements SqlSession {
     return !autoCommit && dirty || force;
   }
 
+  /**
+   * @param object the param object, maybe an array or collection.
+   * @return wrapped map or the original object
+   */
   private Object wrapCollection(final Object object) {
     return ParamNameResolver.wrapToMapIfCollection(object, null);
   }
 
-  /**
-   * @deprecated Since 3.5.5
-   */
-  @Deprecated
   public static class StrictMap<V> extends HashMap<String, V> {
-
-    private static final long serialVersionUID = -5741767162221585340L;
 
     @Override
     public V get(Object key) {
@@ -335,7 +337,5 @@ public class DefaultSqlSession implements SqlSession {
       }
       return super.get(key);
     }
-
   }
-
 }

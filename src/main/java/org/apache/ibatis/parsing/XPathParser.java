@@ -232,14 +232,17 @@ public class XPathParser {
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
       factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
       factory.setValidating(validation);
-
+      // 设置由本工厂创建的解析器是否支持XML命名空间
       factory.setNamespaceAware(false);
+      // 设置是否忽略注释
       factory.setIgnoringComments(true);
       factory.setIgnoringElementContentWhitespace(false);
+      // 设置是否将CDATA节点转换为Text节点
       factory.setCoalescing(false);
       factory.setExpandEntityReferences(false);
 
       DocumentBuilder builder = factory.newDocumentBuilder();
+      // 设置解析xml文档节点的解析器
       builder.setEntityResolver(entityResolver);
       builder.setErrorHandler(new IgnoreWarnErrorHandler());
       return builder.parse(inputSource);

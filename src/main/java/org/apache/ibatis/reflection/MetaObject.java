@@ -59,10 +59,14 @@ public interface MetaObject {
 
   boolean hasSetter(@NotNull String name);
 
-  boolean hasGetter(@NotNull String name);
+  boolean hasGetter(String name);
 
   Object getValue(@NotNull String name);
 
+  /**
+   * @param name  expression
+   * @param value value to set
+   */
   void setValue(@NotNull String name, Object value);
 
   MetaObject metaObjectForProperty(@NotNull String name);

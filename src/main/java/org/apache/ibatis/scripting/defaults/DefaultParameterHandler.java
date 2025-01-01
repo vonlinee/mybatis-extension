@@ -27,6 +27,7 @@ import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeException;
 import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.PreparedStatement;
@@ -43,6 +44,8 @@ public class DefaultParameterHandler implements ParameterHandler {
 
   private final MappedStatement mappedStatement;
   private final Object parameterObject;
+
+  @Deprecated
   private final BoundSql boundSql;
   private final Configuration configuration;
 
@@ -61,7 +64,7 @@ public class DefaultParameterHandler implements ParameterHandler {
 
   @Override
   @SuppressWarnings({"rawtypes", "unchecked"})
-  public void setParameters(PreparedStatement ps) {
+  public void setParameters(@NotNull PreparedStatement ps, @NotNull MappedStatement mappedStatement, @NotNull BoundSql boundSql) {
     ErrorContext.instance().activity("setting parameters").object(mappedStatement.getParameterMap().getId());
     List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
     if (parameterMappings != null) {

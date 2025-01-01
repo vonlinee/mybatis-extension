@@ -20,6 +20,7 @@ import org.apache.ibatis.binding.MapperMethod.ParamMap;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -27,7 +28,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -99,7 +99,7 @@ public class ParamNameResolver {
   }
 
   private String getActualParamName(Method method, int paramIndex) {
-    return ParamNameUtil.getParamNames(method).get(paramIndex);
+    return ReflectionUtils.getParamNames(method).get(paramIndex);
   }
 
   private static boolean isSpecialParameter(Class<?> clazz) {
@@ -157,20 +157,24 @@ public class ParamNameResolver {
    * @return a {@link ParamMap}
    * @since 3.5.5
    */
-  public static Object wrapToMapIfCollection(Object object, String actualParamName) {
+  public static Object wrapToMapIfCollection(Object object, @Nullable String actualParamName) {
     if (object instanceof Collection) {
       ParamMap<Object> map = new ParamMap<>();
       map.put("collection", object);
       if (object instanceof List) {
         map.put("list", object);
       }
-      Optional.ofNullable(actualParamName).ifPresent(name -> map.put(name, object));
+      if (actualParamName != null) {
+        map.put(actualParamName, object);
+      }
       return map;
     }
     if (object != null && object.getClass().isArray()) {
       ParamMap<Object> map = new ParamMap<>();
       map.put("array", object);
-      Optional.ofNullable(actualParamName).ifPresent(name -> map.put(name, object));
+      if (actualParamName != null) {
+        map.put(actualParamName, object);
+      }
       return map;
     }
     return object;

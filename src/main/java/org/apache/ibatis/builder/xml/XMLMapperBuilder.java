@@ -115,6 +115,7 @@ public class XMLMapperBuilder extends BaseBuilder {
       // <sql></sql>
       sqlElement(context.evalNodes("/mapper/sql"));
 
+      // CRUD xml tags handle
       // <select></select>
       // <insert></insert>
       // <update></update>

@@ -15,13 +15,6 @@
  */
 package org.apache.ibatis.executor.statement;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.List;
-
 import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.executor.ExecutorException;
@@ -35,13 +28,20 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.type.JdbcType;
 
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
+
 /**
  * @author Clinton Begin
  */
 public class CallableStatementHandler extends BaseStatementHandler {
 
   public <T> CallableStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameter,
-      RowBounds rowBounds, ResultHandler<T> resultHandler, BoundSql boundSql) {
+                                      RowBounds rowBounds, ResultHandler<T> resultHandler, BoundSql boundSql) {
     super(executor, mappedStatement, parameter, rowBounds, resultHandler, boundSql);
   }
 
@@ -53,7 +53,7 @@ public class CallableStatementHandler extends BaseStatementHandler {
     Object parameterObject = boundSql.getParameterObject();
     KeyGenerator keyGenerator = mappedStatement.getKeyGenerator();
     keyGenerator.processAfter(executor, mappedStatement, cs, parameterObject);
-    resultSetHandler.handleOutputParameters(cs);
+    resultSetHandler.handleOutputParameters(cs, parameterHandler.getParameterObject());
     return rows;
   }
 
@@ -68,7 +68,7 @@ public class CallableStatementHandler extends BaseStatementHandler {
     CallableStatement cs = (CallableStatement) statement;
     cs.execute();
     List<E> resultList = resultSetHandler.handleResultSets(cs);
-    resultSetHandler.handleOutputParameters(cs);
+    resultSetHandler.handleOutputParameters(cs, parameterHandler.getParameterObject());
     return resultList;
   }
 
@@ -77,7 +77,7 @@ public class CallableStatementHandler extends BaseStatementHandler {
     CallableStatement cs = (CallableStatement) statement;
     cs.execute();
     Cursor<E> resultList = resultSetHandler.handleCursorResultSets(cs);
-    resultSetHandler.handleOutputParameters(cs);
+    resultSetHandler.handleOutputParameters(cs, parameterHandler.getParameterObject());
     return resultList;
   }
 
@@ -93,7 +93,7 @@ public class CallableStatementHandler extends BaseStatementHandler {
   @Override
   public void parameterize(Statement statement) throws SQLException {
     registerOutputParameters((CallableStatement) statement);
-    parameterHandler.setParameters((CallableStatement) statement);
+    parameterHandler.setParameters((CallableStatement) statement, this.mappedStatement, this.boundSql);
   }
 
   private void registerOutputParameters(CallableStatement cs) throws SQLException {
@@ -103,17 +103,17 @@ public class CallableStatementHandler extends BaseStatementHandler {
       if (parameterMapping.getMode() == ParameterMode.OUT || parameterMapping.getMode() == ParameterMode.INOUT) {
         if (null == parameterMapping.getJdbcType()) {
           throw new ExecutorException(
-              "The JDBC Type must be specified for output parameter.  Parameter: " + parameterMapping.getProperty());
+            "The JDBC Type must be specified for output parameter.  Parameter: " + parameterMapping.getProperty());
         }
         if (parameterMapping.getNumericScale() != null && (parameterMapping.getJdbcType() == JdbcType.NUMERIC
-            || parameterMapping.getJdbcType() == JdbcType.DECIMAL)) {
+          || parameterMapping.getJdbcType() == JdbcType.DECIMAL)) {
           cs.registerOutParameter(i + 1, parameterMapping.getJdbcType().TYPE_CODE, parameterMapping.getNumericScale());
         } else {
           if (parameterMapping.getJdbcTypeName() == null) {
             cs.registerOutParameter(i + 1, parameterMapping.getJdbcType().TYPE_CODE);
           } else {
             cs.registerOutParameter(i + 1, parameterMapping.getJdbcType().TYPE_CODE,
-                parameterMapping.getJdbcTypeName());
+              parameterMapping.getJdbcTypeName());
           }
         }
       }

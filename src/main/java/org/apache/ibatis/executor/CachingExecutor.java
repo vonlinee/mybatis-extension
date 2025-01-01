@@ -31,6 +31,7 @@ import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.transaction.Transaction;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Clinton Begin
@@ -71,19 +72,19 @@ public class CachingExecutor implements Executor {
   }
 
   @Override
-  public int update(MappedStatement ms, Object parameterObject) throws SQLException {
+  public int update(@NotNull MappedStatement ms, Object parameterObject) throws SQLException {
     flushCacheIfRequired(ms);
     return delegate.update(ms, parameterObject);
   }
 
   @Override
-  public <E> Cursor<E> queryCursor(MappedStatement ms, Object parameter, RowBounds rowBounds) throws SQLException {
+  public <E> Cursor<E> queryCursor(@NotNull MappedStatement ms, Object parameter, RowBounds rowBounds) throws SQLException {
     flushCacheIfRequired(ms);
     return delegate.queryCursor(ms, parameter, rowBounds);
   }
 
   @Override
-  public <E> List<E> query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler<?> resultHandler)
+  public <E> List<E> query(@NotNull MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler<?> resultHandler)
       throws SQLException {
     BoundSql boundSql = ms.getBoundSql(parameterObject);
     CacheKey key = createCacheKey(ms, parameterObject, rowBounds, boundSql);
@@ -91,8 +92,8 @@ public class CachingExecutor implements Executor {
   }
 
   @Override
-  public <E> List<E> query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler<?> resultHandler,
-      CacheKey key, BoundSql boundSql) throws SQLException {
+  public <E> List<E> query(@NotNull MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler<?> resultHandler,
+                           CacheKey key, BoundSql boundSql) throws SQLException {
     Cache cache = ms.getCache();
     if (cache != null) {
       flushCacheIfRequired(ms);
@@ -145,18 +146,18 @@ public class CachingExecutor implements Executor {
   }
 
   @Override
-  public CacheKey createCacheKey(MappedStatement ms, Object parameterObject, RowBounds rowBounds, BoundSql boundSql) {
+  public CacheKey createCacheKey(@NotNull MappedStatement ms, Object parameterObject, RowBounds rowBounds, BoundSql boundSql) {
     return delegate.createCacheKey(ms, parameterObject, rowBounds, boundSql);
   }
 
   @Override
-  public boolean isCached(MappedStatement ms, CacheKey key) {
+  public boolean isCached(@NotNull MappedStatement ms, CacheKey key) {
     return delegate.isCached(ms, key);
   }
 
   @Override
-  public void deferLoad(MappedStatement ms, MetaObject resultObject, String property, CacheKey key,
-      Class<?> targetType) {
+  public void deferLoad(@NotNull MappedStatement ms, MetaObject resultObject, String property, CacheKey key,
+                        Class<?> targetType) {
     delegate.deferLoad(ms, resultObject, property, key, targetType);
   }
 

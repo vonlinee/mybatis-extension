@@ -8,6 +8,27 @@ import java.sql.Statement;
 public class JdbcUtils {
 
   /**
+   * Apply a transaction timeout.
+   * <p>
+   * Update a query timeout to apply a transaction timeout.
+   * </p>
+   *
+   * @param statement          a target statement
+   * @param queryTimeout       a query timeout
+   * @param transactionTimeout a transaction timeout
+   * @throws SQLException if a database access error occurs, this method is called on a closed <code>Statement</code>
+   */
+  public static void applyTransactionTimeout(Statement statement, Integer queryTimeout, Integer transactionTimeout)
+    throws SQLException {
+    if (transactionTimeout == null) {
+      return;
+    }
+    if (queryTimeout == null || queryTimeout == 0 || transactionTimeout < queryTimeout) {
+      statement.setQueryTimeout(transactionTimeout);
+    }
+  }
+
+  /**
    * Silently closes a ResultSet.
    *
    * @param rs the ResultSet to close; if null, no action is taken.

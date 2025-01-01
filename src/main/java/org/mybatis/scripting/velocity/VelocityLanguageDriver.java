@@ -30,9 +30,8 @@ import org.apache.ibatis.session.Configuration;
  * This class rename from {@code Driver}.
  * </p>
  *
- * @since 2.1.0
- *
  * @author Kazuki Shimizu
+ * @since 2.1.0
  */
 public class VelocityLanguageDriver implements LanguageDriver {
 
@@ -46,8 +45,7 @@ public class VelocityLanguageDriver implements LanguageDriver {
   /**
    * Constructor.
    *
-   * @param driverConfig
-   *          a language driver configuration
+   * @param driverConfig a language driver configuration
    */
   public VelocityLanguageDriver(VelocityLanguageDriverConfig driverConfig) {
     VelocityTemplateEngine.initialize(driverConfig);
@@ -58,7 +56,7 @@ public class VelocityLanguageDriver implements LanguageDriver {
    */
   @Override
   public ParameterHandler createParameterHandler(MappedStatement mappedStatement, Object parameterObject,
-      BoundSql boundSql) {
+                                                 BoundSql boundSql) {
     return new DefaultParameterHandler(mappedStatement, parameterObject, boundSql);
   }
 
@@ -68,7 +66,7 @@ public class VelocityLanguageDriver implements LanguageDriver {
   @Override
   public SqlSource createSqlSource(Configuration configuration, XNode script, Class<?> parameterTypeClass) {
     return new SQLScriptSource(configuration, script.getNode().getTextContent(),
-        parameterTypeClass == null ? Object.class : parameterTypeClass);
+      parameterTypeClass == null ? Object.class : parameterTypeClass);
   }
 
   /**

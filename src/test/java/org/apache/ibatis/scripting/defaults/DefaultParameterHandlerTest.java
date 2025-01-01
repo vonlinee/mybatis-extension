@@ -76,7 +76,7 @@ class DefaultParameterHandlerTest {
 
     PreparedStatement ps = mock(PreparedStatement.class);
     try {
-      defaultParameterHandler.setParameters(ps);
+      defaultParameterHandler.setParameters(ps, mappedStatement, boundSql);
       Assertions.fail("Should have thrown TypeException");
     } catch (Exception e) {
       Assertions.assertInstanceOf(TypeException.class, e, "expected TypeException");
@@ -128,7 +128,7 @@ class DefaultParameterHandlerTest {
 
     PreparedStatement ps = mock(PreparedStatement.class);
 
-    defaultParameterHandler.setParameters(ps);
+    defaultParameterHandler.setParameters(ps, mappedStatement, boundSql);
 
     verify(ps, times(1)).setInt(1, 2);
   }
@@ -141,20 +141,18 @@ class DefaultParameterHandlerTest {
     MappedStatement mappedStatement = new MappedStatement.Builder(config, "testSelect",
       new StaticSqlSource(config, "some select statement"), SqlCommandType.SELECT).build();
 
-    Object parameterObject = null;
-
     BoundSql boundSql = new BoundSql(config, "some select statement", new ArrayList<>() {
       {
         add(new ParameterMapping.Builder("id", registry.getTypeHandler(int.class)).build(config));
       }
     }, null);
 
-    DefaultParameterHandler defaultParameterHandler = new DefaultParameterHandler(mappedStatement, parameterObject,
+    DefaultParameterHandler defaultParameterHandler = new DefaultParameterHandler(mappedStatement, null,
       boundSql);
 
     PreparedStatement ps = mock(PreparedStatement.class);
 
-    defaultParameterHandler.setParameters(ps);
+    defaultParameterHandler.setParameters(ps, mappedStatement, boundSql);
 
     verify(ps, times(1)).setNull(1, config.getJdbcTypeForNull().TYPE_CODE);
   }
@@ -180,7 +178,7 @@ class DefaultParameterHandlerTest {
 
     PreparedStatement ps = mock(PreparedStatement.class);
 
-    defaultParameterHandler.setParameters(ps);
+    defaultParameterHandler.setParameters(ps, mappedStatement, boundSql);
 
     verify(ps, times(1)).setInt(1, parameterObject);
   }
@@ -213,7 +211,7 @@ class DefaultParameterHandlerTest {
 
     PreparedStatement ps = mock(PreparedStatement.class);
 
-    defaultParameterHandler.setParameters(ps);
+    defaultParameterHandler.setParameters(ps, mappedStatement, boundSql);
 
     verify(ps, times(1)).setInt(1, parameterObject.getId());
     verify(ps, times(1)).setString(2, parameterObject.getUsername());
@@ -265,7 +263,7 @@ class DefaultParameterHandlerTest {
 
     PreparedStatement ps = mock(PreparedStatement.class);
 
-    defaultParameterHandler.setParameters(ps);
+    defaultParameterHandler.setParameters(ps, mappedStatement, boundSql);
 
     verify(parameterObject, times(1)).getId();
     verify(parameterObject, times(1)).getUsername();

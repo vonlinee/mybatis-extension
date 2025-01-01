@@ -82,7 +82,6 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   private final Configuration configuration;
   private final MappedStatement mappedStatement;
   private final RowBounds rowBounds;
-  private final ParameterHandler parameterHandler;
   private final ResultHandler<?> resultHandler;
   private final BoundSql boundSql;
   private final TypeHandlerRegistry typeHandlerRegistry;
@@ -124,13 +123,12 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     }
   }
 
-  public DefaultResultSetHandler(Executor executor, MappedStatement mappedStatement, ParameterHandler parameterHandler,
+  public DefaultResultSetHandler(Executor executor, MappedStatement mappedStatement,
       ResultHandler<?> resultHandler, BoundSql boundSql, RowBounds rowBounds) {
     this.executor = executor;
     this.configuration = mappedStatement.getConfiguration();
     this.mappedStatement = mappedStatement;
     this.rowBounds = rowBounds;
-    this.parameterHandler = parameterHandler;
     this.boundSql = boundSql;
     this.typeHandlerRegistry = configuration.getTypeHandlerRegistry();
     this.objectFactory = configuration.getObjectFactory();
@@ -143,8 +141,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   //
 
   @Override
-  public void handleOutputParameters(CallableStatement cs) throws SQLException {
-    final Object parameterObject = parameterHandler.getParameterObject();
+  public void handleOutputParameters(CallableStatement cs, Object parameterObject) throws SQLException {
     final MetaObject metaParam = configuration.newMetaObject(parameterObject);
     final List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
     for (int i = 0; i < parameterMappings.size(); i++) {
@@ -186,6 +183,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   // HANDLE RESULT SETS
   //
   @Override
+  @SuppressWarnings("unchecked")
   public List<Object> handleResultSets(Statement stmt) throws SQLException {
     ErrorContext.instance().activity("handling results").object(mappedStatement.getId());
 
@@ -303,7 +301,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         handleRowValues(rsw, resultMap, resultHandler, rowBounds, null);
       }
     } finally {
-      // issue #228 (close resultsets)
+      // issue #228 (close result sets)
       closeResultSet(rsw.getResultSet());
     }
   }
@@ -1000,10 +998,15 @@ public class DefaultResultSetHandler implements ResultSetHandler {
       ResultHandler<?> resultHandler, RowBounds rowBounds, ResultMapping parentMapping) throws SQLException {
     final DefaultResultContext<Object> resultContext = new DefaultResultContext<>();
     ResultSet resultSet = rsw.getResultSet();
+    // 分页处理
     skipRows(resultSet, rowBounds);
+    // 前一次处理的记录,只有在映射语句的结果集无序的情况下有意义
     Object rowValue = previousRowValue;
+    // 一直处理直到超出分页边界或者结果集处理完
     while (shouldProcessMoreRows(resultContext, rowBounds) && !resultSet.isClosed() && resultSet.next()) {
+      // 同主记录, 先解析到鉴别器的最底层的ResultMap
       final ResultMap discriminatedResultMap = resolveDiscriminatedResultMap(resultSet, resultMap, null);
+      // 创建当前处理记录的rowKey, 规则见下文
       final CacheKey rowKey = createRowKey(discriminatedResultMap, rsw, null);
       Object partialObject = nestedResultObjects.get(rowKey);
       // issue #577 && #542

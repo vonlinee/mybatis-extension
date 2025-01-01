@@ -40,6 +40,7 @@ import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Clinton Begin
@@ -289,7 +290,7 @@ public class ResultLoaderMap {
     }
 
     @Override
-    protected int doUpdate(MappedStatement ms, Object parameter) throws SQLException {
+    protected int doUpdate(@NotNull MappedStatement ms, Object parameter) throws SQLException {
       throw new UnsupportedOperationException("Not supported.");
     }
 
@@ -299,13 +300,13 @@ public class ResultLoaderMap {
     }
 
     @Override
-    protected <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds,
-        ResultHandler<E> resultHandler, BoundSql boundSql) throws SQLException {
+    protected <E> List<E> doQuery(@NotNull MappedStatement ms, Object parameter, RowBounds rowBounds,
+                                  ResultHandler<E> resultHandler, BoundSql boundSql) throws SQLException {
       throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
-    protected <E> Cursor<E> doQueryCursor(MappedStatement ms, Object parameter, RowBounds rowBounds, BoundSql boundSql)
+    protected <E> Cursor<E> doQueryCursor(@NotNull MappedStatement ms, Object parameter, RowBounds rowBounds, BoundSql boundSql)
         throws SQLException {
       throw new UnsupportedOperationException("Not supported.");
     }

@@ -15,22 +15,23 @@
  */
 package org.apache.ibatis.executor.statement;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.List;
-
 import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.session.ResultHandler;
+import org.jetbrains.annotations.Nullable;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
 
 /**
  * @author Clinton Begin
  */
 public interface StatementHandler {
 
-  Statement prepare(Connection connection, Integer transactionTimeout) throws SQLException;
+  Statement prepare(Connection connection, @Nullable Integer transactionTimeout) throws SQLException;
 
   void parameterize(Statement statement) throws SQLException;
 
@@ -44,6 +45,11 @@ public interface StatementHandler {
 
   BoundSql getBoundSql();
 
+  /**
+   * TODO it seems that this method is redundant
+   *
+   * @return ParameterHandler
+   */
   ParameterHandler getParameterHandler();
 
 }

@@ -94,7 +94,7 @@ public class PreparedStatementHandler extends BaseStatementHandler {
 
   @Override
   public void parameterize(Statement statement) throws SQLException {
-    parameterHandler.setParameters((PreparedStatement) statement);
+    parameterHandler.setParameters((PreparedStatement) statement, this.mappedStatement, this.getBoundSql());
   }
 
 }

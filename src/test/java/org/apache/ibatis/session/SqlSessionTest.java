@@ -45,6 +45,7 @@ import org.mockito.Mockito;
 
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -742,13 +743,7 @@ class SqlSessionTest extends BaseDataTest {
       List<Post> posts = session.selectList("org.apache.ibatis.domain.blog.mappers.PostMapper.findPost",
         new HashMap<String, List<Integer>>() {
           {
-            put("ids", new ArrayList<>() {
-              {
-                add(1);
-                add(2);
-                add(3);
-              }
-            });
+            put("ids", Arrays.asList(1, 2, 3));
           }
         });
       assertEquals(3, posts.size());
@@ -760,8 +755,6 @@ class SqlSessionTest extends BaseDataTest {
     try (SqlSession session = sqlMapper.openSession()) {
       List<Post> posts = session.selectList("org.apache.ibatis.domain.blog.mappers.PostMapper.findPost",
         new HashMap<String, Integer>() {
-          private static final long serialVersionUID = 1L;
-
           {
             put("blog_id", 1);
           }
@@ -775,8 +768,6 @@ class SqlSessionTest extends BaseDataTest {
     try (SqlSession session = sqlMapper.openSession()) {
       List<Post> posts = session.selectList("org.apache.ibatis.domain.blog.mappers.PostMapper.findPost",
         new HashMap<String, Integer>() {
-          private static final long serialVersionUID = 1L;
-
           {
             put("author_id", 101);
           }
@@ -790,12 +781,8 @@ class SqlSessionTest extends BaseDataTest {
     try (SqlSession session = sqlMapper.openSession()) {
       List<Post> posts = session.selectList("org.apache.ibatis.domain.blog.mappers.PostMapper.findPost",
         new HashMap<String, Object>() {
-          private static final long serialVersionUID = 1L;
-
           {
             put("ids", new ArrayList<Integer>() {
-              private static final long serialVersionUID = 1L;
-
               {
                 add(1);
                 add(2);
@@ -814,8 +801,6 @@ class SqlSessionTest extends BaseDataTest {
     try (SqlSession session = sqlMapper.openSession()) {
       List<Post> posts = session.selectList("org.apache.ibatis.domain.blog.mappers.PostMapper.selectPostIn",
         new ArrayList<Integer>() {
-          private static final long serialVersionUID = 1L;
-
           {
             add(1);
             add(3);
@@ -830,17 +815,7 @@ class SqlSessionTest extends BaseDataTest {
   void shouldFindOddPostsInList() {
     try (SqlSession session = sqlMapper.openSession()) {
       List<Post> posts = session.selectList("org.apache.ibatis.domain.blog.mappers.PostMapper.selectOddPostsIn",
-        new ArrayList<Integer>() {
-          private static final long serialVersionUID = 1L;
-
-          {
-            add(0);
-            add(1);
-            add(2);
-            add(3);
-            add(4);
-          }
-        });
+        new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4)));
       // we're getting odd indexes, not odd values, 0 is not odd
       assertEquals(2, posts.size());
       assertEquals(1, posts.get(0).getId());
@@ -853,20 +828,8 @@ class SqlSessionTest extends BaseDataTest {
     try (SqlSession session = sqlMapper.openSession()) {
       List<Post> posts = session.selectList("org.apache.ibatis.domain.blog.mappers.PostMapper.selectOddPostsInKeysList",
         new HashMap<String, List<Integer>>() {
-          private static final long serialVersionUID = 1L;
-
           {
-            put("keys", new ArrayList<>() {
-              private static final long serialVersionUID = 1L;
-
-              {
-                add(0);
-                add(1);
-                add(2);
-                add(3);
-                add(4);
-              }
-            });
+            put("keys", new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4)));
           }
         });
       // we're getting odd indexes, not odd values, 0 is not odd

@@ -32,6 +32,7 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.transaction.Transaction;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Clinton Begin
@@ -45,7 +46,7 @@ public class ReuseExecutor extends BaseExecutor {
   }
 
   @Override
-  public int doUpdate(MappedStatement ms, Object parameter) throws SQLException {
+  public int doUpdate(@NotNull MappedStatement ms, Object parameter) throws SQLException {
     Configuration configuration = ms.getConfiguration();
     StatementHandler handler = configuration.newStatementHandler(this, ms, parameter, RowBounds.DEFAULT, null, null);
     Statement stmt = prepareStatement(handler, ms.getStatementLog());
@@ -53,8 +54,8 @@ public class ReuseExecutor extends BaseExecutor {
   }
 
   @Override
-  public <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler<E> resultHandler,
-      BoundSql boundSql) throws SQLException {
+  public <E> List<E> doQuery(@NotNull MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler<E> resultHandler,
+                             BoundSql boundSql) throws SQLException {
     Configuration configuration = ms.getConfiguration();
     StatementHandler handler = configuration.newStatementHandler(wrapper, ms, parameter, rowBounds, resultHandler,
         boundSql);
@@ -63,7 +64,7 @@ public class ReuseExecutor extends BaseExecutor {
   }
 
   @Override
-  protected <E> Cursor<E> doQueryCursor(MappedStatement ms, Object parameter, RowBounds rowBounds, BoundSql boundSql)
+  protected <E> Cursor<E> doQueryCursor(@NotNull MappedStatement ms, Object parameter, RowBounds rowBounds, BoundSql boundSql)
       throws SQLException {
     Configuration configuration = ms.getConfiguration();
     StatementHandler handler = configuration.newStatementHandler(wrapper, ms, parameter, rowBounds, null, boundSql);

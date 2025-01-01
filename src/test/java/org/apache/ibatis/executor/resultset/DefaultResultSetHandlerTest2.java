@@ -80,11 +80,10 @@ class DefaultResultSetHandlerTest2 {
       }).build();
 
     final Executor executor = null;
-    final ParameterHandler parameterHandler = null;
     final ResultHandler<?> resultHandler = null;
     final BoundSql boundSql = null;
     final RowBounds rowBounds = Pagination.of(5, 1);
-    final DefaultResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, ms, parameterHandler,
+    final DefaultResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, ms,
       resultHandler, boundSql, rowBounds);
 
     when(stmt.getResultSet()).thenReturn(rs);
@@ -124,11 +123,10 @@ class DefaultResultSetHandlerTest2 {
     }).resultOrdered(true).build();
 
     final Executor executor = null;
-    final ParameterHandler parameterHandler = null;
     final ResultHandler<?> resultHandler = null;
     final BoundSql boundSql = null;
     final RowBounds rowBounds = Pagination.of(5, 1);
-    final DefaultResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, ms, parameterHandler,
+    final DefaultResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, ms,
       resultHandler, boundSql, rowBounds);
 
     when(stmt.getResultSet()).thenReturn(rs);

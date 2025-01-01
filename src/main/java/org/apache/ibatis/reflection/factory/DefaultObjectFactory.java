@@ -16,7 +16,7 @@
 package org.apache.ibatis.reflection.factory;
 
 import org.apache.ibatis.reflection.ReflectionRuntimeException;
-import org.apache.ibatis.reflection.Reflector;
+import org.apache.ibatis.reflection.ReflectionUtils;
 import org.apache.ibatis.scripting.ExpressionEvaluator;
 import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
 import org.apache.ibatis.util.CollectionUtils;
@@ -46,12 +46,7 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
 
   {
     // TODO find a better way to create internal singleton object
-    objectProviders.put(ExpressionEvaluator.class, new Supplier<ExpressionEvaluator>() {
-      @Override
-      public ExpressionEvaluator get() {
-        return new OgnlExpressionEvaluator();
-      }
-    });
+    objectProviders.put(ExpressionEvaluator.class, (Supplier<ExpressionEvaluator>) OgnlExpressionEvaluator::new);
   }
 
   @Override
@@ -82,7 +77,7 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
         try {
           return constructor.newInstance();
         } catch (IllegalAccessException e) {
-          if (Reflector.canControlMemberAccessible()) {
+          if (ReflectionUtils.canControlMemberAccessible()) {
             constructor.setAccessible(true);
             return constructor.newInstance();
           }
@@ -93,7 +88,7 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
       try {
         return constructor.newInstance(constructorArgs.toArray(new Object[0]));
       } catch (IllegalAccessException e) {
-        if (Reflector.canControlMemberAccessible()) {
+        if (ReflectionUtils.canControlMemberAccessible()) {
           constructor.setAccessible(true);
           return constructor.newInstance(constructorArgs.toArray(new Object[0]));
         }

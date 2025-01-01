@@ -21,6 +21,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
+ * 无论是在预处理语句（PreparedStatement）中设置一个参数时，还是从结果集中取出一个值时，
+ * 都会用类型处理器将获取的值以合适的方式转换成 Java 类型。
+ *
  * @author Clinton Begin
  */
 public interface TypeHandler<T> {

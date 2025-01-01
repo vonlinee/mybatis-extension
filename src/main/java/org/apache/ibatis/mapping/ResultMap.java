@@ -15,6 +15,13 @@
  */
 package org.apache.ibatis.mapping;
 
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.builder.BuilderException;
+import org.apache.ibatis.logging.Log;
+import org.apache.ibatis.logging.LogFactory;
+import org.apache.ibatis.reflection.ReflectionUtils;
+import org.apache.ibatis.session.Configuration;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -24,30 +31,70 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.builder.BuilderException;
-import org.apache.ibatis.logging.Log;
-import org.apache.ibatis.logging.LogFactory;
-import org.apache.ibatis.reflection.ParamNameUtil;
-import org.apache.ibatis.session.Configuration;
-
 /**
  * @author Clinton Begin
  */
 public class ResultMap {
   private Configuration configuration;
 
+  /**
+   * resultMap的id属性
+   */
   private String id;
+
+  /**
+   * resultMap的type属性,有可能是alias
+   */
   private Class<?> type;
+
+  /**
+   * resultMap下的所有节点
+   */
   private List<ResultMapping> resultMappings;
+
+  /**
+   * resultMap下的id节点, 比如<id property="id" column="user_id" />
+   */
   private List<ResultMapping> idResultMappings;
+
+  /**
+   * resultMap下的构造器节点<constructor>
+   */
   private List<ResultMapping> constructorResultMappings;
+
+  /**
+   * resultMap下的property节点比如<result property="password" column="hashed_password"/>
+   */
   private List<ResultMapping> propertyResultMappings;
+
+  /**
+   * 映射的列名
+   */
   private Set<String> mappedColumns;
+
+  /**
+   * 映射的javaBean属性名,所有映射不管是id、构造器或者普通的
+   */
   private Set<String> mappedProperties;
+
+  /**
+   * 鉴别器
+   */
   private Discriminator discriminator;
+
+  /**
+   * 是否有嵌套的resultMap比如association或者collection
+   */
   private boolean hasNestedResultMaps;
+
+  /**
+   * 是否有嵌套的查询,也就是select属性
+   */
   private boolean hasNestedQueries;
+
+  /**
+   * autoMapping属性,这个属性会覆盖全局的属性autoMappingBehavior
+   */
   private Boolean autoMapping;
 
   private ResultMap() {
@@ -63,7 +110,7 @@ public class ResultMap {
     }
 
     public Builder(Configuration configuration, String id, Class<?> type, List<ResultMapping> resultMappings,
-        Boolean autoMapping) {
+                   Boolean autoMapping) {
       resultMap.configuration = configuration;
       resultMap.id = id;
       resultMap.type = type;
@@ -91,9 +138,10 @@ public class ResultMap {
       resultMap.propertyResultMappings = new ArrayList<>();
       final List<String> constructorArgNames = new ArrayList<>();
       for (ResultMapping resultMapping : resultMap.resultMappings) {
+        // 判断是否有嵌套查询, nestedQueryId是在buildResultMappingFromContext的时候通过读取节点的select属性得到的
         resultMap.hasNestedQueries = resultMap.hasNestedQueries || resultMapping.getNestedQueryId() != null;
         resultMap.hasNestedResultMaps = resultMap.hasNestedResultMaps
-            || resultMapping.getNestedResultMapId() != null && resultMapping.getResultSet() == null;
+          || resultMapping.getNestedResultMapId() != null && resultMapping.getResultSet() == null;
         final String column = resultMapping.getColumn();
         if (column != null) {
           resultMap.mappedColumns.add(column.toUpperCase(Locale.ENGLISH));
@@ -128,8 +176,8 @@ public class ResultMap {
         final List<String> actualArgNames = argNamesOfMatchingConstructor(constructorArgNames);
         if (actualArgNames == null) {
           throw new BuilderException("Error in result map '" + resultMap.id + "'. Failed to find a constructor in '"
-              + resultMap.getType().getName() + "' with arg names " + constructorArgNames
-              + ". Note that 'javaType' is required when there is no writable property with the same name ('name' is optional, BTW). There might be more info in debug log.");
+            + resultMap.getType().getName() + "' with arg names " + constructorArgNames
+            + ". Note that 'javaType' is required when there is no writable property with the same name ('name' is optional, BTW). There might be more info in debug log.");
         }
         resultMap.constructorResultMappings.sort((o1, o2) -> {
           int paramIdx1 = actualArgNames.indexOf(o1.getProperty());
@@ -153,7 +201,7 @@ public class ResultMap {
         if (constructorArgNames.size() == paramTypes.length) {
           List<String> paramNames = getArgNames(constructor);
           if (constructorArgNames.containsAll(paramNames)
-              && argTypesMatch(constructorArgNames, paramTypes, paramNames)) {
+            && argTypesMatch(constructorArgNames, paramTypes, paramNames)) {
             return paramNames;
           }
         }
@@ -162,16 +210,16 @@ public class ResultMap {
     }
 
     private boolean argTypesMatch(final List<String> constructorArgNames, Class<?>[] paramTypes,
-        List<String> paramNames) {
+                                  List<String> paramNames) {
       for (int i = 0; i < constructorArgNames.size(); i++) {
         Class<?> actualType = paramTypes[paramNames.indexOf(constructorArgNames.get(i))];
         Class<?> specifiedType = resultMap.constructorResultMappings.get(i).getJavaType();
         if (!actualType.equals(specifiedType)) {
           if (log.isDebugEnabled()) {
             log.debug("While building result map '" + resultMap.id + "', found a constructor with arg names "
-                + constructorArgNames + ", but the type of '" + constructorArgNames.get(i)
-                + "' did not match. Specified: [" + specifiedType.getName() + "] Declared: [" + actualType.getName()
-                + "]");
+              + constructorArgNames + ", but the type of '" + constructorArgNames.get(i)
+              + "' did not match. Specified: [" + specifiedType.getName() + "] Declared: [" + actualType.getName()
+              + "]");
           }
           return false;
         }
@@ -194,7 +242,7 @@ public class ResultMap {
         }
         if (name == null && resultMap.configuration.isUseActualParamName()) {
           if (actualParamNames == null) {
-            actualParamNames = ParamNameUtil.getParamNames(constructor);
+            actualParamNames = ReflectionUtils.getParamNames(constructor);
           }
           if (actualParamNames.size() > paramIndex) {
             name = actualParamNames.get(paramIndex);

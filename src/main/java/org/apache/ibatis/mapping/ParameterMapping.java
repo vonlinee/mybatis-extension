@@ -29,6 +29,12 @@ import java.sql.ResultSet;
 public class ParameterMapping {
 
   private String property;
+
+  /**
+   * 参数模式
+   *
+   * @see ParameterMode
+   */
   private ParameterMode mode;
   private Class<?> javaType = Object.class;
   private JdbcType jdbcType;

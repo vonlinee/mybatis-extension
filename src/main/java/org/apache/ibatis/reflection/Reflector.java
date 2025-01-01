@@ -15,9 +15,14 @@
  */
 package org.apache.ibatis.reflection;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
+import org.apache.ibatis.reflection.invoker.AmbiguousMethodInvoker;
+import org.apache.ibatis.reflection.invoker.GetFieldInvoker;
+import org.apache.ibatis.reflection.invoker.Invoker;
+import org.apache.ibatis.reflection.invoker.MethodInvoker;
+import org.apache.ibatis.reflection.invoker.SetFieldInvoker;
+import org.apache.ibatis.reflection.property.BeanUtils;
+import org.apache.ibatis.util.CollectionUtils;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -25,7 +30,6 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.ReflectPermission;
 import java.lang.reflect.Type;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -37,14 +41,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.ibatis.reflection.invoker.AmbiguousMethodInvoker;
-import org.apache.ibatis.reflection.invoker.GetFieldInvoker;
-import org.apache.ibatis.reflection.invoker.Invoker;
-import org.apache.ibatis.reflection.invoker.MethodInvoker;
-import org.apache.ibatis.reflection.invoker.SetFieldInvoker;
-import org.apache.ibatis.reflection.property.BeanUtils;
-import org.apache.ibatis.util.CollectionUtils;
-
 /**
  * This class represents a cached set of class definition information that allows for easy mapping between property
  * names and getter/setter methods.
@@ -53,7 +49,6 @@ import org.apache.ibatis.util.CollectionUtils;
  */
 public class Reflector {
 
-  private static final MethodHandle isRecordMethodHandle = getIsRecordMethodHandle();
   private final Class<?> type;
   private final String[] readablePropertyNames;
   private final String[] writablePropertyNames;
@@ -69,7 +64,7 @@ public class Reflector {
     type = clazz;
     addDefaultConstructor(clazz);
     Method[] classMethods = getClassMethods(clazz);
-    if (isRecord(type)) {
+    if (ReflectionUtils.isRecordType(type)) {
       addRecordGetMethods(classMethods);
     } else {
       addGetMethods(classMethods);
@@ -88,19 +83,19 @@ public class Reflector {
 
   private void addRecordGetMethods(Method[] methods) {
     Arrays.stream(methods).filter(m -> m.getParameterTypes().length == 0)
-        .forEach(m -> addGetMethod(m.getName(), m, false));
+      .forEach(m -> addGetMethod(m.getName(), m, false));
   }
 
   private void addDefaultConstructor(Class<?> clazz) {
     Constructor<?>[] constructors = clazz.getDeclaredConstructors();
     Arrays.stream(constructors).filter(constructor -> constructor.getParameterTypes().length == 0).findAny()
-        .ifPresent(constructor -> this.defaultConstructor = constructor);
+      .ifPresent(constructor -> this.defaultConstructor = constructor);
   }
 
   private void addGetMethods(Method[] methods) {
     Map<String, List<Method>> conflictingGetters = new HashMap<>();
     Arrays.stream(methods).filter(m -> m.getParameterTypes().length == 0 && BeanUtils.isGetter(m.getName()))
-        .forEach(m -> addMethodConflict(conflictingGetters, BeanUtils.methodToProperty(m.getName()), m));
+      .forEach(m -> addMethodConflict(conflictingGetters, BeanUtils.methodToProperty(m.getName()), m));
     resolveGetterConflicts(conflictingGetters);
   }
 
@@ -121,7 +116,7 @@ public class Reflector {
             isAmbiguous = true;
             break;
           }
-          if (candidate.getName().startsWith("is")) {
+          if (BeanUtils.isBooleanGetterMethod(candidate)) {
             winner = candidate;
           }
         } else if (candidateType.isAssignableFrom(winnerType)) {
@@ -139,8 +134,8 @@ public class Reflector {
 
   private void addGetMethod(String name, Method method, boolean isAmbiguous) {
     MethodInvoker invoker = isAmbiguous ? new AmbiguousMethodInvoker(method, MessageFormat.format(
-        "Illegal overloaded getter method with ambiguous type for property ''{0}'' in class ''{1}''. This breaks the JavaBeans specification and can cause unpredictable results.",
-        name, method.getDeclaringClass().getName())) : new MethodInvoker(method);
+      "Illegal overloaded getter method with ambiguous type for property ''{0}'' in class ''{1}''. This breaks the JavaBeans specification and can cause unpredictable results.",
+      name, method.getDeclaringClass().getName())) : new MethodInvoker(method);
     getMethods.put(name, invoker);
     Type returnType = TypeParameterResolver.resolveReturnType(method, type);
     getTypes.put(name, typeToClass(returnType));
@@ -149,7 +144,7 @@ public class Reflector {
   private void addSetMethods(Method[] methods) {
     Map<String, List<Method>> conflictingSetters = new HashMap<>();
     Arrays.stream(methods).filter(m -> m.getParameterTypes().length == 1 && BeanUtils.isSetter(m.getName()))
-        .forEach(m -> addMethodConflict(conflictingSetters, BeanUtils.methodToProperty(m.getName()), m));
+      .forEach(m -> addMethodConflict(conflictingSetters, BeanUtils.methodToProperty(m.getName()), m));
     resolveSetterConflicts(conflictingSetters);
   }
 
@@ -198,9 +193,9 @@ public class Reflector {
       return setter1;
     }
     MethodInvoker invoker = new AmbiguousMethodInvoker(setter1,
-        MessageFormat.format(
-            "Ambiguous setters defined for property ''{0}'' in class ''{1}'' with types ''{2}'' and ''{3}''.", property,
-            setter2.getDeclaringClass().getName(), paramType1.getName(), paramType2.getName()));
+      MessageFormat.format(
+        "Ambiguous setters defined for property ''{0}'' in class ''{1}'' with types ''{2}'' and ''{3}''.", property,
+        setter2.getDeclaringClass().getName(), paramType1.getName(), paramType2.getName()));
     setMethods.put(property, invoker);
     Type[] paramTypes = TypeParameterResolver.resolveParamTypes(setter1, type);
     setTypes.put(property, typeToClass(paramTypes[0]));
@@ -280,9 +275,7 @@ public class Reflector {
    * This method returns an array containing all methods declared in this class and any superclass. We use this method,
    * instead of the simpler <code>Class.getMethods()</code>, because we want to look for private methods as well.
    *
-   * @param clazz
-   *          The class
-   *
+   * @param clazz The class
    * @return An array containing all methods in this class
    */
   private Method[] getClassMethods(Class<?> clazz) {
@@ -333,25 +326,6 @@ public class Reflector {
   }
 
   /**
-   * Checks whether you can control member accessible.
-   *
-   * @return If you can control member accessible, it return {@literal true}
-   *
-   * @since 3.5.0
-   */
-  public static boolean canControlMemberAccessible() {
-    try {
-      SecurityManager securityManager = System.getSecurityManager();
-      if (null != securityManager) {
-        securityManager.checkPermission(new ReflectPermission("suppressAccessChecks"));
-      }
-    } catch (SecurityException e) {
-      return false;
-    }
-    return true;
-  }
-
-  /**
    * Gets the name of the class the instance provides information for.
    *
    * @return The class name
@@ -390,9 +364,7 @@ public class Reflector {
   /**
    * Gets the type for a property setter.
    *
-   * @param propertyName
-   *          - the name of the property
-   *
+   * @param propertyName - the name of the property
    * @return The Class of the property setter
    */
   public Class<?> getSetterType(String propertyName) {
@@ -406,9 +378,7 @@ public class Reflector {
   /**
    * Gets the type for a property getter.
    *
-   * @param propertyName
-   *          - the name of the property
-   *
+   * @param propertyName - the name of the property
    * @return The Class of the property getter
    */
   public Class<?> getGetterType(String propertyName) {
@@ -440,9 +410,7 @@ public class Reflector {
   /**
    * Check to see if a class has a writable property by name.
    *
-   * @param propertyName
-   *          - the name of the property to check
-   *
+   * @param propertyName - the name of the property to check
    * @return True if the object has a writable property by the name
    */
   public boolean hasSetter(String propertyName) {
@@ -452,9 +420,7 @@ public class Reflector {
   /**
    * Check to see if a class has a readable property by name.
    *
-   * @param propertyName
-   *          - the name of the property to check
-   *
+   * @param propertyName - the name of the property to check
    * @return True if the object has a readable property by the name
    */
   public boolean hasGetter(String propertyName) {
@@ -463,26 +429,5 @@ public class Reflector {
 
   public String findPropertyName(String name) {
     return caseInsensitivePropertyMap.get(name.toUpperCase(Locale.ENGLISH));
-  }
-
-  /**
-   * Class.isRecord() alternative for Java 15 and older.
-   */
-  private static boolean isRecord(Class<?> clazz) {
-    try {
-      return isRecordMethodHandle != null && (boolean) isRecordMethodHandle.invokeExact(clazz);
-    } catch (Throwable e) {
-      throw new ReflectionRuntimeException("Failed to invoke 'Class.isRecord()'.", e);
-    }
-  }
-
-  private static MethodHandle getIsRecordMethodHandle() {
-    MethodHandles.Lookup lookup = MethodHandles.lookup();
-    MethodType mt = MethodType.methodType(boolean.class);
-    try {
-      return lookup.findVirtual(Class.class, "isRecord", mt);
-    } catch (NoSuchMethodException | IllegalAccessException e) {
-      return null;
-    }
   }
 }

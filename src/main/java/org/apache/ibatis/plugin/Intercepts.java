@@ -52,6 +52,7 @@ import java.lang.annotation.Target;
 public @interface Intercepts {
   /**
    * Returns method signatures to intercept.
+   * 如果没有指定，它会拦截StatementHandler、ResultSetHandler、ParameterHandler和Executor这四个核心接口对象中的所有方法
    *
    * @return method signatures
    */

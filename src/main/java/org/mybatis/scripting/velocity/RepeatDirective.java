@@ -37,7 +37,7 @@ import org.apache.velocity.util.introspection.Info;
 /**
  * #repeat($collection $item SEP OPEN CLOSE).
  */
-public class RepeatDirective extends Directive {
+public class RepeatDirective extends BlockDirective {
 
   protected static final int MAX_IN_CLAUSE_SIZE = 1000;
 
@@ -182,11 +182,6 @@ public class RepeatDirective extends Directive {
 
   protected void put(InternalContextAdapter context, String key, Object value) {
     context.put(key, value);
-  }
-
-  @Override
-  public int getType() {
-    return BLOCK;
   }
 
   public static class RepeatScope extends Scope {

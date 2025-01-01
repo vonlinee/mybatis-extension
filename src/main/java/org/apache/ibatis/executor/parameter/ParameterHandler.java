@@ -15,6 +15,10 @@
  */
 package org.apache.ibatis.executor.parameter;
 
+import org.apache.ibatis.mapping.BoundSql;
+import org.apache.ibatis.mapping.MappedStatement;
+import org.jetbrains.annotations.NotNull;
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -27,6 +31,5 @@ public interface ParameterHandler {
 
   Object getParameterObject();
 
-  void setParameters(PreparedStatement ps) throws SQLException;
-
+  void setParameters(@NotNull PreparedStatement ps, @NotNull MappedStatement mappedStatement, @NotNull BoundSql boundSql) throws SQLException;
 }
