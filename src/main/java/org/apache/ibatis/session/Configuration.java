@@ -119,19 +119,32 @@ public class Configuration {
    */
   protected boolean safeResultHandlerEnabled = true;
 
-  // 是否开启自动驼峰命名规则（camel case）映射，即从经典数据库列名 A_COLUMN 到经典 Java 属性名 aColumn 的类似映射。默认false
+  /**
+   * 是否开启自动驼峰命名规则（camel case）映射，
+   * 即从经典数据库列名 A_COLUMN 到经典 Java 属性名 aColumn 的类似映射。默认false
+   */
   protected boolean mapUnderscoreToCamelCase;
 
-  // 当开启时，任何方法的调用都会加载该对象的所有属性。否则，每个属性会按需加载。默认值false (true in ≤3.4.1)
+  /**
+   * 当开启时，任何方法的调用都会加载该对象的所有属性。否则，每个属性会按需加载。
+   * 默认值false (true in ≤3.4.1)
+   */
   protected boolean aggressiveLazyLoading;
 
-  // 允许 JDBC 支持自动生成主键，需要驱动兼容。这就是insert时获取mysql自增主键/oracle sequence的开关。注：一般来说,这是希望的结果,应该默认值为true比较合适。
+  /**
+   * 允许 JDBC 支持自动生成主键，需要驱动兼容。这就是insert时获取mysql自增主键/oracle sequence的开关。
+   * 注：一般来说默认值为true比较合适
+   */
   protected boolean useGeneratedKeys;
 
-  // 使用列标签代替列名,一般来说,这是希望的结果
+  /**
+   * 使用列标签代替列名
+   */
   protected boolean useColumnLabel = true;
 
-  // 是否启用缓存
+  /**
+   * 是否启用二级缓存
+   */
   protected boolean cacheEnabled = true;
 
   // 指定当结果集中值为 null 的时候是否调用映射对象的 setter（map 对象时为 put）方法，这对于有 Map.keySet() 依赖或 null 值初始化的时候是有用的。
@@ -740,10 +753,6 @@ public class Configuration {
     StatementHandler statementHandler = new RoutingStatementHandler(executor, mappedStatement, parameterObject,
       rowBounds, resultHandler, boundSql);
     return (StatementHandler) interceptorChain.pluginAll(statementHandler);
-  }
-
-  public Executor newExecutor(Transaction transaction) {
-    return newExecutor(transaction, defaultExecutorType);
   }
 
   public Executor newExecutor(Transaction transaction, ExecutorType executorType) {

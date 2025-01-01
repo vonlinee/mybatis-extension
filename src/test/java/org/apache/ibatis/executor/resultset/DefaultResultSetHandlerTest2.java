@@ -17,7 +17,6 @@ package org.apache.ibatis.executor.resultset;
 
 import org.apache.ibatis.builder.StaticSqlSource;
 import org.apache.ibatis.executor.Executor;
-import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.ResultMap;
@@ -82,7 +81,7 @@ class DefaultResultSetHandlerTest2 {
     final Executor executor = null;
     final ResultHandler<?> resultHandler = null;
     final BoundSql boundSql = null;
-    final RowBounds rowBounds = Pagination.of(5, 1);
+    final RowBounds rowBounds = RowBounds.valueOf(5, 1);
     final DefaultResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, ms,
       resultHandler, boundSql, rowBounds);
 
@@ -125,7 +124,7 @@ class DefaultResultSetHandlerTest2 {
     final Executor executor = null;
     final ResultHandler<?> resultHandler = null;
     final BoundSql boundSql = null;
-    final RowBounds rowBounds = Pagination.of(5, 1);
+    final RowBounds rowBounds = RowBounds.valueOf(5, 1);
     final DefaultResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, ms,
       resultHandler, boundSql, rowBounds);
 

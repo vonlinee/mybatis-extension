@@ -15,9 +15,6 @@
  */
 package org.apache.ibatis.executor;
 
-import java.sql.SQLException;
-import java.util.List;
-
 import org.apache.ibatis.cache.Cache;
 import org.apache.ibatis.cache.CacheKey;
 import org.apache.ibatis.cache.TransactionalCacheManager;
@@ -32,6 +29,9 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.transaction.Transaction;
 import org.jetbrains.annotations.NotNull;
+
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  * @author Clinton Begin
@@ -85,7 +85,7 @@ public class CachingExecutor implements Executor {
 
   @Override
   public <E> List<E> query(@NotNull MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler<?> resultHandler)
-      throws SQLException {
+    throws SQLException {
     BoundSql boundSql = ms.getBoundSql(parameterObject);
     CacheKey key = createCacheKey(ms, parameterObject, rowBounds, boundSql);
     return query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
@@ -108,6 +108,7 @@ public class CachingExecutor implements Executor {
         return list;
       }
     }
+    // 缓存为空
     return delegate.query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
   }
 
@@ -138,8 +139,8 @@ public class CachingExecutor implements Executor {
       for (ParameterMapping parameterMapping : boundSql.getParameterMappings()) {
         if (parameterMapping.getMode() != ParameterMode.IN) {
           throw new ExecutorException(
-              "Caching stored procedures with OUT params is not supported.  Please configure useCache=false in "
-                  + ms.getId() + " statement.");
+            "Caching stored procedures with OUT params is not supported.  Please configure useCache=false in "
+              + ms.getId() + " statement.");
         }
       }
     }

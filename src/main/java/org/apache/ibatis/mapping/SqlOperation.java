@@ -11,4 +11,10 @@ public interface SqlOperation {
   List<ParameterMapping> getParameterMappings();
 
   Object getParameterObject();
+
+  boolean hasAdditionalParameter(String name);
+
+  void setAdditionalParameter(String name, Object value);
+
+  Object getAdditionalParameter(String name);
 }

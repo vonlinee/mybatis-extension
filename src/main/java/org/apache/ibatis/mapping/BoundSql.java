@@ -94,15 +94,18 @@ public class BoundSql implements SqlOperation {
     return parameterObject;
   }
 
+  @Override
   public boolean hasAdditionalParameter(String name) {
     String paramName = PropertyTokenizer.getPropertyName(name);
     return additionalParameters.containsKey(paramName);
   }
 
+  @Override
   public void setAdditionalParameter(String name, Object value) {
     metaParameters.setValue(name, value);
   }
 
+  @Override
   public Object getAdditionalParameter(String name) {
     return metaParameters.getValue(name);
   }

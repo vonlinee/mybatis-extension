@@ -15,8 +15,6 @@
  */
 package org.apache.ibatis.binding;
 
-import java.util.List;
-
 import org.apache.ibatis.annotations.Arg;
 import org.apache.ibatis.annotations.CacheNamespace;
 import org.apache.ibatis.annotations.ConstructorArgs;
@@ -31,6 +29,8 @@ import org.apache.ibatis.domain.blog.Section;
 import org.apache.ibatis.executor.BatchResult;
 import org.apache.ibatis.session.RowBounds;
 
+import java.util.List;
+
 @CacheNamespace(readWrite = false)
 public interface BoundAuthorMapper {
 
@@ -41,6 +41,12 @@ public interface BoundAuthorMapper {
   // ======================================================
 
   List<Post> findPostsInList(List<Integer> ids);
+
+  /**
+   * 原始sql查询
+   */
+  @Select("select * from post")
+  List<Post> findAllPosts();
 
   // ======================================================
 

@@ -28,7 +28,7 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.ibatis.executor.result.DefaultResultHandler;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.Configuration;
-import org.apache.ibatis.session.Pagination;
+import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
@@ -43,6 +43,7 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -55,6 +56,9 @@ import static com.googlecode.catchexception.apis.BDDCatchException.when;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Mapper方法和XML中sql绑定
+ */
 class BindingTest {
   private static SqlSessionFactory sqlSessionFactory;
 
@@ -94,17 +98,20 @@ class BindingTest {
   void shouldFindPostsInList() {
     try (SqlSession session = sqlSessionFactory.openSession()) {
       BoundAuthorMapper mapper = session.getMapper(BoundAuthorMapper.class);
-      List<Post> posts = mapper.findPostsInList(new ArrayList<Integer>() {
-        private static final long serialVersionUID = 1L;
-
-        {
-          add(1);
-          add(3);
-          add(5);
-        }
-      });
+      List<Post> posts = mapper.findPostsInList(new ArrayList<>(Arrays.asList(1, 3, 5)));
       assertEquals(3, posts.size());
       session.rollback();
+    }
+  }
+
+  @Test
+  void shouldFindAllPosts() {
+    try (SqlSession session = sqlSessionFactory.openSession()) {
+      BoundAuthorMapper mapper = session.getMapper(BoundAuthorMapper.class);
+      List<Post> posts = mapper.findAllPosts();
+      List<Post> posts1 = mapper.findAllPosts();
+
+      System.out.println(posts);
     }
   }
 
@@ -123,7 +130,7 @@ class BindingTest {
   void shouldFindThreeSpecificPosts() {
     try (SqlSession session = sqlSessionFactory.openSession()) {
       BoundAuthorMapper mapper = session.getMapper(BoundAuthorMapper.class);
-      List<Post> posts = mapper.findThreeSpecificPosts(1, Pagination.of(1, 1), 3, 5);
+      List<Post> posts = mapper.findThreeSpecificPosts(1, RowBounds.valueOf(1, 1), 3, 5);
       assertEquals(1, posts.size());
       assertEquals(3, posts.get(0).getId());
       session.rollback();
@@ -319,7 +326,7 @@ class BindingTest {
   void shouldSelectListOfPostsLike() {
     try (SqlSession session = sqlSessionFactory.openSession()) {
       BoundBlogMapper mapper = session.getMapper(BoundBlogMapper.class);
-      List<Post> posts = mapper.selectPostsLike(Pagination.of(1, 1), "%a%");
+      List<Post> posts = mapper.selectPostsLike(RowBounds.valueOf(1, 1), "%a%");
       assertEquals(1, posts.size());
     }
   }
@@ -328,7 +335,7 @@ class BindingTest {
   void shouldSelectListOfPostsLikeTwoParameters() {
     try (SqlSession session = sqlSessionFactory.openSession()) {
       BoundBlogMapper mapper = session.getMapper(BoundBlogMapper.class);
-      List<Post> posts = mapper.selectPostsLikeSubjectAndBody(Pagination.of(1, 1), "%a%", "%a%");
+      List<Post> posts = mapper.selectPostsLikeSubjectAndBody(RowBounds.valueOf(1, 1), "%a%", "%a%");
       assertEquals(1, posts.size());
     }
   }
@@ -420,9 +427,7 @@ class BindingTest {
   void shouldSelectOneBlogAsMap() {
     try (SqlSession session = sqlSessionFactory.openSession()) {
       BoundBlogMapper mapper = session.getMapper(BoundBlogMapper.class);
-      Map<String, Object> blog = mapper.selectBlogAsMap(new HashMap<String, Object>() {
-        private static final long serialVersionUID = 1L;
-
+      Map<String, Object> blog = mapper.selectBlogAsMap(new HashMap<>() {
         {
           put("id", 1);
         }
@@ -512,7 +517,7 @@ class BindingTest {
   void shouldReturnANotNullHashCode() {
     try (SqlSession session = sqlSessionFactory.openSession()) {
       BoundBlogMapper mapper = session.getMapper(BoundBlogMapper.class);
-      assertNotNull(mapper.hashCode());
+      assertNotNull(mapper);
     }
   }
 
@@ -546,7 +551,7 @@ class BindingTest {
   void shouldFailWhenSelectingOneBlogWithNonExistentNestedParam() {
     try (SqlSession session = sqlSessionFactory.openSession()) {
       BoundBlogMapper mapper = session.getMapper(BoundBlogMapper.class);
-      mapper.selectBlogByNonExistentNestedParam(1, Collections.<String, Object>emptyMap());
+      mapper.selectBlogByNonExistentNestedParam(1, Collections.emptyMap());
     }
   }
 
@@ -653,7 +658,7 @@ class BindingTest {
     try (SqlSession session = sqlSessionFactory.openSession()) {
       BoundBlogMapper mapper = session.getMapper(BoundBlogMapper.class);
       final DefaultResultHandler handler = new DefaultResultHandler();
-      mapper.collectRangeBlogs(handler, Pagination.of(1, 1));
+      mapper.collectRangeBlogs(handler, RowBounds.valueOf(1, 1));
 
       assertEquals(1, handler.getResultList().size());
       Blog blog = (Blog) handler.getResultList().get(0);
@@ -665,7 +670,7 @@ class BindingTest {
   void executeWithMapKeyAndRowBounds() {
     try (SqlSession session = sqlSessionFactory.openSession()) {
       BoundBlogMapper mapper = session.getMapper(BoundBlogMapper.class);
-      Map<Integer, Blog> blogs = mapper.selectRangeBlogsAsMapById(Pagination.of(1, 1));
+      Map<Integer, Blog> blogs = mapper.selectRangeBlogsAsMapById(RowBounds.valueOf(1, 1));
 
       assertEquals(1, blogs.size());
       Blog blog = blogs.get(2);
@@ -677,7 +682,7 @@ class BindingTest {
   void executeWithCursorAndRowBounds() {
     try (SqlSession session = sqlSessionFactory.openSession()) {
       BoundBlogMapper mapper = session.getMapper(BoundBlogMapper.class);
-      try (Cursor<Blog> blogs = mapper.openRangeBlogs(Pagination.of(1, 1))) {
+      try (Cursor<Blog> blogs = mapper.openRangeBlogs(RowBounds.valueOf(1, 1))) {
         Iterator<Blog> blogIterator = blogs.iterator();
         Blog blog = blogIterator.next();
         assertEquals(2, blog.getId());

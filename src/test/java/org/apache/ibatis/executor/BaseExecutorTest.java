@@ -273,7 +273,7 @@ class BaseExecutorTest extends BaseDataTest {
     Executor executor = createExecutor(new JdbcTransaction(ds, null, false));
     try {
       MappedStatement selectStatement = ExecutorTestHelper.prepareSelectDiscriminatedPost(config);
-      List<Map<String, String>> products = executor.query(selectStatement, null, Pagination.of(2, 2),
+      List<Map<String, String>> products = executor.query(selectStatement, null, RowBounds.valueOf(2, 2),
         Executor.NO_RESULT_HANDLER);
       assertEquals(2, products.size());
       for (Map<String, String> m : products) {

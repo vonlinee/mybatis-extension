@@ -29,33 +29,33 @@ public class PropertyTokenizer implements Iterator<PropertyTokenizer> {
   private final String children;
 
   public PropertyTokenizer(@NotNull String fullName) {
-    int delim = fullName.indexOf('.');
-    if (delim > -1) {
-      name = fullName.substring(0, delim);
-      children = fullName.substring(delim + 1);
+    int delimiterIndex = fullName.indexOf('.');
+    if (delimiterIndex > -1) {
+      name = fullName.substring(0, delimiterIndex);
+      children = fullName.substring(delimiterIndex + 1);
     } else {
       name = fullName;
       children = null;
     }
     indexedName = name;
-    delim = name.indexOf('[');
-    if (delim > -1) {
-      index = name.substring(delim + 1, name.length() - 1);
-      name = name.substring(0, delim);
+    delimiterIndex = name.indexOf('[');
+    if (delimiterIndex > -1) {
+      index = name.substring(delimiterIndex + 1, name.length() - 1);
+      name = name.substring(0, delimiterIndex);
     }
   }
 
   public static String getPropertyName(String fullName) {
     String name;
-    int delim = fullName.indexOf('.');
-    if (delim > -1) {
-      name = fullName.substring(0, delim);
+    int delimiterIndex = fullName.indexOf('.');
+    if (delimiterIndex > -1) {
+      name = fullName.substring(0, delimiterIndex);
     } else {
       name = fullName;
     }
-    delim = name.indexOf('[');
-    if (delim > -1) {
-      name = name.substring(0, delim);
+    delimiterIndex = name.indexOf('[');
+    if (delimiterIndex > -1) {
+      name = name.substring(0, delimiterIndex);
     }
     return name;
   }

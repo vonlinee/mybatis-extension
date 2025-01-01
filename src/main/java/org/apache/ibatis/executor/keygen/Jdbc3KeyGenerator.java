@@ -22,6 +22,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -107,7 +108,7 @@ public class Jdbc3KeyGenerator implements KeyGenerator {
 
   private void assignKeysToParam(Configuration configuration, ResultSet rs, ResultSetMetaData rsmd,
       String[] keyProperties, Object parameter) throws SQLException {
-    Collection<?> params = collectionize(parameter);
+    Collection<?> params = asCollection(parameter);
     if (params.isEmpty()) {
       return;
     }
@@ -157,7 +158,7 @@ public class Jdbc3KeyGenerator implements KeyGenerator {
       Entry<String, KeyAssigner> entry = getAssignerForParamMap(configuration, rsmd, i + 1, paramMap, keyProperties[i],
           keyProperties, true);
       Entry<Iterator<?>, List<KeyAssigner>> iteratorPair = CollectionUtils.computeIfAbsent(assignerMap, entry.getKey(),
-          k -> CollectionUtils.entry(collectionize(paramMap.get(k)).iterator(), new ArrayList<>()));
+          k -> CollectionUtils.entry(asCollection(paramMap.get(k)).iterator(), new ArrayList<>()));
       iteratorPair.getValue().add(entry.getValue());
     }
     long counter = 0;
@@ -218,14 +219,14 @@ public class Jdbc3KeyGenerator implements KeyGenerator {
     return paramMap.keySet().iterator().next();
   }
 
-  private static Collection<?> collectionize(Object param) {
+  private static Collection<?> asCollection(Object param) {
     if (param instanceof Collection) {
       return (Collection<?>) param;
     }
     if (param instanceof Object[]) {
       return Arrays.asList((Object[]) param);
     } else {
-      return Arrays.asList(param);
+      return Collections.singletonList(param);
     }
   }
 
@@ -271,8 +272,7 @@ public class Jdbc3KeyGenerator implements KeyGenerator {
           metaParam.setValue(propertyName, value);
         }
       } catch (SQLException e) {
-        throw new ExecutorException("Error getting generated key or setting result to parameter object. Cause: " + e,
-            e);
+        throw new ExecutorException("Error getting generated key or setting result to parameter object. Cause: " + e, e);
       }
     }
   }

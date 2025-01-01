@@ -49,6 +49,7 @@ public abstract class BaseExecutor implements Executor {
 
   private static final Log log = LogFactory.getLog(BaseExecutor.class);
 
+  @NotNull
   protected Transaction transaction;
   protected Executor wrapper;
 
@@ -60,7 +61,7 @@ public abstract class BaseExecutor implements Executor {
   protected int queryStack;
   private boolean closed;
 
-  protected BaseExecutor(Configuration configuration, Transaction transaction) {
+  protected BaseExecutor(Configuration configuration, @NotNull Transaction transaction) {
     this.transaction = transaction;
     this.deferredLoads = new ConcurrentLinkedQueue<>();
     this.localCache = new PerpetualCache("LocalCache");
@@ -140,7 +141,7 @@ public abstract class BaseExecutor implements Executor {
   public <E> List<E> query(@NotNull MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler<?> resultHandler,
                            CacheKey key, BoundSql boundSql) throws SQLException {
     ErrorContext.instance().resource(ms.getResource()).activity("executing a query").object(ms.getId());
-    if (closed) {
+    if (isClosed()) {
       throw new ExecutorException("Executor was closed.");
     }
     if (queryStack == 0 && ms.isFlushCacheRequired()) {
@@ -151,6 +152,7 @@ public abstract class BaseExecutor implements Executor {
       queryStack++;
       list = resultHandler == null ? (List<E>) localCache.getObject(key) : null;
       if (list != null) {
+        // 缓存中存在
         handleLocallyCachedOutputParameters(ms, key, parameter, boundSql);
       } else {
         list = queryFromDatabase(ms, parameter, rowBounds, resultHandler, key, boundSql);
@@ -158,6 +160,11 @@ public abstract class BaseExecutor implements Executor {
     } finally {
       queryStack--;
     }
+    handleDeferredLoad();
+    return list;
+  }
+
+  private void handleDeferredLoad() {
     if (queryStack == 0) {
       for (DeferredLoad deferredLoad : deferredLoads) {
         deferredLoad.load();
@@ -169,7 +176,6 @@ public abstract class BaseExecutor implements Executor {
         clearLocalCache();
       }
     }
-    return list;
   }
 
   @Override
@@ -178,6 +184,9 @@ public abstract class BaseExecutor implements Executor {
     return doQueryCursor(ms, parameter, rowBounds, boundSql);
   }
 
+  /**
+   * 一级缓存中存在就赋值进去 没有就添加到队列里面
+   */
   @Override
   public void deferLoad(@NotNull MappedStatement ms, MetaObject resultObject, String property, CacheKey key,
                         Class<?> targetType) {

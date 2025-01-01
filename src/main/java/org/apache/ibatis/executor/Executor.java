@@ -47,6 +47,9 @@ public interface Executor {
 
   List<BatchResult> flushStatements() throws SQLException;
 
+  /**
+   * 提交事务
+   */
   void commit(boolean required) throws SQLException;
 
   void rollback(boolean required) throws SQLException;
@@ -57,12 +60,30 @@ public interface Executor {
 
   void clearLocalCache();
 
+  /**
+   * 嵌套查询, 延迟加载
+   */
   void deferLoad(@NotNull MappedStatement ms, MetaObject resultObject, String property, CacheKey key, Class<?> targetType);
 
+  /**
+   * 事务管理
+   *
+   * @return 事务管理实现
+   */
   Transaction getTransaction();
 
+  /**
+   * 关闭操作
+   *
+   * @param forceRollback 是否强制回滚
+   */
   void close(boolean forceRollback);
 
+  /**
+   * 当前Executor是否已经关闭
+   *
+   * @return Executor是否已经关闭
+   */
   boolean isClosed();
 
   void setExecutorWrapper(Executor executor);

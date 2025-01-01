@@ -597,8 +597,8 @@ class SqlSessionTest extends BaseDataTest {
     configuration.addMapper(AuthorMapperWithRowBounds.class);
     SqlSessionFactory sqlMapperWithMultipleHandlers = new DefaultSqlSessionFactory(configuration);
     try (SqlSession sqlSession = sqlMapperWithMultipleHandlers.openSession()) {
-      RowBounds bounds1 = Pagination.of(0, 1);
-      RowBounds bounds2 = Pagination.of(0, 1);
+      RowBounds bounds1 = RowBounds.valueOf(0, 1);
+      RowBounds bounds2 = RowBounds.valueOf(0, 1);
       AuthorMapperWithRowBounds mapper = sqlSession.getMapper(AuthorMapperWithRowBounds.class);
       Assertions.assertThrows(BindingException.class, () -> mapper.selectAuthor(101, bounds1, bounds2));
     }
@@ -656,7 +656,7 @@ class SqlSessionTest extends BaseDataTest {
   void shouldLimitResultsUsingMapperClass() {
     try (SqlSession session = sqlMapper.openSession()) {
       BlogMapper mapper = session.getMapper(BlogMapper.class);
-      List<Map<String, Object>> posts = mapper.selectAllPosts(Pagination.of(0, 2), null);
+      List<Map<String, Object>> posts = mapper.selectAllPosts(RowBounds.valueOf(0, 2), null);
       assertEquals(2, posts.size());
       assertEquals(1, posts.get(0).get("ID"));
       assertEquals(2, posts.get(1).get("ID"));
@@ -706,7 +706,7 @@ class SqlSessionTest extends BaseDataTest {
   void shouldOffsetAndLimitResultsUsingMapperClass() {
     try (SqlSession session = sqlMapper.openSession()) {
       BlogMapper mapper = session.getMapper(BlogMapper.class);
-      List<Map<String, Object>> posts = mapper.selectAllPosts(Pagination.of(2, 3));
+      List<Map<String, Object>> posts = mapper.selectAllPosts(RowBounds.valueOf(2, 3));
       assertEquals(3, posts.size());
       assertEquals(3, posts.get(0).get("ID"));
       assertEquals(4, posts.get(1).get("ID"));

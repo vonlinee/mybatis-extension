@@ -24,7 +24,7 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class CollectionUtils {
+public final class CollectionUtils {
 
   public static boolean isEmpty(Collection<?> collection) {
     return collection == null || collection.isEmpty();

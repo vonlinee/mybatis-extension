@@ -138,12 +138,12 @@ public class DefaultSqlSession implements SqlSession {
 
   @Override
   public <E> List<E> selectList(@NotNull String statement) {
-    return this.selectList(statement, null);
+    return this.selectList(statement, null, RowBounds.DEFAULT, Executor.NO_RESULT_HANDLER);
   }
 
   @Override
   public <E> List<E> selectList(@NotNull String statement, Object parameter) {
-    return this.selectList(statement, parameter, RowBounds.DEFAULT);
+    return this.selectList(statement, parameter, RowBounds.DEFAULT, Executor.NO_RESULT_HANDLER);
   }
 
   @Override

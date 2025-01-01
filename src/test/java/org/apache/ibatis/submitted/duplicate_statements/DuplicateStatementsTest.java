@@ -21,6 +21,7 @@ import java.util.List;
 import org.apache.ibatis.BaseDataTest;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.Pagination;
+import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
@@ -59,7 +60,7 @@ class DuplicateStatementsTest {
   void shouldGetFirstFourUsers() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
-      List<User> users = mapper.getAllUsers(Pagination.of(0, 4));
+      List<User> users = mapper.getAllUsers(RowBounds.valueOf(0, 4));
       Assertions.assertEquals(4, users.size());
     }
   }
@@ -81,7 +82,7 @@ class DuplicateStatementsTest {
     sqlSessionFactory.getConfiguration().addMapper(AnnotatedMapper.class);
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       AnnotatedMapper mapper = sqlSession.getMapper(AnnotatedMapper.class);
-      List<User> users = mapper.getAllUsers(Pagination.of(0, 4));
+      List<User> users = mapper.getAllUsers(RowBounds.valueOf(0, 4));
       Assertions.assertEquals(4, users.size());
     }
   }
