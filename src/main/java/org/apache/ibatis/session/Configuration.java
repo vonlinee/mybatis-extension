@@ -658,6 +658,24 @@ public class Configuration {
   /**
    * Gets the language driver.
    *
+   * @param lang the lang driver class alias.
+   * @return the language driver
+   */
+  public LanguageDriver getLanguageDriver(String lang) {
+    Class<? extends LanguageDriver> langClass = null;
+    if (lang != null) {
+      try {
+        langClass = typeAliasRegistry.resolveAlias(lang);
+      } catch (Throwable throwable) {
+        // fallback to default
+      }
+    }
+    return getLanguageDriver(langClass);
+  }
+
+  /**
+   * Gets the language driver.
+   *
    * @param langClass the lang class
    * @return the language driver
    * @since 3.5.1
