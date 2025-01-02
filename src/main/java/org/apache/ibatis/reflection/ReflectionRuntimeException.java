@@ -20,22 +20,22 @@ import org.apache.ibatis.exceptions.PersistenceException;
 /**
  * @author Clinton Begin
  */
-public class ReflectionException extends PersistenceException {
+public class ReflectionRuntimeException extends PersistenceException {
 
   private static final long serialVersionUID = 7642570221267566591L;
 
-  public ReflectionException() {
+  public ReflectionRuntimeException() {
   }
 
-  public ReflectionException(String message) {
+  public ReflectionRuntimeException(String message) {
     super(message);
   }
 
-  public ReflectionException(String message, Throwable cause) {
+  public ReflectionRuntimeException(String message, Throwable cause) {
     super(message, cause);
   }
 
-  public ReflectionException(Throwable cause) {
+  public ReflectionRuntimeException(Throwable cause) {
     super(cause);
   }
 

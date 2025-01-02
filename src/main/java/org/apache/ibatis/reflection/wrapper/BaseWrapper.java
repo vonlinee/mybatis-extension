@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.reflection.MetaObject;
-import org.apache.ibatis.reflection.ReflectionException;
+import org.apache.ibatis.reflection.ReflectionRuntimeException;
 import org.apache.ibatis.reflection.SystemMetaObject;
 import org.apache.ibatis.reflection.property.PropertyTokenizer;
 
@@ -44,7 +44,7 @@ public abstract class BaseWrapper implements ObjectWrapper {
 
   protected Object getCollectionValue(PropertyTokenizer prop, Object collection) {
     if (collection == null) {
-      throw new ReflectionException("Cannot get the value '" + prop.getIndexedName() + "' because the property '"
+      throw new ReflectionRuntimeException("Cannot get the value '" + prop.getIndexedName() + "' because the property '"
           + prop.getName() + "' is null.");
     }
     if (collection instanceof Map) {
@@ -72,14 +72,14 @@ public abstract class BaseWrapper implements ObjectWrapper {
     } else if (collection instanceof short[]) {
       return ((short[]) collection)[i];
     } else {
-      throw new ReflectionException("Cannot get the value '" + prop.getIndexedName() + "' because the property '"
+      throw new ReflectionRuntimeException("Cannot get the value '" + prop.getIndexedName() + "' because the property '"
           + prop.getName() + "' is not Map, List or Array.");
     }
   }
 
   protected void setCollectionValue(PropertyTokenizer prop, Object collection, Object value) {
     if (collection == null) {
-      throw new ReflectionException("Cannot set the value '" + prop.getIndexedName() + "' because the property '"
+      throw new ReflectionRuntimeException("Cannot set the value '" + prop.getIndexedName() + "' because the property '"
           + prop.getName() + "' is null.");
     }
     if (collection instanceof Map) {
@@ -107,7 +107,7 @@ public abstract class BaseWrapper implements ObjectWrapper {
       } else if (collection instanceof short[]) {
         ((short[]) collection)[i] = (Short) value;
       } else {
-        throw new ReflectionException("Cannot set the value '" + prop.getIndexedName() + "' because the property '"
+        throw new ReflectionRuntimeException("Cannot set the value '" + prop.getIndexedName() + "' because the property '"
             + prop.getName() + "' is not Map, List or Array.");
       }
     }

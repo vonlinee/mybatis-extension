@@ -17,7 +17,7 @@ package org.apache.ibatis.reflection.property;
 
 import java.util.Locale;
 
-import org.apache.ibatis.reflection.ReflectionException;
+import org.apache.ibatis.reflection.ReflectionRuntimeException;
 
 /**
  * @author Clinton Begin
@@ -34,7 +34,7 @@ public final class PropertyNamer {
     } else if (name.startsWith("get") || name.startsWith("set")) {
       name = name.substring(3);
     } else {
-      throw new ReflectionException(
+      throw new ReflectionRuntimeException(
           "Error parsing property name '" + name + "'.  Didn't start with 'is', 'get' or 'set'.");
     }
 

@@ -46,9 +46,4 @@ public final class TemplateArgumentsMap implements TemplateArguments {
   public boolean isMap() {
     return true;
   }
-
-  @Override
-  public Object getDataModel() {
-    return argumentsMap;
-  }
 }

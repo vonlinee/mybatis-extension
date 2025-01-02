@@ -15,15 +15,28 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
-import java.util.regex.Pattern;
-
 import org.apache.ibatis.parsing.GenericTokenParser;
 import org.apache.ibatis.parsing.TokenHandler;
 import org.apache.ibatis.scripting.ScriptingException;
 import org.apache.ibatis.type.SimpleTypeRegistry;
 
+import java.util.regex.Pattern;
+
 /**
+ * xml element that contains text node as children only, typically just some literal strings.
+ * <p>
+ * for example:
+ * <blockquote><pre>
+ * <select id="xxx">
+ *   select * from t_user
+ *   <if test="some expression">where user_id = 1</if>
+ * </select>
+ * </pre></blockquote>
+ * the string (select * from t_user) will be parsed as a text sql node, while
+ * the string (where user_id = 1) will be parsed as the body of a IfSqlNode.
+ *
  * @author Clinton Begin
+ * @see IfSqlNode
  */
 public class TextSqlNode implements SqlNode {
   private final String text;

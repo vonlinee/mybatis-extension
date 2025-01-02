@@ -30,7 +30,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import org.apache.ibatis.reflection.ReflectionException;
+import org.apache.ibatis.reflection.ReflectionRuntimeException;
 import org.apache.ibatis.reflection.Reflector;
 
 /**
@@ -83,7 +83,7 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
           .map(Class::getSimpleName).collect(Collectors.joining(","));
       String argValues = Optional.ofNullable(constructorArgs).orElseGet(Collections::emptyList).stream()
           .map(String::valueOf).collect(Collectors.joining(","));
-      throw new ReflectionException("Error instantiating " + type + " with invalid types (" + argTypes + ") or values ("
+      throw new ReflectionRuntimeException("Error instantiating " + type + " with invalid types (" + argTypes + ") or values ("
           + argValues + "). Cause: " + e, e);
     }
   }

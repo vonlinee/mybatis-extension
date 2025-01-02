@@ -15,15 +15,15 @@
  */
 package org.apache.ibatis.session;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.util.Properties;
-
 import org.apache.ibatis.builder.xml.XMLConfigBuilder;
 import org.apache.ibatis.exceptions.ExceptionFactory;
 import org.apache.ibatis.executor.ErrorContext;
+import org.apache.ibatis.io.IOUtils;
 import org.apache.ibatis.session.defaults.DefaultSqlSessionFactory;
+
+import java.io.InputStream;
+import java.io.Reader;
+import java.util.Properties;
 
 /**
  * Builds {@link SqlSession} instances.
@@ -52,13 +52,7 @@ public class SqlSessionFactoryBuilder {
       throw ExceptionFactory.wrapException("Error building SqlSession.", e);
     } finally {
       ErrorContext.instance().reset();
-      try {
-        if (reader != null) {
-          reader.close();
-        }
-      } catch (IOException e) {
-        // Intentionally ignore. Prefer previous error.
-      }
+      IOUtils.closeSilently(reader);
     }
   }
 
@@ -82,13 +76,7 @@ public class SqlSessionFactoryBuilder {
       throw ExceptionFactory.wrapException("Error building SqlSession.", e);
     } finally {
       ErrorContext.instance().reset();
-      try {
-        if (inputStream != null) {
-          inputStream.close();
-        }
-      } catch (IOException e) {
-        // Intentionally ignore. Prefer previous error.
-      }
+      IOUtils.closeSilently(inputStream);
     }
   }
 

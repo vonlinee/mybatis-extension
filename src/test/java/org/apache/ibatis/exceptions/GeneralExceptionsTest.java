@@ -28,7 +28,7 @@ import org.apache.ibatis.executor.ExecutorException;
 import org.apache.ibatis.logging.LogException;
 import org.apache.ibatis.parsing.ParsingException;
 import org.apache.ibatis.plugin.PluginException;
-import org.apache.ibatis.reflection.ReflectionException;
+import org.apache.ibatis.reflection.ReflectionRuntimeException;
 import org.apache.ibatis.scripting.ScriptingException;
 import org.apache.ibatis.session.SqlSessionException;
 import org.apache.ibatis.transaction.TransactionException;
@@ -51,7 +51,7 @@ class GeneralExceptionsTest {
   void shouldInstantiateAndThrowAllCustomExceptions() throws Exception {
     Class<?>[] exceptionTypes = { BindingException.class, CacheException.class, DataSourceException.class,
         ExecutorException.class, LogException.class, ParsingException.class, BuilderException.class,
-        PluginException.class, ReflectionException.class, PersistenceException.class, SqlSessionException.class,
+        PluginException.class, ReflectionRuntimeException.class, PersistenceException.class, SqlSessionException.class,
         TransactionException.class, TypeException.class, ScriptingException.class };
     for (Class<?> exceptionType : exceptionTypes) {
       testExceptionConstructors(exceptionType);

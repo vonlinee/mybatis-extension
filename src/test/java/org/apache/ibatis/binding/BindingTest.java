@@ -18,15 +18,7 @@ package org.apache.ibatis.binding;
 import static com.googlecode.catchexception.apis.BDDCatchException.caughtException;
 import static com.googlecode.catchexception.apis.BDDCatchException.when;
 import static org.assertj.core.api.BDDAssertions.then;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -45,7 +37,6 @@ import javax.sql.DataSource;
 import net.sf.cglib.proxy.Factory;
 
 import org.apache.ibatis.BaseDataTest;
-import org.apache.ibatis.binding.MapperProxy.MapperMethodInvoker;
 import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.domain.blog.Author;
 import org.apache.ibatis.domain.blog.Blog;
@@ -106,8 +97,7 @@ class BindingTest {
   void shouldFindPostsInList() {
     try (SqlSession session = sqlSessionFactory.openSession()) {
       BoundAuthorMapper mapper = session.getMapper(BoundAuthorMapper.class);
-      List<Post> posts = mapper.findPostsInList(new ArrayList<Integer>() {
-        private static final long serialVersionUID = 1L;
+      List<Post> posts = mapper.findPostsInList(new ArrayList<>() {
         {
           add(1);
           add(3);
@@ -430,8 +420,9 @@ class BindingTest {
   void shouldSelectOneBlogAsMap() {
     try (SqlSession session = sqlSessionFactory.openSession()) {
       BoundBlogMapper mapper = session.getMapper(BoundBlogMapper.class);
-      Map<String, Object> blog = mapper.selectBlogAsMap(new HashMap<String, Object>() {
+      Map<String, Object> blog = mapper.selectBlogAsMap(new HashMap<>() {
         private static final long serialVersionUID = 1L;
+
         {
           put("id", 1);
         }
@@ -487,9 +478,9 @@ class BindingTest {
       BoundBlogMapper mapper = session.getMapper(BoundBlogMapper.class);
       List<Post> posts = mapper.selectPosts();
       assertEquals(5, posts.size());
-      assertTrue(posts.get(0) instanceof DraftPost);
+      assertInstanceOf(DraftPost.class, posts.get(0));
       assertFalse(posts.get(1) instanceof DraftPost);
-      assertTrue(posts.get(2) instanceof DraftPost);
+      assertInstanceOf(DraftPost.class, posts.get(2));
       assertFalse(posts.get(3) instanceof DraftPost);
       assertFalse(posts.get(4) instanceof DraftPost);
     }
@@ -501,9 +492,9 @@ class BindingTest {
       BoundBlogMapper mapper = session.getMapper(BoundBlogMapper.class);
       List<Post> posts = mapper.selectPostsWithResultMap();
       assertEquals(5, posts.size());
-      assertTrue(posts.get(0) instanceof DraftPost);
+      assertInstanceOf(DraftPost.class, posts.get(0));
       assertFalse(posts.get(1) instanceof DraftPost);
-      assertTrue(posts.get(2) instanceof DraftPost);
+      assertInstanceOf(DraftPost.class, posts.get(2));
       assertFalse(posts.get(3) instanceof DraftPost);
       assertFalse(posts.get(4) instanceof DraftPost);
     }
@@ -628,11 +619,11 @@ class BindingTest {
       BoundBlogMapper mapper = session.getMapper(BoundBlogMapper.class);
       List<Blog> blogs = mapper.selectBlogsWithAutorAndPosts();
       assertEquals(2, blogs.size());
-      assertTrue(blogs.get(0) instanceof Proxy);
+      assertInstanceOf(Proxy.class, blogs.get(0));
       assertEquals(101, blogs.get(0).getAuthor().getId());
       assertEquals(1, blogs.get(0).getPosts().size());
       assertEquals(1, blogs.get(0).getPosts().get(0).getId());
-      assertTrue(blogs.get(1) instanceof Proxy);
+      assertInstanceOf(Proxy.class, blogs.get(1));
       assertEquals(102, blogs.get(1).getAuthor().getId());
       assertEquals(1, blogs.get(1).getPosts().size());
       assertEquals(2, blogs.get(1).getPosts().get(0).getId());

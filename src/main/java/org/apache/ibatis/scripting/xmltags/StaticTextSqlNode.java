@@ -16,6 +16,8 @@
 package org.apache.ibatis.scripting.xmltags;
 
 /**
+ * the xml element does not contains ${foo}.
+ *
  * @author Clinton Begin
  */
 public class StaticTextSqlNode implements SqlNode {

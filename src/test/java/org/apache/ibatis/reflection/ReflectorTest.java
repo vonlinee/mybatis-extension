@@ -227,7 +227,7 @@ class ReflectorTest {
     Invoker ambiguousInvoker = reflector.getSetInvoker("prop2");
     Object[] param = String.class.equals(paramType) ? new String[] { "x" } : new Integer[] { 1 };
     when(() -> ambiguousInvoker.invoke(new BeanClass(), param));
-    then(caughtException()).isInstanceOf(ReflectionException.class)
+    then(caughtException()).isInstanceOf(ReflectionRuntimeException.class)
         .hasMessageMatching("Ambiguous setters defined for property 'prop2' in class '"
             + BeanClass.class.getName().replace("$", "\\$")
             + "' with types '(java.lang.String|java.lang.Integer|boolean)' and '(java.lang.String|java.lang.Integer|boolean)'\\.");
@@ -267,7 +267,7 @@ class ReflectorTest {
 
     Invoker ambiguousInvoker = reflector.getGetInvoker("prop2");
     when(() -> ambiguousInvoker.invoke(new BeanClass(), new Integer[] { 1 }));
-    then(caughtException()).isInstanceOf(ReflectionException.class)
+    then(caughtException()).isInstanceOf(ReflectionRuntimeException.class)
         .hasMessageContaining("Illegal overloaded getter method with ambiguous type for property 'prop2' in class '"
             + BeanClass.class.getName()
             + "'. This breaks the JavaBeans specification and can cause unpredictable results.");
@@ -307,7 +307,7 @@ class ReflectorTest {
 
     Invoker ambiguousInvoker = reflector.getGetInvoker("prop2");
     when(() -> ambiguousInvoker.invoke(new BeanClass(), null));
-    then(caughtException()).isInstanceOf(ReflectionException.class)
+    then(caughtException()).isInstanceOf(ReflectionRuntimeException.class)
         .hasMessageContaining("Illegal overloaded getter method with ambiguous type for property 'prop2' in class '"
             + BeanClass.class.getName()
             + "'. This breaks the JavaBeans specification and can cause unpredictable results.");
@@ -358,7 +358,7 @@ class ReflectorTest {
     Object[] param = boolean.class.equals(paramType) ? new Boolean[] { true } : new Integer[] { 1 };
     Invoker ambiguousInvoker = reflector.getSetInvoker("bool");
     when(() -> ambiguousInvoker.invoke(new Bean(), param));
-    then(caughtException()).isInstanceOf(ReflectionException.class).hasMessageMatching(
+    then(caughtException()).isInstanceOf(ReflectionRuntimeException.class).hasMessageMatching(
         "Ambiguous setters defined for property 'bool' in class '" + Bean.class.getName().replace("$", "\\$")
             + "' with types '(java.lang.Integer|boolean)' and '(java.lang.Integer|boolean)'\\.");
   }

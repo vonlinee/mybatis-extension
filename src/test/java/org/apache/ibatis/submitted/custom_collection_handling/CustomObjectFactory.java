@@ -27,7 +27,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.ibatis.reflection.ReflectionException;
+import org.apache.ibatis.reflection.ReflectionRuntimeException;
 import org.apache.ibatis.reflection.factory.ObjectFactory;
 
 public class CustomObjectFactory implements ObjectFactory {
@@ -73,7 +73,7 @@ public class CustomObjectFactory implements ObjectFactory {
           argValues.append(",");
         }
       }
-      throw new ReflectionException("Error instantiating " + type + " with invalid types (" + argTypes + ") or values ("
+      throw new ReflectionRuntimeException("Error instantiating " + type + " with invalid types (" + argTypes + ") or values ("
           + argValues + "). Cause: " + e, e);
     }
   }
