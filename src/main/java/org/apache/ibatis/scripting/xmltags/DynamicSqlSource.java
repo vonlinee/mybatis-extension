@@ -21,6 +21,19 @@ import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * the sql that contains ${} or dynamic sql xml tag (if, foreach. etc.)
+ * <blockquote><pre>
+ * <select id="xxx">
+ *   select * from t where id = ${id}
+ * </select>
+ * </pre></blockquote><p>
+ * or
+ * <blockquote><pre>
+ * <select id="xxx">
+ *   select * from t
+ *   <if test="expression">where id = #{id}</if>
+ * </select>
+ * </pre></blockquote>
  * @author Clinton Begin
  */
 public class DynamicSqlSource implements SqlSource {

@@ -30,6 +30,7 @@ import org.apache.ibatis.jdbc.ScriptRunner;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -66,19 +67,18 @@ class NoActualParamNameTest {
           mapper.getUserCountUsingList(Arrays.asList(1, 2));
           fail();
         } catch (PersistenceException e) {
-          assertEquals("Parameter 'ids' not found. Available parameters are [collection, list]",
-              e.getCause().getMessage());
+          Assertions.assertEquals("Parameter 'ids' not found. Available parameters are [collection, list]", e.getCause().getMessage());
         }
       }
       // use 'collection' as alias
       {
         long count = mapper.getUserCountUsingListWithAliasIsCollection(Arrays.asList(1, 2));
-        assertEquals(2, count);
+        Assertions.assertEquals(2, count);
       }
       // use 'list' as alias
       {
         long count = mapper.getUserCountUsingListWithAliasIsList(Arrays.asList(1, 2));
-        assertEquals(2, count);
+        Assertions.assertEquals(2, count);
       }
     }
   }

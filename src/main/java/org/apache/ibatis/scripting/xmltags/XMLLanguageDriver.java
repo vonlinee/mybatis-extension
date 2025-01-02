@@ -35,7 +35,7 @@ public class XMLLanguageDriver implements LanguageDriver {
 
   @Override
   public ParameterHandler createParameterHandler(MappedStatement mappedStatement, Object parameterObject,
-      BoundSql boundSql) {
+                                                 BoundSql boundSql) {
     return new DefaultParameterHandler(mappedStatement, parameterObject, boundSql);
   }
 
@@ -45,6 +45,28 @@ public class XMLLanguageDriver implements LanguageDriver {
     return builder.parseScriptNode();
   }
 
+  /**
+   * for example:
+   * <blockquote><pre>
+   * {@code @}Update({"<script>",
+   *        "update Author",
+   *        "  <set>",
+   *        "    <if test='username != null'>username=#{username},</if>",
+   *        "    <if test='password != null'>password=#{password},</if>",
+   *        "    <if test='email != null'>email=#{email},</if>",
+   *        "    <if test='bio != null'>bio=#{bio}</if>",
+   *        "  </set>",
+   *        "where id=#{id}",
+   *        "</script>"})
+   * void updateAuthorValues(Author author);
+   * </pre></blockquote>
+   *
+   * @param configuration The MyBatis configuration
+   * @param script        The content of the annotation
+   * @param parameterType input parameter type got from a mapper method or specified in the parameterType xml attribute. Can be
+   *                      null.
+   * @return SqlSource
+   */
   @Override
   public SqlSource createSqlSource(Configuration configuration, String script, Class<?> parameterType) {
     // issue #3
