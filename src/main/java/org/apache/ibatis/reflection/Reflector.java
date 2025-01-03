@@ -333,9 +333,9 @@ public class Reflector {
   }
 
   /**
-   * Checks whether can control member accessible.
+   * Checks whether you can control member accessible.
    *
-   * @return If can control member accessible, it return {@literal true}
+   * @return If you can control member accessible, it return {@literal true}
    *
    * @since 3.5.0
    */
@@ -424,7 +424,7 @@ public class Reflector {
    *
    * @return The array
    */
-  public String[] getGetablePropertyNames() {
+  public String[] getGettablePropertyNames() {
     return readablePropertyNames;
   }
 
@@ -433,7 +433,7 @@ public class Reflector {
    *
    * @return The array
    */
-  public String[] getSetablePropertyNames() {
+  public String[] getSettablePropertyNames() {
     return writablePropertyNames;
   }
 

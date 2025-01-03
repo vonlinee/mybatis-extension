@@ -38,6 +38,7 @@ public class MetaObject {
   private final ObjectWrapperFactory objectWrapperFactory;
   private final ReflectorFactory reflectorFactory;
 
+  @SuppressWarnings({"rawtypes", "unchecked"})
   private MetaObject(Object object, ObjectFactory objectFactory, ObjectWrapperFactory objectWrapperFactory,
       ReflectorFactory reflectorFactory) {
     this.originalObject = object;
@@ -52,7 +53,7 @@ public class MetaObject {
     } else if (object instanceof Map) {
       this.objectWrapper = new MapWrapper(this, (Map) object);
     } else if (object instanceof Collection) {
-      this.objectWrapper = new CollectionWrapper(this, (Collection) object);
+      this.objectWrapper = new CollectionWrapper((Collection) object);
     } else {
       this.objectWrapper = new BeanWrapper(this, object);
     }

@@ -42,6 +42,7 @@ public abstract class BaseWrapper implements ObjectWrapper {
     return metaObject.getValue(prop.getName());
   }
 
+  @SuppressWarnings("rawtypes")
   protected Object getCollectionValue(PropertyTokenizer prop, Object collection) {
     if (collection == null) {
       throw new ReflectionRuntimeException("Cannot get the value '" + prop.getIndexedName() + "' because the property '"
@@ -77,6 +78,7 @@ public abstract class BaseWrapper implements ObjectWrapper {
     }
   }
 
+  @SuppressWarnings({"rawtypes", "unchecked"})
   protected void setCollectionValue(PropertyTokenizer prop, Object collection, Object value) {
     if (collection == null) {
       throw new ReflectionRuntimeException("Cannot set the value '" + prop.getIndexedName() + "' because the property '"

@@ -26,20 +26,20 @@ public class PropertyTokenizer implements Iterator<PropertyTokenizer> {
   private String index;
   private final String children;
 
-  public PropertyTokenizer(String fullname) {
-    int delim = fullname.indexOf('.');
-    if (delim > -1) {
-      name = fullname.substring(0, delim);
-      children = fullname.substring(delim + 1);
+  public PropertyTokenizer(String fullName) {
+    int delimiter = fullName.indexOf('.');
+    if (delimiter > -1) {
+      name = fullName.substring(0, delimiter);
+      children = fullName.substring(delimiter + 1);
     } else {
-      name = fullname;
+      name = fullName;
       children = null;
     }
     indexedName = name;
-    delim = name.indexOf('[');
-    if (delim > -1) {
-      index = name.substring(delim + 1, name.length() - 1);
-      name = name.substring(0, delim);
+    delimiter = name.indexOf('[');
+    if (delimiter > -1) {
+      index = name.substring(delimiter + 1, name.length() - 1);
+      name = name.substring(0, delimiter);
     }
   }
 

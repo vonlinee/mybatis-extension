@@ -16,6 +16,7 @@
 package org.apache.ibatis.scripting.xmltags;
 
 import org.apache.ibatis.parsing.GenericTokenParser;
+import org.apache.ibatis.scripting.ExpressionEvaluator;
 import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
 import org.apache.ibatis.session.Configuration;
 
@@ -28,7 +29,7 @@ import java.util.Optional;
 public class ForEachSqlNode implements SqlNode {
   public static final String ITEM_PREFIX = "__frch_";
 
-  private final OgnlExpressionEvaluator evaluator;
+  private final ExpressionEvaluator evaluator;
   private final String collectionExpression;
   private final boolean nullable;
   private final SqlNode contents;
