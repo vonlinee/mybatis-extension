@@ -56,9 +56,9 @@ public class XMLScriptBuilder extends BaseBuilder {
     nodeHandlerMap.put("where", new WhereHandler());
     nodeHandlerMap.put("set", new SetHandler());
     nodeHandlerMap.put("foreach", new ForEachHandler());
-    nodeHandlerMap.put("if", new IfHandler());
+    nodeHandlerMap.put("if", new IfHandler(this.evaluator));
     nodeHandlerMap.put("choose", new ChooseHandler());
-    nodeHandlerMap.put("when", new IfHandler());
+    nodeHandlerMap.put("when", new IfHandler(this.evaluator));
     nodeHandlerMap.put("otherwise", new OtherwiseHandler());
     nodeHandlerMap.put("bind", new BindHandler(this.evaluator));
   }
@@ -188,15 +188,18 @@ public class XMLScriptBuilder extends BaseBuilder {
   }
 
   private class IfHandler implements NodeHandler {
-    public IfHandler() {
-      // Prevent Synthetic Access
+
+    ExpressionEvaluator evaluator;
+
+    public IfHandler(ExpressionEvaluator evaluator) {
+      this.evaluator = evaluator;
     }
 
     @Override
     public void handleNode(XNode nodeToHandle, List<SqlNode> targetContents) {
       MixedSqlNode mixedSqlNode = parseDynamicTags(nodeToHandle);
       String test = nodeToHandle.getStringAttribute("test");
-      IfSqlNode ifSqlNode = new IfSqlNode(mixedSqlNode, test);
+      IfSqlNode ifSqlNode = new IfSqlNode(this.evaluator, mixedSqlNode, test);
       targetContents.add(ifSqlNode);
     }
   }

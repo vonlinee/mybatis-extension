@@ -22,6 +22,8 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import org.apache.ibatis.scripting.ExpressionEvaluator;
+import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -48,12 +50,13 @@ class SetSqlNodeTest extends SqlNodeTest {
   private static final String FIRST_TEXT = " username = #{username},";
   private static final String SECOND_TEXT = " password = #{password}";
 
+  private final ExpressionEvaluator evaluator = new OgnlExpressionEvaluator();
   private SqlNode sqlNode;
 
   @BeforeEach
   void setup() {
-    SqlNode first = new IfSqlNode(new StaticTextSqlNode(FIRST_TEXT), "username != null");
-    SqlNode second = new IfSqlNode(new StaticTextSqlNode(SECOND_TEXT), "password != null");
+    SqlNode first = new IfSqlNode(evaluator, new StaticTextSqlNode(FIRST_TEXT), "username != null");
+    SqlNode second = new IfSqlNode(evaluator, new StaticTextSqlNode(SECOND_TEXT), "password != null");
     SqlNode contents = new MixedSqlNode(Arrays.asList(first, second));
 
     this.sqlNode = new SetSqlNode(configuration, contents);

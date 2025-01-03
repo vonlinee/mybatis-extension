@@ -15,17 +15,17 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 /**
  * <pre>{@code
@@ -39,7 +39,6 @@ import org.mockito.ArgumentCaptor;
  * }</pre>
  *
  * @author <a href="1181963012mw@gmail.com">mawen12</a>
- *
  * @see <a href="https://mybatis.org/mybatis-3/dynamic-sql.html#foreach">foreach</a>
  */
 class ForEachSqlNodeTest extends SqlNodeTest {
@@ -49,7 +48,7 @@ class ForEachSqlNodeTest extends SqlNodeTest {
   @BeforeEach
   void setup() {
     SqlNode contents = new StaticTextSqlNode("#{name}");
-    this.sqlNode = new ForEachSqlNode(configuration, contents, "list", "index", "item", "ID in (", ")", ",");
+    this.sqlNode = new ForEachSqlNode(configuration, contents, "list", false, "index", "item", "ID in (", ")", ",");
   }
 
   @Test
@@ -74,7 +73,7 @@ class ForEachSqlNodeTest extends SqlNodeTest {
     List<String> allKeyValues = bindKeyCaptor.getAllValues();
     List<Object> allValValues = bindValueCaptor.getAllValues();
     assertEquals(Arrays.asList("index", "__frch_index_0", "item", "__frch_item_0", "index", "__frch_index_0", "item",
-        "__frch_item_0", "index", "__frch_index_0", "item", "__frch_item_0"), allKeyValues);
+      "__frch_item_0", "index", "__frch_index_0", "item", "__frch_item_0"), allKeyValues);
     assertEquals(Arrays.asList(0, 0, "a", "a", 1, 1, "b", "b", 2, 2, "c", "c"), allValValues);
   }
 }

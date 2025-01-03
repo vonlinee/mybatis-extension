@@ -21,6 +21,8 @@ import static org.mockito.Mockito.*;
 
 import java.util.HashMap;
 
+import org.apache.ibatis.scripting.ExpressionEvaluator;
+import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -39,13 +41,13 @@ class IfSqlNodeTest extends SqlNodeTest {
 
   private static final String CONDITION = "title != null";
   private static final String TEXT = "AND title like #{title}";
-
+  private final ExpressionEvaluator evaluator = new OgnlExpressionEvaluator();
   private SqlNode sqlNode;
 
   @BeforeEach
   void setup() {
     SqlNode contents = new StaticTextSqlNode(TEXT);
-    this.sqlNode = new IfSqlNode(contents, CONDITION);
+    this.sqlNode = new IfSqlNode(evaluator, contents, CONDITION);
   }
 
   @Test
