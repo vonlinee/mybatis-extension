@@ -50,9 +50,9 @@ What if we wanted to optionally search by title and author? First, I’d change 
 
 ### choose, when, otherwise
 
-Sometimes we don’t want all of the conditionals to apply, instead we want to choose only one case among many options. Similar to a switch statement in Java, MyBatis offers a choose element.
+Sometimes we don’t want all the conditionals to apply, instead we want to choose only one case among many options. Similar to a switch statement in Java, MyBatis offers a choose element.
 
-Let’s use the example above, but now let’s search only on title if one is provided, then only by author if one is provided. If neither is provided, let’s only return featured blogs (perhaps a strategically list selected by administrators, instead of returning a huge meaningless list of random blogs).
+Let’s use the example above, but now let’s search only on title if one is provided, then only by author if one is provided. If neither is provided, let’s only return featured blogs (perhaps a strategical list selected by administrators, instead of returning a huge meaningless list of random blogs).
 
 ```xml
 <select id="findActiveBlogLike"
@@ -197,17 +197,17 @@ This wraps up the discussion regarding the XML configuration file and XML mappin
 For using dynamic SQL in annotated mapper class, *script* element can be used. For example:
 
 ```java
-    @Update({"<script>",
-      "update Author",
-      "  <set>",
-      "    <if test='username != null'>username=#{username},</if>",
-      "    <if test='password != null'>password=#{password},</if>",
-      "    <if test='email != null'>email=#{email},</if>",
-      "    <if test='bio != null'>bio=#{bio}</if>",
-      "  </set>",
-      "where id=#{id}",
-      "</script>"})
-    void updateAuthorValues(Author author);
+@Update({"<script>",
+  "update Author",
+  "  <set>",
+  "    <if test='username != null'>username=#{username},</if>",
+  "    <if test='password != null'>password=#{password},</if>",
+  "    <if test='email != null'>email=#{email},</if>",
+  "    <if test='bio != null'>bio=#{bio}</if>",
+  "  </set>",
+  "where id=#{id}",
+  "</script>"})
+void updateAuthorValues(Author author);
 ```
 
 ### bind
@@ -260,12 +260,17 @@ Once you have your custom language driver you can set it to be the default by co
 <typeAliases>
   <typeAlias type="org.sample.MyLanguageDriver" alias="myLanguage"/>
 </typeAliases>
+
+```
+or
+```xml
 <settings>
   <setting name="defaultScriptingLanguage" value="myLanguage"/>
 </settings>
 ```
 
-Instead of changing the default, you can specify the language for an specific statement by adding the `lang` attribute as follows:
+
+Instead of changing the default, you can specify the language for a specific statement by adding the `lang` attribute as follows:
 
 ```xml
 <select id="selectBlog" lang="myLanguage">
