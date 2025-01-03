@@ -67,7 +67,7 @@ class TextSqlNodeTest extends SqlNodeTest {
 
     // then
     assertTrue(result);
-    assertTrue(sqlNode.isDynamic());
+    assertTrue(DynamicCheckerTokenParser.isDynamic(sqlNode.getText()));
     verify(context).appendSql("select * from user where id = 1");
   }
 }

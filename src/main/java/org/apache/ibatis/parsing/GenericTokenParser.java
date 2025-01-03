@@ -90,4 +90,9 @@ public class GenericTokenParser {
     }
     return builder.toString();
   }
+
+  public static String parse(String text, String openToken, String closeToken, TokenHandler handler) {
+    GenericTokenParser parser = new GenericTokenParser(openToken, closeToken, handler);
+    return parser.parse(text);
+  }
 }

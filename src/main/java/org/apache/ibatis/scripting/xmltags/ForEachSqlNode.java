@@ -41,11 +41,11 @@ public class ForEachSqlNode implements SqlNode {
 
   /**
    * @deprecated Since 3.5.9, use the
-   *             {@link #ForEachSqlNode(Configuration, SqlNode, String, Boolean, String, String, String, String, String)}.
+   * {@link #ForEachSqlNode(Configuration, SqlNode, String, Boolean, String, String, String, String, String)}.
    */
   @Deprecated
   public ForEachSqlNode(Configuration configuration, SqlNode contents, String collectionExpression, String index,
-      String item, String open, String close, String separator) {
+                        String item, String open, String close, String separator) {
     this(configuration, contents, collectionExpression, null, index, item, open, close, separator);
   }
 
@@ -53,7 +53,7 @@ public class ForEachSqlNode implements SqlNode {
    * @since 3.5.9
    */
   public ForEachSqlNode(Configuration configuration, SqlNode contents, String collectionExpression, Boolean nullable,
-      String index, String item, String open, String close, String separator) {
+                        String index, String item, String open, String close, String separator) {
     this.evaluator = new OgnlExpressionEvaluator();
     this.collectionExpression = collectionExpression;
     this.nullable = nullable;
@@ -145,7 +145,7 @@ public class ForEachSqlNode implements SqlNode {
     private final String item;
 
     public FilteredDynamicContext(Configuration configuration, DynamicContext delegate, String itemIndex, String item,
-        int i) {
+                                  int i) {
       super(configuration, null);
       this.delegate = delegate;
       this.index = i;
@@ -216,7 +216,7 @@ public class ForEachSqlNode implements SqlNode {
 
     @Override
     public void appendSql(String sql) {
-      if (!prefixApplied && sql != null && sql.trim().length() > 0) {
+      if (!prefixApplied && sql != null && !sql.trim().isEmpty()) {
         delegate.appendSql(prefix);
         prefixApplied = true;
       }

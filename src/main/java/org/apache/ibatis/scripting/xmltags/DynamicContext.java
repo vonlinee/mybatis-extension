@@ -29,7 +29,6 @@ public class DynamicContext {
   public static final String PARAMETER_OBJECT_KEY = "_parameter";
   public static final String DATABASE_ID_KEY = "_databaseId";
 
-
   private final ContextMap bindings;
   private final StringJoiner sqlBuilder = new StringJoiner(" ");
   private int uniqueNumber;

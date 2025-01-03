@@ -143,7 +143,7 @@ public class MapperAnnotationBuilder {
   }
 
   private void loadXmlResource() {
-    // Spring may not know the real resource name so we check a flag
+    // Spring may not know the real resource name, so we check a flag
     // to prevent loading again a resource twice
     // this flag is set at XMLMapperBuilder#bindMapperForNamespace
     if (!configuration.isResourceLoaded("namespace:" + type.getName())) {
@@ -407,7 +407,7 @@ public class MapperAnnotationBuilder {
           if (returnTypeParameter instanceof Class<?>) {
             returnType = (Class<?>) returnTypeParameter;
           } else if (returnTypeParameter instanceof ParameterizedType) {
-            // (gcode issue #443) actual type can be a also a parameterized type
+            // (gcode issue #443) actual type can be also a parameterized type
             returnType = (Class<?>) ((ParameterizedType) returnTypeParameter).getRawType();
           } else if (returnTypeParameter instanceof GenericArrayType) {
             Class<?> componentType = (Class<?>) ((GenericArrayType) returnTypeParameter).getGenericComponentType();
@@ -423,7 +423,7 @@ public class MapperAnnotationBuilder {
           if (returnTypeParameter instanceof Class<?>) {
             returnType = (Class<?>) returnTypeParameter;
           } else if (returnTypeParameter instanceof ParameterizedType) {
-            // (gcode issue 443) actual type can be a also a parameterized type
+            // (gcode issue 443) actual type can be also a parameterized type
             returnType = (Class<?>) ((ParameterizedType) returnTypeParameter).getRawType();
           }
         }
@@ -461,7 +461,7 @@ public class MapperAnnotationBuilder {
 
   private String findColumnPrefix(Result result) {
     String columnPrefix = result.one().columnPrefix();
-    if (columnPrefix.length() < 1) {
+    if (columnPrefix.isEmpty()) {
       columnPrefix = result.many().columnPrefix();
     }
     return columnPrefix;
@@ -469,7 +469,7 @@ public class MapperAnnotationBuilder {
 
   private String nestedResultMapId(Result result) {
     String resultMapId = result.one().resultMap();
-    if (resultMapId.length() < 1) {
+    if (resultMapId.isEmpty()) {
       resultMapId = result.many().resultMap();
     }
     if (!resultMapId.contains(".")) {
@@ -479,15 +479,15 @@ public class MapperAnnotationBuilder {
   }
 
   private boolean hasNestedResultMap(Result result) {
-    if (result.one().resultMap().length() > 0 && result.many().resultMap().length() > 0) {
+    if (!result.one().resultMap().isEmpty() && !result.many().resultMap().isEmpty()) {
       throw new BuilderException("Cannot use both @One and @Many annotations in the same @Result");
     }
-    return result.one().resultMap().length() > 0 || result.many().resultMap().length() > 0;
+    return !result.one().resultMap().isEmpty() || !result.many().resultMap().isEmpty();
   }
 
   private String nestedSelectId(Result result) {
     String nestedSelect = result.one().select();
-    if (nestedSelect.length() < 1) {
+    if (nestedSelect.isEmpty()) {
       nestedSelect = result.many().select();
     }
     if (!nestedSelect.contains(".")) {
@@ -498,19 +498,19 @@ public class MapperAnnotationBuilder {
 
   private boolean isLazy(Result result) {
     boolean isLazy = configuration.isLazyLoadingEnabled();
-    if (result.one().select().length() > 0 && FetchType.DEFAULT != result.one().fetchType()) {
+    if (!result.one().select().isEmpty() && FetchType.DEFAULT != result.one().fetchType()) {
       isLazy = result.one().fetchType() == FetchType.LAZY;
-    } else if (result.many().select().length() > 0 && FetchType.DEFAULT != result.many().fetchType()) {
+    } else if (!result.many().select().isEmpty() && FetchType.DEFAULT != result.many().fetchType()) {
       isLazy = result.many().fetchType() == FetchType.LAZY;
     }
     return isLazy;
   }
 
   private boolean hasNestedSelect(Result result) {
-    if (result.one().select().length() > 0 && result.many().select().length() > 0) {
+    if (!result.one().select().isEmpty() && !result.many().select().isEmpty()) {
       throw new BuilderException("Cannot use both @One and @Many annotations in the same @Result");
     }
-    return result.one().select().length() > 0 || result.many().select().length() > 0;
+    return !result.one().select().isEmpty() || !result.many().select().isEmpty();
   }
 
   private void applyConstructorArgs(Arg[] args, Class<?> resultType, List<ResultMapping> resultMappings) {
@@ -532,7 +532,7 @@ public class MapperAnnotationBuilder {
   }
 
   private String nullOrEmpty(String value) {
-    return value == null || value.trim().length() == 0 ? null : value;
+    return value == null || value.trim().isEmpty() ? null : value;
   }
 
   private KeyGenerator handleSelectKeyAnnotation(SelectKey selectKeyAnnotation, String baseStatementId,
@@ -593,8 +593,8 @@ public class MapperAnnotationBuilder {
   }
 
   @SafeVarargs
-  private final Optional<AnnotationWrapper> getAnnotationWrapper(Method method, boolean errorIfNoMatch,
-      Class<? extends Annotation>... targetTypes) {
+  private Optional<AnnotationWrapper> getAnnotationWrapper(Method method, boolean errorIfNoMatch,
+                                                           Class<? extends Annotation>... targetTypes) {
     return getAnnotationWrapper(method, errorIfNoMatch, Arrays.asList(targetTypes));
   }
 

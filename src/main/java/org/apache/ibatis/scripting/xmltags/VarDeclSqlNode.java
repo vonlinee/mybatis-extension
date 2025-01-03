@@ -24,7 +24,7 @@ public class VarDeclSqlNode implements SqlNode {
 
   private final String name;
   private final String expression;
-  private ExpressionEvaluator evaluator;
+  private final ExpressionEvaluator evaluator;
 
   public VarDeclSqlNode(ExpressionEvaluator evaluator, String name, String exp) {
     this.evaluator = evaluator;

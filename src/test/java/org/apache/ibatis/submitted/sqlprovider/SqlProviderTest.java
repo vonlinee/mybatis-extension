@@ -650,7 +650,6 @@ class SqlProviderTest {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   void keepBackwardCompatibilityOnDeprecatedConstructorWithAnnotation() throws NoSuchMethodException {
     Class<?> mapperType = StaticMethodSqlProviderMapper.class;
     Method mapperMethod = mapperType.getMethod("noArgument");
