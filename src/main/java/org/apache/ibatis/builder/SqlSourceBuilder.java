@@ -15,11 +15,6 @@
  */
 package org.apache.ibatis.builder;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
 import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.parsing.GenericTokenParser;
@@ -28,6 +23,11 @@ import org.apache.ibatis.reflection.MetaClass;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.JdbcType;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * @author Clinton Begin
@@ -42,8 +42,8 @@ public class SqlSourceBuilder extends BaseBuilder {
 
   public SqlSource parse(String originalSql, Class<?> parameterType, Map<String, Object> additionalParameters) {
     ParameterMappingTokenHandler handler = new ParameterMappingTokenHandler(configuration, parameterType,
-        additionalParameters);
-    GenericTokenParser parser = new GenericTokenParser("#{", "}", handler);
+      additionalParameters);
+    GenericTokenParser parser = GenericTokenParser.ofSign(handler);
     String sql;
     if (configuration.isShrinkWhitespacesInSql()) {
       sql = parser.parse(removeExtraWhitespaces(originalSql));
@@ -74,7 +74,7 @@ public class SqlSourceBuilder extends BaseBuilder {
     private final MetaObject metaParameters;
 
     public ParameterMappingTokenHandler(Configuration configuration, Class<?> parameterType,
-        Map<String, Object> additionalParameters) {
+                                        Map<String, Object> additionalParameters) {
       super(configuration);
       this.parameterType = parameterType;
       this.metaParameters = configuration.newMetaObject(additionalParameters);
@@ -137,7 +137,7 @@ public class SqlSourceBuilder extends BaseBuilder {
           throw new BuilderException("Expression based parameters are not supported yet");
         } else {
           throw new BuilderException("An invalid property '" + name + "' was found in mapping #{" + content
-              + "}.  Valid properties are " + PARAMETER_PROPERTIES);
+            + "}.  Valid properties are " + PARAMETER_PROPERTIES);
         }
       }
       if (typeHandlerAlias != null) {
@@ -153,7 +153,7 @@ public class SqlSourceBuilder extends BaseBuilder {
         throw ex;
       } catch (Exception ex) {
         throw new BuilderException("Parsing error was found in mapping #{" + content
-            + "}.  Check syntax #{property|(expression), var1=value1, var2=value2, ...} ", ex);
+          + "}.  Check syntax #{property|(expression), var1=value1, var2=value2, ...} ", ex);
       }
     }
   }

@@ -59,6 +59,10 @@ public class PropertyParser {
   }
 
   private static class VariableTokenHandler implements TokenHandler {
+
+    /**
+     * may be null
+     */
     private final Properties variables;
     private final boolean enableDefaultValue;
     private final String defaultValueSeparator;
@@ -75,22 +79,23 @@ public class PropertyParser {
 
     @Override
     public String handleToken(String content) {
-      if (variables != null) {
-        String key = content;
-        if (enableDefaultValue) {
-          final int separatorIndex = content.indexOf(defaultValueSeparator);
-          String defaultValue = null;
-          if (separatorIndex >= 0) {
-            key = content.substring(0, separatorIndex);
-            defaultValue = content.substring(separatorIndex + defaultValueSeparator.length());
-          }
-          if (defaultValue != null) {
-            return variables.getProperty(key, defaultValue);
-          }
+      if (variables == null) {
+        return "${" + content + "}";
+      }
+      String key = content;
+      if (enableDefaultValue) {
+        final int separatorIndex = content.indexOf(defaultValueSeparator);
+        String defaultValue = null;
+        if (separatorIndex >= 0) {
+          key = content.substring(0, separatorIndex);
+          defaultValue = content.substring(separatorIndex + defaultValueSeparator.length());
         }
-        if (variables.containsKey(key)) {
-          return variables.getProperty(key);
+        if (defaultValue != null) {
+          return variables.getProperty(key, defaultValue);
         }
+      }
+      if (variables.containsKey(key)) {
+        return variables.getProperty(key);
       }
       return "${" + content + "}";
     }

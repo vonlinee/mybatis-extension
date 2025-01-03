@@ -18,8 +18,11 @@ package org.apache.ibatis.scripting.xmltags;
 import org.apache.ibatis.builder.BaseBuilder;
 import org.apache.ibatis.builder.BuilderException;
 import org.apache.ibatis.mapping.SqlSource;
+import org.apache.ibatis.parsing.DynamicCheckerTokenParser;
 import org.apache.ibatis.parsing.XNode;
+import org.apache.ibatis.scripting.ExpressionEvaluator;
 import org.apache.ibatis.scripting.defaults.RawSqlSource;
+import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
 import org.apache.ibatis.session.Configuration;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -38,6 +41,7 @@ public class XMLScriptBuilder extends BaseBuilder {
   private boolean isDynamic;
   private final Class<?> parameterType;
   private final Map<String, NodeHandler> nodeHandlerMap = new HashMap<>();
+  private final ExpressionEvaluator evaluator = new OgnlExpressionEvaluator();
 
   public XMLScriptBuilder(Configuration configuration, XNode context) {
     this(configuration, context, null);
@@ -47,10 +51,7 @@ public class XMLScriptBuilder extends BaseBuilder {
     super(configuration);
     this.context = context;
     this.parameterType = parameterType;
-    initNodeHandlerMap();
-  }
 
-  private void initNodeHandlerMap() {
     nodeHandlerMap.put("trim", new TrimHandler());
     nodeHandlerMap.put("where", new WhereHandler());
     nodeHandlerMap.put("set", new SetHandler());
@@ -59,7 +60,7 @@ public class XMLScriptBuilder extends BaseBuilder {
     nodeHandlerMap.put("choose", new ChooseHandler());
     nodeHandlerMap.put("when", new IfHandler());
     nodeHandlerMap.put("otherwise", new OtherwiseHandler());
-    nodeHandlerMap.put("bind", new BindHandler());
+    nodeHandlerMap.put("bind", new BindHandler(this.evaluator));
   }
 
   public SqlSource parseScriptNode() {
@@ -81,9 +82,8 @@ public class XMLScriptBuilder extends BaseBuilder {
       if (child.getNode().getNodeType() == Node.CDATA_SECTION_NODE || child.getNode().getNodeType() == Node.TEXT_NODE) {
         // the body content of the xml element
         String data = child.getStringBody("");
-        TextSqlNode textSqlNode = new TextSqlNode(data);
-        if (textSqlNode.isDynamic()) {
-          contents.add(textSqlNode);
+        if (DynamicCheckerTokenParser.isDynamic(data)) {
+          contents.add(new TextSqlNode(evaluator, data));
           isDynamic = true;
         } else {
           contents.add(new StaticTextSqlNode(data));
@@ -106,15 +106,19 @@ public class XMLScriptBuilder extends BaseBuilder {
   }
 
   private static class BindHandler implements NodeHandler {
-    public BindHandler() {
+
+    ExpressionEvaluator evaluator;
+
+    public BindHandler(ExpressionEvaluator evaluator) {
       // Prevent Synthetic Access
+      this.evaluator = evaluator;
     }
 
     @Override
     public void handleNode(XNode nodeToHandle, List<SqlNode> targetContents) {
       final String name = nodeToHandle.getStringAttribute("name");
       final String expression = nodeToHandle.getStringAttribute("value");
-      final VarDeclSqlNode node = new VarDeclSqlNode(name, expression);
+      final VarDeclSqlNode node = new VarDeclSqlNode(this.evaluator, name, expression);
       targetContents.add(node);
     }
   }

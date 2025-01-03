@@ -15,6 +15,9 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
+import org.apache.ibatis.scripting.ExpressionEvaluator;
+import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
+
 /**
  * @author Clinton Begin
  */
@@ -26,7 +29,7 @@ public class IfSqlNode implements SqlNode {
   public IfSqlNode(SqlNode contents, String test) {
     this.test = test;
     this.contents = contents;
-    this.evaluator = new ExpressionEvaluator();
+    this.evaluator = new OgnlExpressionEvaluator();
   }
 
   @Override

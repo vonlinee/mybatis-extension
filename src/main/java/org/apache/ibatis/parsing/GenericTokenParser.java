@@ -24,6 +24,10 @@ public class GenericTokenParser {
   private final String closeToken;
   private final TokenHandler handler;
 
+  public static GenericTokenParser ofSign(TokenHandler handler) {
+    return new GenericTokenParser(TokenHandler.OPEN_TOKEN_SIGN, TokenHandler.CLOSE_TOKEN, handler);
+  }
+
   public GenericTokenParser(String openToken, String closeToken, TokenHandler handler) {
     this.openToken = openToken;
     this.closeToken = closeToken;
@@ -53,6 +57,7 @@ public class GenericTokenParser {
         if (expression == null) {
           expression = new StringBuilder();
         } else {
+          // clear all
           expression.setLength(0);
         }
         builder.append(src, offset, start - offset);
@@ -73,6 +78,7 @@ public class GenericTokenParser {
           builder.append(src, start, src.length - start);
           offset = src.length;
         } else {
+          // found a token
           builder.append(handler.handleToken(expression.toString()));
           offset = end + closeToken.length();
         }

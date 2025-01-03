@@ -15,14 +15,6 @@
  */
 package org.apache.ibatis.parsing;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
-
-import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Stream;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -30,10 +22,18 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+
 class GenericTokenParserTest {
 
   public static class VariableTokenHandler implements TokenHandler {
-    private Map<String, String> variables = new HashMap<>();
+    private final Map<String, String> variables;
 
     VariableTokenHandler(Map<String, String> variables) {
       this.variables = variables;
@@ -49,39 +49,37 @@ class GenericTokenParserTest {
   @MethodSource("shouldDemonstrateGenericTokenReplacementProvider")
   void shouldDemonstrateGenericTokenReplacement(String expected, String text) {
     GenericTokenParser parser = new GenericTokenParser("${", "}",
-        new VariableTokenHandler(new HashMap<String, String>() {
-          private static final long serialVersionUID = 1L;
-
-          {
-            put("first_name", "James");
-            put("initial", "T");
-            put("last_name", "Kirk");
-            put("var{with}brace", "Hiya");
-            put("", "");
-          }
-        }));
+      new VariableTokenHandler(new HashMap<>() {
+        {
+          put("first_name", "James");
+          put("initial", "T");
+          put("last_name", "Kirk");
+          put("var{with}brace", "Hiya");
+          put("", "");
+        }
+      }));
     assertEquals(expected, parser.parse(text));
   }
 
   static Stream<Arguments> shouldDemonstrateGenericTokenReplacementProvider() {
     return Stream.of(arguments("James T Kirk reporting.", "${first_name} ${initial} ${last_name} reporting."),
-        arguments("Hello captain James T Kirk", "Hello captain ${first_name} ${initial} ${last_name}"),
-        arguments("James T Kirk", "${first_name} ${initial} ${last_name}"),
-        arguments("JamesTKirk", "${first_name}${initial}${last_name}"),
-        arguments("{}JamesTKirk", "{}${first_name}${initial}${last_name}"),
-        arguments("}JamesTKirk", "}${first_name}${initial}${last_name}"),
+      arguments("Hello captain James T Kirk", "Hello captain ${first_name} ${initial} ${last_name}"),
+      arguments("James T Kirk", "${first_name} ${initial} ${last_name}"),
+      arguments("JamesTKirk", "${first_name}${initial}${last_name}"),
+      arguments("{}JamesTKirk", "{}${first_name}${initial}${last_name}"),
+      arguments("}JamesTKirk", "}${first_name}${initial}${last_name}"),
 
-        arguments("}James{{T}}Kirk", "}${first_name}{{${initial}}}${last_name}"),
-        arguments("}James}T{Kirk", "}${first_name}}${initial}{${last_name}"),
-        arguments("}James}T{Kirk", "}${first_name}}${initial}{${last_name}"),
-        arguments("}James}T{Kirk{{}}", "}${first_name}}${initial}{${last_name}{{}}"),
-        arguments("}James}T{Kirk{{}}", "}${first_name}}${initial}{${last_name}{{}}${}"),
+      arguments("}James{{T}}Kirk", "}${first_name}{{${initial}}}${last_name}"),
+      arguments("}James}T{Kirk", "}${first_name}}${initial}{${last_name}"),
+      arguments("}James}T{Kirk", "}${first_name}}${initial}{${last_name}"),
+      arguments("}James}T{Kirk{{}}", "}${first_name}}${initial}{${last_name}{{}}"),
+      arguments("}James}T{Kirk{{}}", "}${first_name}}${initial}{${last_name}{{}}${}"),
 
-        arguments("{$$something}JamesTKirk", "{$$something}${first_name}${initial}${last_name}"), arguments("${", "${"),
-        arguments("${\\}", "${\\}"), arguments("Hiya", "${var{with\\}brace}"), arguments("", "${}"),
-        arguments("}", "}"), arguments("Hello ${ this is a test.", "Hello ${ this is a test."),
-        arguments("Hello } this is a test.", "Hello } this is a test."),
-        arguments("Hello } ${ this is a test.", "Hello } ${ this is a test."));
+      arguments("{$$something}JamesTKirk", "{$$something}${first_name}${initial}${last_name}"), arguments("${", "${"),
+      arguments("${\\}", "${\\}"), arguments("Hiya", "${var{with\\}brace}"), arguments("", "${}"),
+      arguments("}", "}"), arguments("Hello ${ this is a test.", "Hello ${ this is a test."),
+      arguments("Hello } this is a test.", "Hello } this is a test."),
+      arguments("Hello } ${ this is a test.", "Hello } ${ this is a test."));
   }
 
   @ParameterizedTest
@@ -93,9 +91,9 @@ class GenericTokenParserTest {
 
   static Stream<Arguments> shallNotInterpolateSkippedVariablesProvider() {
     return Stream.of(arguments("${skipped} variable", "\\${skipped} variable"),
-        arguments("This is a ${skipped} variable", "This is a \\${skipped} variable"),
-        arguments("null ${skipped} variable", "${skipped} \\${skipped} variable"),
-        arguments("The null is ${skipped} variable", "The ${skipped} is \\${skipped} variable"));
+      arguments("This is a ${skipped} variable", "This is a \\${skipped} variable"),
+      arguments("null ${skipped} variable", "${skipped} \\${skipped} variable"),
+      arguments("The null is ${skipped} variable", "The ${skipped} is \\${skipped} variable"));
   }
 
   @Disabled("Because it randomly fails on Github CI. It could be useful during development.")
@@ -104,16 +102,14 @@ class GenericTokenParserTest {
     Assertions.assertTimeout(Duration.ofMillis(1000), () -> {
       // issue #760
       GenericTokenParser parser = new GenericTokenParser("${", "}",
-          new VariableTokenHandler(new HashMap<String, String>() {
-            private static final long serialVersionUID = 1L;
-
-            {
-              put("first_name", "James");
-              put("initial", "T");
-              put("last_name", "Kirk");
-              put("", "");
-            }
-          }));
+        new VariableTokenHandler(new HashMap<>() {
+          {
+            put("first_name", "James");
+            put("initial", "T");
+            put("last_name", "Kirk");
+            put("", "");
+          }
+        }));
 
       StringBuilder input = new StringBuilder();
       for (int i = 0; i < 10000; i++) {

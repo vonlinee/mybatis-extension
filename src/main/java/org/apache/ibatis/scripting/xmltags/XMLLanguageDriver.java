@@ -20,18 +20,23 @@ import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlSource;
+import org.apache.ibatis.parsing.DynamicCheckerTokenParser;
 import org.apache.ibatis.parsing.PropertyParser;
 import org.apache.ibatis.parsing.XNode;
 import org.apache.ibatis.parsing.XPathParser;
+import org.apache.ibatis.scripting.ExpressionEvaluator;
 import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
 import org.apache.ibatis.scripting.defaults.RawSqlSource;
+import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
 import org.apache.ibatis.session.Configuration;
 
 /**
  * @author Eduardo Macarron
  */
 public class XMLLanguageDriver implements LanguageDriver {
+
+  ExpressionEvaluator evaluator = new OgnlExpressionEvaluator();
 
   @Override
   public ParameterHandler createParameterHandler(MappedStatement mappedStatement, Object parameterObject,
@@ -76,12 +81,9 @@ public class XMLLanguageDriver implements LanguageDriver {
     }
     // issue #127
     script = PropertyParser.parse(script, configuration.getVariables());
-    TextSqlNode textSqlNode = new TextSqlNode(script);
-    if (textSqlNode.isDynamic()) {
-      return new DynamicSqlSource(configuration, textSqlNode);
-    } else {
-      return new RawSqlSource(configuration, script, parameterType);
+    if (DynamicCheckerTokenParser.isDynamic(script)) {
+      return new DynamicSqlSource(configuration, new TextSqlNode(evaluator, script));
     }
+    return new RawSqlSource(configuration, script, parameterType);
   }
-
 }

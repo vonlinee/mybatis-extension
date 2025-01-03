@@ -82,15 +82,13 @@ class XmlMapperBuilderTest {
 
   @Test
   void parseExpression() {
-    BaseBuilder builder = new BaseBuilder(new Configuration()) {
-    };
     {
-      Pattern pattern = builder.parseExpression("[0-9]", "[a-z]");
+      Pattern pattern = BaseBuilder.parseExpression("[0-9]", "[a-z]");
       assertThat(pattern.matcher("0").find()).isTrue();
       assertThat(pattern.matcher("a").find()).isFalse();
     }
     {
-      Pattern pattern = builder.parseExpression(null, "[a-z]");
+      Pattern pattern = BaseBuilder.parseExpression(null, "[a-z]");
       assertThat(pattern.matcher("0").find()).isFalse();
       assertThat(pattern.matcher("a").find()).isTrue();
     }

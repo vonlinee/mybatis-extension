@@ -15,8 +15,10 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
+import org.apache.ibatis.parsing.DynamicCheckerTokenParser;
 import org.apache.ibatis.parsing.GenericTokenParser;
 import org.apache.ibatis.parsing.TokenHandler;
+import org.apache.ibatis.scripting.ExpressionEvaluator;
 import org.apache.ibatis.scripting.ScriptingException;
 import org.apache.ibatis.type.SimpleTypeRegistry;
 
@@ -41,9 +43,11 @@ import java.util.regex.Pattern;
 public class TextSqlNode implements SqlNode {
   private final String text;
   private final Pattern injectionFilter;
+  private ExpressionEvaluator evaluator;
 
-  public TextSqlNode(String text) {
+  public TextSqlNode(ExpressionEvaluator evaluator, String text) {
     this(text, null);
+    this.evaluator = evaluator;
   }
 
   public TextSqlNode(String text, Pattern injectionFilter) {
@@ -60,7 +64,7 @@ public class TextSqlNode implements SqlNode {
 
   @Override
   public boolean apply(DynamicContext context) {
-    GenericTokenParser parser = createParser(new BindingTokenParser(context, injectionFilter));
+    GenericTokenParser parser = createParser(new BindingTokenParser(this.evaluator, context, injectionFilter));
     context.appendSql(parser.parse(text));
     return true;
   }
@@ -73,8 +77,10 @@ public class TextSqlNode implements SqlNode {
 
     private final DynamicContext context;
     private final Pattern injectionFilter;
+    private final ExpressionEvaluator evaluator;
 
-    public BindingTokenParser(DynamicContext context, Pattern injectionFilter) {
+    public BindingTokenParser(ExpressionEvaluator evaluator, DynamicContext context, Pattern injectionFilter) {
+      this.evaluator = evaluator;
       this.context = context;
       this.injectionFilter = injectionFilter;
     }
@@ -87,7 +93,7 @@ public class TextSqlNode implements SqlNode {
       } else if (SimpleTypeRegistry.isSimpleType(parameter.getClass())) {
         context.getBindings().put("value", parameter);
       }
-      Object value = OgnlCache.getValue(content, context.getBindings());
+      Object value = evaluator.getValue(content, context.getBindings());
       String srtValue = value == null ? "" : String.valueOf(value); // issue #274 return "" instead of "null"
       checkInjection(srtValue);
       return srtValue;
@@ -100,23 +106,5 @@ public class TextSqlNode implements SqlNode {
     }
   }
 
-  private static class DynamicCheckerTokenParser implements TokenHandler {
-
-    private boolean isDynamic;
-
-    public DynamicCheckerTokenParser() {
-      // Prevent Synthetic Access
-    }
-
-    public boolean isDynamic() {
-      return isDynamic;
-    }
-
-    @Override
-    public String handleToken(String content) {
-      this.isDynamic = true;
-      return null;
-    }
-  }
 
 }

@@ -19,5 +19,10 @@ package org.apache.ibatis.parsing;
  * @author Clinton Begin
  */
 public interface TokenHandler {
+
+  String OPEN_TOKEN_SIGN = "#{";
+  String OPEN_TOKEN_$ = "${";
+  String CLOSE_TOKEN = "}";
+
   String handleToken(String content);
 }

@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.ibatis.parsing.GenericTokenParser;
+import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
 import org.apache.ibatis.session.Configuration;
 
 /**
@@ -27,7 +28,7 @@ import org.apache.ibatis.session.Configuration;
 public class ForEachSqlNode implements SqlNode {
   public static final String ITEM_PREFIX = "__frch_";
 
-  private final ExpressionEvaluator evaluator;
+  private final OgnlExpressionEvaluator evaluator;
   private final String collectionExpression;
   private final Boolean nullable;
   private final SqlNode contents;
@@ -53,7 +54,7 @@ public class ForEachSqlNode implements SqlNode {
    */
   public ForEachSqlNode(Configuration configuration, SqlNode contents, String collectionExpression, Boolean nullable,
       String index, String item, String open, String close, String separator) {
-    this.evaluator = new ExpressionEvaluator();
+    this.evaluator = new OgnlExpressionEvaluator();
     this.collectionExpression = collectionExpression;
     this.nullable = nullable;
     this.contents = contents;

@@ -21,6 +21,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 
+import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +42,7 @@ class VarDeclSqlNodeTest extends SqlNodeTest {
 
   @BeforeEach
   void setup() {
-    this.sqlNode = new VarDeclSqlNode("pattern", "'%' + _parameter.getTitle() + '%'");
+    this.sqlNode = new VarDeclSqlNode(new OgnlExpressionEvaluator(), "pattern", "'%' + _parameter.getTitle() + '%'");
   }
 
   @Test

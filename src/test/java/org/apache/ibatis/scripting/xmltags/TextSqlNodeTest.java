@@ -15,14 +15,17 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
+import org.apache.ibatis.parsing.DynamicCheckerTokenParser;
+import org.apache.ibatis.scripting.ExpressionEvaluator;
+import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
+import org.junit.jupiter.api.Test;
+
+import java.util.HashMap;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import java.util.HashMap;
-
-import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="1181963012mw@gmail.com">mawen12</a>
@@ -32,25 +35,27 @@ class TextSqlNodeTest extends SqlNodeTest {
   private static final String TEXT = "select 1 from dual";
   private static final String DYNAMIC_TEXT = "select * from user where id = ${id}";
 
+  ExpressionEvaluator evaluator = new OgnlExpressionEvaluator();
+
   @Test
   @Override
   public void shouldApply() throws Exception {
     // given
-    TextSqlNode sqlNode = new TextSqlNode(TEXT);
+    TextSqlNode sqlNode = new TextSqlNode(evaluator, TEXT);
 
     // when
     boolean result = sqlNode.apply(context);
 
     // then
     assertTrue(result);
-    assertFalse(sqlNode.isDynamic());
+    assertFalse(DynamicCheckerTokenParser.isDynamic(TEXT));
     verify(context).appendSql(TEXT);
   }
 
   @Test
   public void shouldApplyDynamic() {
     // given
-    TextSqlNode sqlNode = new TextSqlNode(DYNAMIC_TEXT);
+    TextSqlNode sqlNode = new TextSqlNode(evaluator, DYNAMIC_TEXT);
     when(context.getBindings()).thenReturn(new HashMap<>() {
       {
         put("id", 1);

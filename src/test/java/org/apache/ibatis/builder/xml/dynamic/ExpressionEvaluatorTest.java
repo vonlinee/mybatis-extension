@@ -23,12 +23,12 @@ import java.util.HashMap;
 
 import org.apache.ibatis.domain.blog.Author;
 import org.apache.ibatis.domain.blog.Section;
-import org.apache.ibatis.scripting.xmltags.ExpressionEvaluator;
+import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
 import org.junit.jupiter.api.Test;
 
 class ExpressionEvaluatorTest {
 
-  private final ExpressionEvaluator evaluator = new ExpressionEvaluator();
+  private final OgnlExpressionEvaluator evaluator = new OgnlExpressionEvaluator();
 
   @Test
   void shouldCompareStringsReturnTrue() {
@@ -89,7 +89,7 @@ class ExpressionEvaluatorTest {
         put("array", new String[] { "1", "2", "3" });
       }
     };
-    final Iterable<?> iterable = evaluator.evaluateIterable("array", parameterObject);
+    final Iterable<?> iterable = evaluator.evaluateIterable("array", parameterObject, false);
     int i = 0;
     for (Object o : iterable) {
       i++;
