@@ -171,10 +171,10 @@ public class DefaultResultSetHandler implements ResultSetHandler {
       final ResultSetWrapper rsw = new ResultSetWrapper(rs, configuration);
       if (this.resultHandler == null) {
         final DefaultResultHandler resultHandler = new DefaultResultHandler(objectFactory);
-        handleRowValues(rsw, resultMap, resultHandler, new RowBounds(), null);
+        handleRowValues(rsw, resultMap, resultHandler, RowBounds.DEFAULT, null);
         metaParam.setValue(parameterMapping.getProperty(), resultHandler.getResultList());
       } else {
-        handleRowValues(rsw, resultMap, resultHandler, new RowBounds(), null);
+        handleRowValues(rsw, resultMap, resultHandler, RowBounds.DEFAULT, null);
       }
     } finally {
       // issue #228 (close resultsets)

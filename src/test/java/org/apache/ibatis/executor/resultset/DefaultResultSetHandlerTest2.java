@@ -84,7 +84,7 @@ class DefaultResultSetHandlerTest2 {
     final ParameterHandler parameterHandler = null;
     final ResultHandler<?> resultHandler = null;
     final BoundSql boundSql = null;
-    final RowBounds rowBounds = new RowBounds(5, 1);
+    final RowBounds rowBounds = RowBounds.valueOf(5, 1);
     final DefaultResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, ms, parameterHandler,
         resultHandler, boundSql, rowBounds);
 
@@ -131,7 +131,7 @@ class DefaultResultSetHandlerTest2 {
     final ParameterHandler parameterHandler = null;
     final ResultHandler<?> resultHandler = null;
     final BoundSql boundSql = null;
-    final RowBounds rowBounds = new RowBounds(5, 1);
+    final RowBounds rowBounds = RowBounds.valueOf(5, 1);
     final DefaultResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, ms, parameterHandler,
         resultHandler, boundSql, rowBounds);
 

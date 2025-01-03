@@ -80,7 +80,7 @@ class DefaultResultSetHandlerTest {
     final ParameterHandler parameterHandler = null;
     final ResultHandler resultHandler = null;
     final BoundSql boundSql = null;
-    final RowBounds rowBounds = new RowBounds(0, 100);
+    final RowBounds rowBounds = RowBounds.valueOf(0, 100);
     final DefaultResultSetHandler fastResultSetHandler = new DefaultResultSetHandler(executor, ms, parameterHandler,
         resultHandler, boundSql, rowBounds);
 
@@ -105,7 +105,7 @@ class DefaultResultSetHandlerTest {
   @Test
   void shouldThrowExceptionWithColumnName() throws Exception {
     final MappedStatement ms = getMappedStatement();
-    final RowBounds rowBounds = new RowBounds(0, 100);
+    final RowBounds rowBounds = RowBounds.valueOf(0, 100);
 
     final DefaultResultSetHandler defaultResultSetHandler = new DefaultResultSetHandler(null/* executor */, ms,
         null/* parameterHandler */, null/* resultHandler */, null/* boundSql */, rowBounds);
