@@ -104,8 +104,8 @@ public class XMLMapperBuilder extends BaseBuilder {
     configuration.parsePendingStatements(false);
   }
 
-  public XNode getSqlFragment(String refid) {
-    return sqlFragments.get(refid);
+  public XNode getSqlFragment(String refId) {
+    return sqlFragments.get(refId);
   }
 
   private void configurationElement(XNode context) {
@@ -390,7 +390,7 @@ public class XMLMapperBuilder extends BaseBuilder {
         // ignore, bound type is not required
       }
       if (boundType != null && !configuration.hasMapper(boundType)) {
-        // Spring may not know the real resource name so we set a flag
+        // Spring may not know the real resource name, so we set a flag
         // to prevent loading again this resource from the mapper interface
         // look at MapperAnnotationBuilder#loadXmlResource
         configuration.addLoadedResource("namespace:" + namespace);

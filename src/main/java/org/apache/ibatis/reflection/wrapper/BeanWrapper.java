@@ -146,7 +146,7 @@ public class BeanWrapper extends BaseWrapper {
       set(prop, newObject);
     } catch (Exception e) {
       throw new ReflectionRuntimeException("Cannot set value of property '" + name + "' because '" + name
-          + "' is null and cannot be instantiated on instance of " + type.getName() + ". Cause:" + e.toString(), e);
+          + "' is null and cannot be instantiated on instance of " + type.getName() + ". Cause:" + e, e);
     }
     return metaValue;
   }
@@ -163,7 +163,7 @@ public class BeanWrapper extends BaseWrapper {
       throw e;
     } catch (Throwable t) {
       throw new ReflectionRuntimeException(
-          "Could not get property '" + prop.getName() + "' from " + object.getClass() + ".  Cause: " + t.toString(), t);
+          "Could not get property '" + prop.getName() + "' from " + object.getClass() + ".  Cause: " + t, t);
     }
   }
 
@@ -178,7 +178,7 @@ public class BeanWrapper extends BaseWrapper {
       }
     } catch (Throwable t) {
       throw new ReflectionRuntimeException("Could not set property '" + prop.getName() + "' of '" + object.getClass()
-          + "' with value '" + value + "' Cause: " + t.toString(), t);
+          + "' with value '" + value + "' Cause: " + t, t);
     }
   }
 
