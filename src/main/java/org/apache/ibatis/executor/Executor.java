@@ -15,9 +15,6 @@
  */
 package org.apache.ibatis.executor;
 
-import java.sql.SQLException;
-import java.util.List;
-
 import org.apache.ibatis.cache.CacheKey;
 import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.mapping.BoundSql;
@@ -26,6 +23,9 @@ import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.transaction.Transaction;
+
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  * @author Clinton Begin
@@ -36,11 +36,19 @@ public interface Executor {
 
   int update(MappedStatement ms, Object parameter) throws SQLException;
 
-  <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler,
-      CacheKey cacheKey, BoundSql boundSql) throws SQLException;
+  <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey cacheKey, BoundSql boundSql) throws SQLException;
 
-  <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler)
-      throws SQLException;
+  /**
+   * @param ms            MappedStatement
+   * @param parameter     the param at runtime
+   * @param rowBounds     RowBounds
+   * @param resultHandler ResultHandler
+   * @param <E>           result type
+   * @return list of result
+   * @throws SQLException error occurs
+   * @see Executor#query(MappedStatement, Object, RowBounds, ResultHandler, CacheKey, BoundSql)
+   */
+  <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException;
 
   <E> Cursor<E> queryCursor(MappedStatement ms, Object parameter, RowBounds rowBounds) throws SQLException;
 

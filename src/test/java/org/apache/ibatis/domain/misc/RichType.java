@@ -28,9 +28,9 @@ public class RichType {
 
   private String richProperty;
 
-  private Map richMap = new HashMap<>();
+  private Map<String, Object> richMap = new HashMap<>();
 
-  private List richList = new ArrayList<>() {
+  private List<Object> richList = new ArrayList<>() {
     private static final long serialVersionUID = 1L;
     {
       add("bar");
@@ -53,19 +53,19 @@ public class RichType {
     this.richProperty = richProperty;
   }
 
-  public List getRichList() {
+  public List<Object> getRichList() {
     return richList;
   }
 
-  public void setRichList(List richList) {
+  public void setRichList(List<Object> richList) {
     this.richList = richList;
   }
 
-  public Map getRichMap() {
+  public Map<String, Object> getRichMap() {
     return richMap;
   }
 
-  public void setRichMap(Map richMap) {
+  public void setRichMap(Map<String, Object> richMap) {
     this.richMap = richMap;
   }
 }

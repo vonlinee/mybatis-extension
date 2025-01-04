@@ -42,7 +42,7 @@ public class ScriptRunner {
   private static final String DEFAULT_DELIMITER = ";";
 
   private static final Pattern DELIMITER_PATTERN = Pattern
-      .compile("^\\s*((--)|(//))?\\s*(//)?\\s*@DELIMITER\\s+([^\\s]+)", Pattern.CASE_INSENSITIVE);
+      .compile("^\\s*((--)|(//))?\\s*(//)?\\s*@DELIMITER\\s+(\\S+)", Pattern.CASE_INSENSITIVE);
 
   private final Connection connection;
 
@@ -205,7 +205,7 @@ public class ScriptRunner {
   }
 
   private void checkForMissingLineTerminator(StringBuilder command) {
-    if (command != null && command.toString().trim().length() > 0) {
+    if (command != null && !command.toString().trim().isEmpty()) {
       throw new RuntimeSqlException("Line missing end-of-line terminator (" + delimiter + ") => " + command);
     }
   }
@@ -224,7 +224,7 @@ public class ScriptRunner {
       println(command);
       executeStatement(command.toString());
       command.setLength(0);
-    } else if (trimmedLine.length() > 0) {
+    } else if (!trimmedLine.isEmpty()) {
       command.append(line);
       command.append(LINE_SEPARATOR);
     }

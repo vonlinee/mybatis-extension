@@ -15,6 +15,8 @@
  */
 package org.apache.ibatis.domain.blog;
 
+import java.util.Objects;
+
 public class ComplexImmutableAuthorId {
   protected final int id;
   protected final String email;
@@ -55,20 +57,16 @@ public class ComplexImmutableAuthorId {
 
     final ComplexImmutableAuthorId that = (ComplexImmutableAuthorId) o;
 
-    if ((id != that.id) || (email != null ? !email.equals(that.email) : that.email != null)
-        || (password != null ? !password.equals(that.password) : that.password != null)
-        || (username != null ? !username.equals(that.username) : that.username != null)) {
-      return false;
-    }
-
-    return true;
+    return (id == that.id) && (Objects.equals(email, that.email))
+      && (Objects.equals(password, that.password))
+      && (Objects.equals(username, that.username));
   }
 
   @Override
   public int hashCode() {
-    int myresult = id;
-    myresult = 31 * myresult + (email != null ? email.hashCode() : 0);
-    myresult = 31 * myresult + (username != null ? username.hashCode() : 0);
-    return 31 * myresult + (password != null ? password.hashCode() : 0);
+    int result = id;
+    result = 31 * result + (email != null ? email.hashCode() : 0);
+    result = 31 * result + (username != null ? username.hashCode() : 0);
+    return 31 * result + (password != null ? password.hashCode() : 0);
   }
 }

@@ -15,18 +15,17 @@
  */
 package org.apache.ibatis;
 
+import org.apache.ibatis.datasource.pooled.PooledDataSource;
+import org.apache.ibatis.datasource.unpooled.UnpooledDataSource;
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.jdbc.ScriptRunner;
+
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.Reader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
-
-import javax.sql.DataSource;
-
-import org.apache.ibatis.datasource.pooled.PooledDataSource;
-import org.apache.ibatis.datasource.unpooled.UnpooledDataSource;
-import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.jdbc.ScriptRunner;
 
 public abstract class BaseDataTest {
 
@@ -58,6 +57,14 @@ public abstract class BaseDataTest {
     return ds;
   }
 
+  /**
+   * run sql script
+   *
+   * @param ds       data source
+   * @param resource resource path from classpath
+   * @throws IOException error when reading file
+   * @throws SQLException error during run the script
+   */
   public static void runScript(DataSource ds, String resource) throws IOException, SQLException {
     try (Connection connection = ds.getConnection()) {
       ScriptRunner runner = new ScriptRunner(connection);

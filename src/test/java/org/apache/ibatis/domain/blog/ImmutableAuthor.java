@@ -16,6 +16,7 @@
 package org.apache.ibatis.domain.blog;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class ImmutableAuthor implements Serializable {
   private static final long serialVersionUID = 1L;
@@ -70,20 +71,15 @@ public class ImmutableAuthor implements Serializable {
 
     Author author = (Author) o;
 
-    if ((id != author.id) || (bio != null ? !bio.equals(author.bio) : author.bio != null)
-        || (email != null ? !email.equals(author.email) : author.email != null)
-        || (password != null ? !password.equals(author.password) : author.password != null)) {
+    if ((id != author.id) || (!Objects.equals(bio, author.bio))
+        || (!Objects.equals(email, author.email))
+        || (!Objects.equals(password, author.password))) {
       return false;
     }
-    if (username != null ? !username.equals(author.username) : author.username != null) {
+    if (!Objects.equals(username, author.username)) {
       return false;
     }
-    if (favouriteSection != null ? !favouriteSection.equals(author.favouriteSection)
-        : author.favouriteSection != null) {
-      return false;
-    }
-
-    return true;
+    return Objects.equals(favouriteSection, author.favouriteSection);
   }
 
   @Override

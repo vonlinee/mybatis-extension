@@ -45,11 +45,7 @@ public class PostLiteId {
 
     final PostLiteId that = (PostLiteId) o;
 
-    if (id != that.id) {
-      return false;
-    }
-
-    return true;
+    return id == that.id;
   }
 
   @Override

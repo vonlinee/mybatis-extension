@@ -15,9 +15,6 @@
  */
 package org.apache.ibatis.exceptions;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.lang.reflect.InvocationTargetException;
 
 import org.apache.ibatis.binding.BindingException;
@@ -35,6 +32,8 @@ import org.apache.ibatis.transaction.TransactionException;
 import org.apache.ibatis.type.TypeException;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 class GeneralExceptionsTest {
 
   private static final String EXPECTED_MESSAGE = "Test Message";
@@ -43,7 +42,7 @@ class GeneralExceptionsTest {
   @Test
   void should() {
     RuntimeException thrown = ExceptionFactory.wrapException(EXPECTED_MESSAGE, EXPECTED_CAUSE);
-    assertTrue(thrown instanceof PersistenceException, "Exception should be wrapped in RuntimeSqlException.");
+    assertInstanceOf(PersistenceException.class, thrown, "Exception should be wrapped in RuntimeSqlException.");
     testThrowException(thrown);
   }
 

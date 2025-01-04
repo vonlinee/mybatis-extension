@@ -16,6 +16,7 @@
 package org.apache.ibatis.domain.blog;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class ComplexImmutableAuthor implements Serializable {
   private static final long serialVersionUID = 1L;
@@ -52,19 +53,14 @@ public class ComplexImmutableAuthor implements Serializable {
 
     final ComplexImmutableAuthor that = (ComplexImmutableAuthor) o;
 
-    if ((bio != null ? !bio.equals(that.bio) : that.bio != null) || (favouriteSection != that.favouriteSection)
-        || (theComplexImmutableAuthorId != null ? !theComplexImmutableAuthorId.equals(that.theComplexImmutableAuthorId)
-            : that.theComplexImmutableAuthorId != null)) {
-      return false;
-    }
-
-    return true;
+    return (Objects.equals(bio, that.bio)) && (favouriteSection == that.favouriteSection)
+      && (Objects.equals(theComplexImmutableAuthorId, that.theComplexImmutableAuthorId));
   }
 
   @Override
   public int hashCode() {
-    int myresult = theComplexImmutableAuthorId != null ? theComplexImmutableAuthorId.hashCode() : 0;
-    myresult = 31 * myresult + (bio != null ? bio.hashCode() : 0);
-    return 31 * myresult + (favouriteSection != null ? favouriteSection.hashCode() : 0);
+    int result = theComplexImmutableAuthorId != null ? theComplexImmutableAuthorId.hashCode() : 0;
+    result = 31 * result + (bio != null ? bio.hashCode() : 0);
+    return 31 * result + (favouriteSection != null ? favouriteSection.hashCode() : 0);
   }
 }

@@ -15,10 +15,6 @@
  */
 package org.apache.ibatis.executor.loader;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +31,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 @Tag("RequireIllegalAccess")
 class CglibProxyTest extends SerializableProxyTest {
 
@@ -50,7 +48,7 @@ class CglibProxyTest extends SerializableProxyTest {
     Object proxy = proxyFactory.createProxy(author, loader, new Configuration(), new DefaultObjectFactory(),
         new ArrayList<>(), new ArrayList<>());
     Author author2 = (Author) deserialize(serialize((Serializable) proxy));
-    assertTrue(author2 instanceof Factory);
+    assertInstanceOf(Factory.class, author2);
   }
 
   @Test

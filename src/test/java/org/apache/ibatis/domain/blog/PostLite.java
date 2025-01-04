@@ -15,6 +15,8 @@
  */
 package org.apache.ibatis.domain.blog;
 
+import java.util.Objects;
+
 public class PostLite {
   private PostLiteId theId;
   private int blogId;
@@ -54,16 +56,12 @@ public class PostLite {
 
     final PostLite that = (PostLite) o;
 
-    if ((blogId != that.blogId) || (theId != null ? !theId.equals(that.theId) : that.theId != null)) {
-      return false;
-    }
-
-    return true;
+    return (blogId == that.blogId) && (Objects.equals(theId, that.theId));
   }
 
   @Override
   public int hashCode() {
-    int myresult = theId != null ? theId.hashCode() : 0;
-    return 31 * myresult + blogId;
+    int result = theId != null ? theId.hashCode() : 0;
+    return 31 * result + blogId;
   }
 }

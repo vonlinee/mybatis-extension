@@ -15,10 +15,6 @@
  */
 package org.apache.ibatis.executor.loader;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,6 +30,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 class JavassistProxyTest extends SerializableProxyTest {
 
   @BeforeAll
@@ -48,7 +46,7 @@ class JavassistProxyTest extends SerializableProxyTest {
     Object proxy = proxyFactory.createProxy(author, loader, new Configuration(), new DefaultObjectFactory(),
         new ArrayList<>(), new ArrayList<>());
     Author author2 = (Author) deserialize(serialize((Serializable) proxy));
-    assertTrue(author2 instanceof Proxy);
+    assertInstanceOf(Proxy.class, author2);
   }
 
   @Test
