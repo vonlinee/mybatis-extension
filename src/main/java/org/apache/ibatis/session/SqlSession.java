@@ -82,7 +82,7 @@ public interface SqlSession extends Closeable {
 
   /**
    * The selectMap is a special case in that it is designed to convert a list of results into a Map based on one of the
-   * properties in the resulting objects. Eg. Return a of Map[Integer,Author] for selectMap("selectAuthors","id")
+   * properties in the resulting objects. E.g. Return an of Map[Integer,Author] for selectMap("selectAuthors","id")
    *
    * @param <K>       the returned Map keys type
    * @param <V>       the returned Map values type
@@ -216,7 +216,7 @@ public interface SqlSession extends Closeable {
    * Execute a delete statement. The number of rows affected will be returned.
    *
    * @param statement Unique identifier matching the statement to execute.
-   * @return int The number of rows affected by the delete.
+   * @return int The number of rows affected by the deletion.
    */
   int delete(String statement);
 
@@ -225,7 +225,7 @@ public interface SqlSession extends Closeable {
    *
    * @param statement Unique identifier matching the statement to execute.
    * @param parameter A parameter object to pass to the statement.
-   * @return int The number of rows affected by the delete.
+   * @return int The number of rows affected by the deletion.
    */
   int delete(String statement, Object parameter);
 

@@ -596,6 +596,10 @@ public class Configuration {
     return typeAliasRegistry;
   }
 
+  public void registerAlias(Class<?> type) {
+    this.typeAliasRegistry.registerAlias(type);
+  }
+
   /**
    * Gets the mapper registry.
    *

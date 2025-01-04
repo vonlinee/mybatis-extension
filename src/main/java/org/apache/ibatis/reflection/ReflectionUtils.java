@@ -153,4 +153,9 @@ public final class ReflectionUtils {
     }
     return (T) Proxy.newProxyInstance(iType.getClassLoader(), new Class[]{iType}, handler);
   }
+
+  @SuppressWarnings("unchecked")
+  public static <T extends InvocationHandler> T getInvocationHandler(Object proxy) {
+    return (T) Proxy.getInvocationHandler(proxy);
+  }
 }

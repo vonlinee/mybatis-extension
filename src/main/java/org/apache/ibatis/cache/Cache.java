@@ -22,7 +22,7 @@ import java.util.concurrent.locks.ReadWriteLock;
  * <p>
  * One instance of cache will be created for each namespace.
  * <p>
- * The cache implementation must have a constructor that receives the cache id as an String parameter.
+ * The cache implementation must have a constructor that receives the cache id as a String parameter.
  * <p>
  * MyBatis will pass the namespace as id to the constructor.
  *
@@ -38,7 +38,6 @@ import java.util.concurrent.locks.ReadWriteLock;
  *
  * @author Clinton Begin
  */
-
 public interface Cache {
 
   /**
@@ -47,17 +46,13 @@ public interface Cache {
   String getId();
 
   /**
-   * @param key
-   *          Can be any object but usually it is a {@link CacheKey}
-   * @param value
-   *          The result of a select.
+   * @param key   Can be any object but usually it is a {@link CacheKey}
+   * @param value The result of a select.
    */
   void putObject(Object key, Object value);
 
   /**
-   * @param key
-   *          The key
-   *
+   * @param key The key
    * @return The object stored in the cache.
    */
   Object getObject(Object key);
@@ -68,9 +63,7 @@ public interface Cache {
    * when a value is null and releases it when the value is back again. This way other threads will wait for the value
    * to be available instead of hitting the database.
    *
-   * @param key
-   *          The key
-   *
+   * @param key The key
    * @return Not used
    */
   Object removeObject(Object key);

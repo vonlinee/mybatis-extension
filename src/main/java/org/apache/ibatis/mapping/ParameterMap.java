@@ -18,8 +18,6 @@ package org.apache.ibatis.mapping;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.ibatis.session.Configuration;
-
 /**
  * @author Clinton Begin
  */
@@ -35,7 +33,7 @@ public class ParameterMap {
   public static class Builder {
     private final ParameterMap parameterMap = new ParameterMap();
 
-    public Builder(Configuration configuration, String id, Class<?> type, List<ParameterMapping> parameterMappings) {
+    public Builder(String id, Class<?> type, List<ParameterMapping> parameterMappings) {
       parameterMap.id = id;
       parameterMap.type = type;
       parameterMap.parameterMappings = parameterMappings;

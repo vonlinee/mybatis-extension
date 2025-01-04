@@ -15,15 +15,15 @@
  */
 package org.apache.ibatis.annotations;
 
+import org.apache.ibatis.mapping.ResultSetType;
+import org.apache.ibatis.mapping.StatementType;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import org.apache.ibatis.mapping.ResultSetType;
-import org.apache.ibatis.mapping.StatementType;
 
 /**
  * The annotation that specify options for customizing default behaviors.
@@ -49,16 +49,22 @@ public @interface Options {
    * The options for the {@link Options#flushCache()}. The default is {@link FlushCachePolicy#DEFAULT}
    */
   enum FlushCachePolicy {
-    /** <code>false</code> for select statement; <code>true</code> for insert/update/delete statement. */
+    /**
+     * <code>false</code> for select statement; <code>true</code> for insert/update/delete statement.
+     */
     DEFAULT,
-    /** Flushes cache regardless of the statement type. */
+    /**
+     * Flushes cache regardless of the statement type.
+     */
     TRUE,
-    /** Does not flush cache regardless of the statement type. */
+    /**
+     * Does not flush cache regardless of the statement type.
+     */
     FALSE
   }
 
   /**
-   * Returns whether use the 2nd cache feature if assigned the cache.
+   * Returns whether you use the 2nd cache feature if assigned the cache.
    *
    * @return {@code true} if use; {@code false} if otherwise
    */
@@ -100,7 +106,7 @@ public @interface Options {
   int timeout() default -1;
 
   /**
-   * Returns whether use the generated keys feature supported by JDBC 3.0
+   * Returns whether you use the generated keys feature supported by JDBC 3.0
    *
    * @return {@code true} if use; {@code false} if otherwise
    */
@@ -138,7 +144,6 @@ public @interface Options {
 
   /**
    * @return A database id that correspond this options
-   *
    * @since 3.5.5
    */
   String databaseId() default "";
@@ -147,7 +152,6 @@ public @interface Options {
    * The container annotation for {@link Options}.
    *
    * @author Kazuki Shimizu
-   *
    * @since 3.5.5
    */
   @Documented

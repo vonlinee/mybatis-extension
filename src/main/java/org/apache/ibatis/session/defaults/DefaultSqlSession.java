@@ -19,11 +19,9 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.binding.BindingException;
 import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.exceptions.ExceptionFactory;
 import org.apache.ibatis.exceptions.TooManyResultsException;
@@ -58,10 +56,6 @@ public class DefaultSqlSession implements SqlSession {
     this.executor = executor;
     this.dirty = false;
     this.autoCommit = autoCommit;
-  }
-
-  public DefaultSqlSession(Configuration configuration, Executor executor) {
-    this(configuration, executor, false);
   }
 
   @Override
