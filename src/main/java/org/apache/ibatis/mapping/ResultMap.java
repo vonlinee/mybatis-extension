@@ -28,7 +28,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.builder.BuilderException;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
-import org.apache.ibatis.reflection.ParamNameUtil;
+import org.apache.ibatis.reflection.ReflectionUtils;
 import org.apache.ibatis.session.Configuration;
 
 /**
@@ -148,11 +148,12 @@ public class ResultMap {
 
     private List<String> argNamesOfMatchingConstructor(List<String> constructorArgNames) {
       Constructor<?>[] constructors = resultMap.type.getDeclaredConstructors();
+      final Set<String> constructorParamNames = new HashSet<>(constructorArgNames);
       for (Constructor<?> constructor : constructors) {
         Class<?>[] paramTypes = constructor.getParameterTypes();
         if (constructorArgNames.size() == paramTypes.length) {
           List<String> paramNames = getArgNames(constructor);
-          if (constructorArgNames.containsAll(paramNames)
+          if (constructorParamNames.containsAll(paramNames)
               && argTypesMatch(constructorArgNames, paramTypes, paramNames)) {
             return paramNames;
           }
@@ -194,7 +195,7 @@ public class ResultMap {
         }
         if (name == null && resultMap.configuration.isUseActualParamName()) {
           if (actualParamNames == null) {
-            actualParamNames = ParamNameUtil.getParamNames(constructor);
+            actualParamNames = ReflectionUtils.getParamNames(constructor);
           }
           if (actualParamNames.size() > paramIndex) {
             name = actualParamNames.get(paramIndex);

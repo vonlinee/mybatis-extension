@@ -60,5 +60,4 @@ public class Invocation {
   public Object proceed() throws InvocationTargetException, IllegalAccessException {
     return method.invoke(target, args);
   }
-
 }

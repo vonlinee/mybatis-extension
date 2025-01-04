@@ -157,7 +157,6 @@ public class MapperAnnotationBuilder implements ConfigurationBuilder {
     // this flag is set at XMLMapperBuilder#bindMapperForNamespace
     if (!configuration.isResourceLoaded("namespace:" + type.getName())) {
       String xmlResource = ClassUtils.getPathname(type) + ".xml";
-      ;
       // #1347
       InputStream inputStream = type.getResourceAsStream("/" + xmlResource);
       if (inputStream == null) {

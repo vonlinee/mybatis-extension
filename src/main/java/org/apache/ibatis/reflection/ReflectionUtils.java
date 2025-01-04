@@ -3,12 +3,16 @@ package org.apache.ibatis.reflection;
 import org.springframework.lang.Nullable;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public final class ReflectionUtils {
@@ -157,5 +161,22 @@ public final class ReflectionUtils {
   @SuppressWarnings("unchecked")
   public static <T extends InvocationHandler> T getInvocationHandler(Object proxy) {
     return (T) Proxy.getInvocationHandler(proxy);
+  }
+
+  public static List<String> getParameterNames(Executable executable) {
+    List<String> parameterNames = new ArrayList<>();
+    Parameter[] parameters = executable.getParameters();
+    for (Parameter parameter : parameters) {
+      parameterNames.add(parameter.getName());
+    }
+    return parameterNames;
+  }
+
+  public static List<String> getMethodParamNames(Method method) {
+    return getParameterNames(method);
+  }
+
+  public static List<String> getParamNames(Constructor<?> constructor) {
+    return getParameterNames(constructor);
   }
 }

@@ -21,19 +21,18 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-// @formatter:off
 /**
  * The annotation that specify target methods to intercept.
  * <p>
  * <b>How to use:</b>
  *
- * <pre>
- * &#064;Intercepts({ &#064;Signature(
+ * <blockquote><pre>
+ * {@code @}Intercepts({ {@code @}Signature(
  *   type = Executor.class,
  *   method = "update",
  *   args = { MappedStatement.class, Object.class }) })
  * public class ExamplePlugin implements Interceptor {
- *   &#064;Override
+ *   {@code @}Override
  *   public Object intercept(Invocation invocation) throws Throwable {
  *     // implement pre-processing if needed
  *     Object returnObject = invocation.proceed();
@@ -41,11 +40,10 @@ import java.lang.annotation.Target;
  *     return returnObject;
  *   }
  * }
- * </pre>
+ * </pre></blockquote>
  *
  * @author Clinton Begin
  */
-// @formatter:on
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

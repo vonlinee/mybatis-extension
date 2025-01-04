@@ -71,15 +71,15 @@ public class Plugin implements InvocationHandler {
       throw new PluginException(
           "No @Intercepts annotation was found in interceptor " + interceptor.getClass().getName());
     }
-    Signature[] sigs = interceptsAnnotation.value();
+    Signature[] signatures = interceptsAnnotation.value();
     Map<Class<?>, Set<Method>> signatureMap = new HashMap<>();
-    for (Signature sig : sigs) {
-      Set<Method> methods = MapUtil.computeIfAbsent(signatureMap, sig.type(), k -> new HashSet<>());
+    for (Signature signature : signatures) {
+      Set<Method> methods = MapUtil.computeIfAbsent(signatureMap, signature.type(), k -> new HashSet<>());
       try {
-        Method method = sig.type().getMethod(sig.method(), sig.args());
+        Method method = signature.type().getMethod(signature.method(), signature.args());
         methods.add(method);
       } catch (NoSuchMethodException e) {
-        throw new PluginException("Could not find method on " + sig.type() + " named " + sig.method() + ". Cause: " + e,
+        throw new PluginException("Could not find method on " + signature.type() + " named " + signature.method() + ". Cause: " + e,
             e);
       }
     }
