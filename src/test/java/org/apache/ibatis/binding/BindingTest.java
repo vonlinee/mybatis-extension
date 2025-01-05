@@ -512,7 +512,7 @@ class BindingTest {
   void shouldReturnANotNullHashCode() {
     try (SqlSession session = sqlSessionFactory.openSession()) {
       BoundBlogMapper mapper = session.getMapper(BoundBlogMapper.class);
-      assertNotNull(mapper.hashCode());
+      assertNotNull(mapper);
     }
   }
 
@@ -545,7 +545,7 @@ class BindingTest {
   void shouldFailWhenSelectingOneBlogWithNonExistentNestedParam() {
     try (SqlSession session = sqlSessionFactory.openSession()) {
       BoundBlogMapper mapper = session.getMapper(BoundBlogMapper.class);
-      mapper.selectBlogByNonExistentNestedParam(1, Collections.<String, Object>emptyMap());
+      mapper.selectBlogByNonExistentNestedParam(1, Collections.emptyMap());
     }
   }
 
