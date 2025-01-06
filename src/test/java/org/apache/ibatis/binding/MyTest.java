@@ -19,7 +19,7 @@ import org.apache.ibatis.BaseDataTest;
 import org.apache.ibatis.domain.blog.Author;
 import org.apache.ibatis.domain.blog.Blog;
 import org.apache.ibatis.domain.blog.Post;
-import org.apache.ibatis.logging.slf4j.Slf4jImpl;
+import org.apache.ibatis.logging.stdout.StdOutImpl;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
@@ -45,7 +45,7 @@ class MyTest {
     Environment environment = new Environment("Production", transactionFactory, dataSource);
     Configuration configuration = new Configuration(environment);
     configuration.setLazyLoadingEnabled(true);
-    configuration.setLogImpl(Slf4jImpl.class);
+    configuration.setLogImpl(StdOutImpl.class);
 
     configuration.setUseActualParamName(false); // to test legacy style reference (#{0} #{1})
     configuration.registerAlias(Blog.class);

@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import org.apache.ibatis.annotations.AutomapConstructor;
+import org.apache.ibatis.annotations.AutoMappingConstructor;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.binding.MapperMethod.ParamMap;
 import org.apache.ibatis.cache.CacheKey;
@@ -89,16 +89,16 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   private final ObjectFactory objectFactory;
   private final ReflectorFactory reflectorFactory;
 
-  // nested resultmaps
+  // nested result maps
   private final Map<CacheKey, Object> nestedResultObjects = new HashMap<>();
   private final Map<String, Object> ancestorObjects = new HashMap<>();
   private Object previousRowValue;
 
-  // multiple resultsets
+  // multiple result sets
   private final Map<String, ResultMapping> nextResultMaps = new HashMap<>();
   private final Map<CacheKey, List<PendingRelation>> pendingRelations = new HashMap<>();
 
-  // Cached Automappings
+  // Cached Auto Mappings
   private final Map<String, List<UnMappedColumnAutoMapping>> autoMappingsCache = new HashMap<>();
   private final Map<String, List<String>> constructorAutoMappingColumns = new HashMap<>();
 
@@ -177,7 +177,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         handleRowValues(rsw, resultMap, resultHandler, RowBounds.DEFAULT, null);
       }
     } finally {
-      // issue #228 (close resultsets)
+      // issue #228 (close result sets)
       closeResultSet(rs);
     }
   }
@@ -244,12 +244,12 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   private ResultSetWrapper getFirstResultSet(Statement stmt) throws SQLException {
     ResultSet rs = stmt.getResultSet();
     while (rs == null) {
-      // move forward to get the first resultset in case the driver
-      // doesn't return the resultset as the first result (HSQLDB)
+      // move forward to get the first result set in case the driver
+      // doesn't return the result set as the first result (HSQLDB)
       if (stmt.getMoreResults()) {
         rs = stmt.getResultSet();
       } else if (stmt.getUpdateCount() == -1) {
-        // no more results. Must be no resultset
+        // no more results. Must be no result set
         break;
       }
     }
@@ -313,7 +313,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         handleRowValues(rsw, resultMap, resultHandler, rowBounds, null);
       }
     } finally {
-      // issue #228 (close resultsets)
+      // issue #228 (close result sets)
       closeResultSet(rsw.getResultSet());
     }
   }
@@ -324,7 +324,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   }
 
   //
-  // HANDLE ROWS FOR SIMPLE RESULTMAP
+  // HANDLE ROWS FOR SIMPLE RESULT MAP
   //
 
   public void handleRowValues(ResultSetWrapper rsw, ResultMap resultMap, ResultHandler<?> resultHandler,
@@ -735,17 +735,17 @@ public class DefaultResultSetHandler implements ResultSetHandler {
       return Optional.of(constructors[0]);
     }
     Optional<Constructor<?>> annotated = Arrays.stream(constructors)
-        .filter(x -> x.isAnnotationPresent(AutomapConstructor.class)).reduce((x, y) -> {
-          throw new ExecutorException("@AutomapConstructor should be used in only one constructor.");
+        .filter(x -> x.isAnnotationPresent(AutoMappingConstructor.class)).reduce((x, y) -> {
+          throw new ExecutorException("@AutoMappingConstructor should be used in only one constructor.");
         });
     if (annotated.isPresent()) {
       return annotated;
     }
     if (configuration.isArgNameBasedConstructorAutoMapping()) {
       // Finding-best-match type implementation is possible,
-      // but using @AutomapConstructor seems sufficient.
+      // but using @AutoMappingConstructor seems sufficient.
       throw new ExecutorException(MessageFormat.format(
-          "'argNameBasedConstructorAutoMapping' is enabled and the class ''{0}'' has multiple constructors, so @AutomapConstructor must be added to one of the constructors.",
+          "'argNameBasedConstructorAutoMapping' is enabled and the class ''{0}'' has multiple constructors, so @AutoMappingConstructor must be added to one of the constructors.",
           resultType.getName()));
     } else {
       return Arrays.stream(constructors).filter(x -> findUsableConstructorByArgTypes(x, rsw.getJdbcTypes())).findAny();

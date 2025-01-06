@@ -36,7 +36,7 @@ import java.lang.annotation.Target;
  *     this.id = id;
  *   }
  *
- *   &#064;AutomapConstructor
+ *   &#064;AutoMappingConstructor
  *   public User(int id, String name) {
  *     this.id = id;
  *     this.name = name;
@@ -52,5 +52,5 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.CONSTRUCTOR })
-public @interface AutomapConstructor {
+public @interface AutoMappingConstructor {
 }
