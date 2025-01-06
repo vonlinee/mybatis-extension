@@ -15,6 +15,15 @@
  */
 package org.apache.ibatis.executor.resultset;
 
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.mapping.ResultMap;
+import org.apache.ibatis.session.Configuration;
+import org.apache.ibatis.type.JdbcType;
+import org.apache.ibatis.type.ObjectTypeHandler;
+import org.apache.ibatis.type.TypeHandler;
+import org.apache.ibatis.type.TypeHandlerRegistry;
+import org.apache.ibatis.type.UnknownTypeHandler;
+
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -27,15 +36,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.mapping.ResultMap;
-import org.apache.ibatis.session.Configuration;
-import org.apache.ibatis.type.JdbcType;
-import org.apache.ibatis.type.ObjectTypeHandler;
-import org.apache.ibatis.type.TypeHandler;
-import org.apache.ibatis.type.TypeHandlerRegistry;
-import org.apache.ibatis.type.UnknownTypeHandler;
-
 /**
  * @author Iwao AVE!
  */
@@ -44,6 +44,10 @@ public class ResultSetWrapper {
   private final ResultSet resultSet;
   private final TypeHandlerRegistry typeHandlerRegistry;
   private final List<String> columnNames = new ArrayList<>();
+
+  /**
+   * @see ResultSetMetaData#getColumnClassName(int)
+   */
   private final List<String> classNames = new ArrayList<>();
   private final List<JdbcType> jdbcTypes = new ArrayList<>();
   private final Map<String, Map<Class<?>, TypeHandler<?>>> typeHandlerMap = new HashMap<>();
@@ -91,11 +95,8 @@ public class ResultSetWrapper {
    * Gets the type handler to use when reading the result set. Tries to get from the TypeHandlerRegistry by searching
    * for the property type. If not found it gets the column JDBC type and tries to get a handler for it.
    *
-   * @param propertyType
-   *          the property type
-   * @param columnName
-   *          the column name
-   *
+   * @param propertyType the property type
+   * @param columnName   the column name
    * @return the type handler
    */
   public TypeHandler<?> getTypeHandler(Class<?> propertyType, String columnName) {
@@ -183,7 +184,7 @@ public class ResultSetWrapper {
   }
 
   private Set<String> prependPrefixes(Set<String> columnNames, String prefix) {
-    if (columnNames == null || columnNames.isEmpty() || prefix == null || prefix.length() == 0) {
+    if (columnNames == null || columnNames.isEmpty() || prefix == null || prefix.isEmpty()) {
       return columnNames;
     }
     final Set<String> prefixed = new HashSet<>();
