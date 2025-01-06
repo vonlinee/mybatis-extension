@@ -416,7 +416,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         foundValues = applyAutomaticMappings(rsw, resultMap, metaObject, columnPrefix) || foundValues;
       }
       foundValues = applyPropertyMappings(rsw, resultMap, metaObject, lazyLoader, columnPrefix) || foundValues;
-      foundValues = lazyLoader.size() > 0 || foundValues;
+      foundValues = !lazyLoader.isEmpty() || foundValues;
       rowValue = foundValues || configuration.isReturnInstanceForEmptyRow() ? rowValue : null;
     }
     return rowValue;
@@ -449,7 +449,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         foundValues = applyNestedResultMappings(rsw, resultMap, metaObject, columnPrefix, combinedKey, true)
             || foundValues;
         ancestorObjects.remove(resultMapId);
-        foundValues = lazyLoader.size() > 0 || foundValues;
+        foundValues = !lazyLoader.isEmpty() || foundValues;
         rowValue = foundValues || configuration.isReturnInstanceForEmptyRow() ? rowValue : null;
       }
       if (combinedKey != CacheKey.NULL_CACHE_KEY) {
@@ -996,7 +996,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   }
 
   private String prependPrefix(String columnName, String prefix) {
-    if (columnName == null || columnName.length() == 0 || prefix == null || prefix.length() == 0) {
+    if (columnName == null || columnName.isEmpty() || prefix == null || prefix.isEmpty()) {
       return columnName;
     }
     return prefix + columnName;
