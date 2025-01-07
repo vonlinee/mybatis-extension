@@ -61,7 +61,7 @@ class PluginTest {
   }
 
   static class SchemaHolder {
-    private static ThreadLocal<String> value = ThreadLocal.withInitial(() -> "PUBLIC");
+    private static final ThreadLocal<String> value = ThreadLocal.withInitial(() -> "PUBLIC");
 
     public static void set(String tenantName) {
       value.set(tenantName);
@@ -89,13 +89,13 @@ class PluginTest {
     map = (Map<?, ?>) new AlwaysMapPlugin().plugin(map);
     try {
       map.get("Anything");
-      fail("Exected IllegalArgumentException, but no exception was thrown.");
+      fail("Expected IllegalArgumentException, but no exception was thrown.");
     } catch (IllegalArgumentException e) {
       assertEquals(
           "Method 'public abstract java.lang.Object java.util.Map.get(java.lang.Object)' is not supported as a plugin target.",
           e.getMessage());
     } catch (Exception e) {
-      fail("Exected IllegalArgumentException, but was " + e.getClass(), e);
+      fail("Expected IllegalArgumentException, but was " + e.getClass(), e);
     }
   }
 

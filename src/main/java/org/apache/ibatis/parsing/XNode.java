@@ -180,7 +180,7 @@ public class XNode {
   }
 
   /**
-   * Return a attribute value as String.
+   * Return an attribute value as String.
    * <p>
    * If attribute value is absent, return value that provided from supplier of default value.
    *
@@ -305,7 +305,7 @@ public class XNode {
           new XNode(xpathParser, node, variables).buildToString(builder, indentLevel + 1);
         } else {
           String text = getBodyData(node).trim();
-          if (text.length() > 0) {
+          if (!text.isEmpty()) {
             indent(builder, indentLevel + 1).append(text).append("\n");
           }
         }

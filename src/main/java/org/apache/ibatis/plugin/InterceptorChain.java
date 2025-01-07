@@ -20,12 +20,37 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * The {@code InterceptorChain} class manages a chain of interceptors for
+ * processing target objects. It provides methods to add interceptors and
+ * apply them to the target object.
+ * <p>
+ * This class is part of the MyBatis framework and is designed to allow
+ * the implementation of cross-cutting concerns such as logging,
+ * transaction management, and security in a modular way.
+ * </p>
+ *
+ * <p>
+ * Example usage:
+ * <pre>
+ * InterceptorChain chain = new InterceptorChain();
+ * chain.addInterceptor(new MyInterceptor());
+ * Object proxiedObject = chain.pluginAll(originalObject);
+ * </pre>
+ *
  * @author Clinton Begin
+ * @see Interceptor
+ * @since 3.0.0
  */
 public class InterceptorChain {
 
   private final List<Interceptor> interceptors = new ArrayList<>();
 
+  /**
+   * Applies all registered interceptors to the given target object.
+   *
+   * @param target the target object to be proxied by the interceptors
+   * @return the proxied object after applying all interceptors
+   */
   public Object pluginAll(Object target) {
     for (Interceptor interceptor : interceptors) {
       target = interceptor.plugin(target);
