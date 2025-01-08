@@ -71,7 +71,7 @@ class PreparedStatementLoggerTest {
     when(log.isDebugEnabled()).thenReturn(true);
     when(preparedStatement.execute(anyString())).thenReturn(true);
 
-    ps.setNull(1, JdbcType.VARCHAR.TYPE_CODE);
+    ps.setNull(1, JdbcType.VARCHAR.getTypeCode());
     boolean result = ps.execute("update name = ? from test");
 
     verify(log).debug(contains("Parameters: null"));

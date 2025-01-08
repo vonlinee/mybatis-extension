@@ -107,12 +107,12 @@ public class CallableStatementHandler extends BaseStatementHandler {
         }
         if (parameterMapping.getNumericScale() != null && (parameterMapping.getJdbcType() == JdbcType.NUMERIC
             || parameterMapping.getJdbcType() == JdbcType.DECIMAL)) {
-          cs.registerOutParameter(i + 1, parameterMapping.getJdbcType().TYPE_CODE, parameterMapping.getNumericScale());
+          cs.registerOutParameter(i + 1, parameterMapping.getJdbcType().getTypeCode(), parameterMapping.getNumericScale());
         } else {
           if (parameterMapping.getJdbcTypeName() == null) {
-            cs.registerOutParameter(i + 1, parameterMapping.getJdbcType().TYPE_CODE);
+            cs.registerOutParameter(i + 1, parameterMapping.getJdbcType().getTypeCode());
           } else {
-            cs.registerOutParameter(i + 1, parameterMapping.getJdbcType().TYPE_CODE,
+            cs.registerOutParameter(i + 1, parameterMapping.getJdbcType().getTypeCode(),
                 parameterMapping.getJdbcTypeName());
           }
         }

@@ -32,13 +32,13 @@ class JdbcTypeTest {
     for (String typeName : requiredStandardTypeNames) {
       int typeCode = Types.class.getField(typeName).getInt(null);
       JdbcType jdbcType = JdbcType.valueOf(typeName);
-      assertEquals(typeCode, jdbcType.TYPE_CODE);
+      assertEquals(typeCode, jdbcType.getTypeCode());
     }
   }
 
   @Test
   void shouldHaveDateTimeOffsetConstant() {
     JdbcType jdbcType = JdbcType.valueOf("DATETIMEOFFSET");
-    assertEquals(-155, jdbcType.TYPE_CODE);
+    assertEquals(-155, jdbcType.getTypeCode());
   }
 }

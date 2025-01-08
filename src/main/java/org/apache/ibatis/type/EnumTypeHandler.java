@@ -39,7 +39,7 @@ public class EnumTypeHandler<E extends Enum<E>> extends BaseTypeHandler<E> {
     if (jdbcType == null) {
       ps.setString(i, parameter.name());
     } else {
-      ps.setObject(i, parameter.name(), jdbcType.TYPE_CODE); // see r3589
+      ps.setObject(i, parameter.name(), jdbcType.getTypeCode()); // see r3589
     }
   }
 

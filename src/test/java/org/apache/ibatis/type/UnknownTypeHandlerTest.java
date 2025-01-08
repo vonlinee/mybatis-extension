@@ -47,7 +47,7 @@ class UnknownTypeHandlerTest extends BaseTypeHandlerTest {
     when(rsmd.getColumnCount()).thenReturn(1);
     when(rsmd.getColumnLabel(1)).thenReturn("column");
     when(rsmd.getColumnClassName(1)).thenReturn(String.class.getName());
-    when(rsmd.getColumnType(1)).thenReturn(JdbcType.VARCHAR.TYPE_CODE);
+    when(rsmd.getColumnType(1)).thenReturn(JdbcType.VARCHAR.getTypeCode());
     when(rs.getString("column")).thenReturn("Hello");
     assertEquals("Hello", TYPE_HANDLER.getResult(rs, "column"));
   }
@@ -62,7 +62,7 @@ class UnknownTypeHandlerTest extends BaseTypeHandlerTest {
   public void shouldGetResultFromResultSetByPosition() throws Exception {
     when(rs.getMetaData()).thenReturn(rsmd);
     when(rsmd.getColumnClassName(1)).thenReturn(String.class.getName());
-    when(rsmd.getColumnType(1)).thenReturn(JdbcType.VARCHAR.TYPE_CODE);
+    when(rsmd.getColumnType(1)).thenReturn(JdbcType.VARCHAR.getTypeCode());
     when(rs.getString(1)).thenReturn("Hello");
     assertEquals("Hello", TYPE_HANDLER.getResult(rs, 1));
   }
@@ -89,17 +89,17 @@ class UnknownTypeHandlerTest extends BaseTypeHandlerTest {
   @Test
   void setParameterWithNullParameter() throws Exception {
     TYPE_HANDLER.setParameter(ps, 0, null, JdbcType.INTEGER);
-    verify(ps).setNull(0, JdbcType.INTEGER.TYPE_CODE);
+    verify(ps).setNull(0, JdbcType.INTEGER.getTypeCode());
   }
 
   @Test
   void setParameterWithNullParameterThrowsException() throws SQLException {
-    doThrow(new SQLException("invalid column")).when(ps).setNull(1, JdbcType.INTEGER.TYPE_CODE);
+    doThrow(new SQLException("invalid column")).when(ps).setNull(1, JdbcType.INTEGER.getTypeCode());
     try {
       TYPE_HANDLER.setParameter(ps, 1, null, JdbcType.INTEGER);
       Assertions.fail("Should have thrown a TypeException");
     } catch (Exception e) {
-      Assertions.assertTrue(e instanceof TypeException, "Expected TypedException");
+      Assertions.assertInstanceOf(TypeException.class, e, "Expected TypedException");
       Assertions.assertTrue(e.getMessage().contains("parameter #1"), "Parameter index is in exception");
     }
   }
@@ -112,7 +112,7 @@ class UnknownTypeHandlerTest extends BaseTypeHandlerTest {
       TYPE_HANDLER.setParameter(ps, 1, 99, JdbcType.INTEGER);
       Assertions.fail("Should have thrown a TypeException");
     } catch (Exception e) {
-      Assertions.assertTrue(e instanceof TypeException, "Expected TypedException");
+      Assertions.assertInstanceOf(TypeException.class, e, "Expected TypedException");
       Assertions.assertTrue(e.getMessage().contains("parameter #1"), "Parameter index is in exception");
     }
   }
@@ -124,7 +124,7 @@ class UnknownTypeHandlerTest extends BaseTypeHandlerTest {
       TYPE_HANDLER.getResult(rs, "foo");
       Assertions.fail("Should have thrown a ResultMapException");
     } catch (Exception e) {
-      Assertions.assertTrue(e instanceof ResultMapException, "Expected ResultMapException");
+      Assertions.assertInstanceOf(ResultMapException.class, e, "Expected ResultMapException");
       Assertions.assertTrue(e.getMessage().contains("column 'foo'"), "column name is not in exception");
     }
   }
@@ -136,7 +136,7 @@ class UnknownTypeHandlerTest extends BaseTypeHandlerTest {
       TYPE_HANDLER.getResult(rs, 1);
       Assertions.fail("Should have thrown a ResultMapException");
     } catch (Exception e) {
-      Assertions.assertTrue(e instanceof ResultMapException, "Expected ResultMapException");
+      Assertions.assertInstanceOf(ResultMapException.class, e, "Expected ResultMapException");
       Assertions.assertTrue(e.getMessage().contains("column #1"), "column index is not in exception");
     }
   }
@@ -148,7 +148,7 @@ class UnknownTypeHandlerTest extends BaseTypeHandlerTest {
       TYPE_HANDLER.getResult(cs, 1);
       Assertions.fail("Should have thrown a ResultMapException");
     } catch (Exception e) {
-      Assertions.assertTrue(e instanceof ResultMapException, "Expected ResultMapException");
+      Assertions.assertInstanceOf(ResultMapException.class, e, "Expected ResultMapException");
       Assertions.assertTrue(e.getMessage().contains("column #1"), "column index is not in exception");
     }
   }

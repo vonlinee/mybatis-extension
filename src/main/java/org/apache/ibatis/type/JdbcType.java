@@ -121,6 +121,10 @@ public enum JdbcType {
     this.TYPE_CODE = code;
   }
 
+  public int getTypeCode() {
+    return TYPE_CODE;
+  }
+
   public static JdbcType forCode(int code) {
     return codeLookup.get(code);
   }

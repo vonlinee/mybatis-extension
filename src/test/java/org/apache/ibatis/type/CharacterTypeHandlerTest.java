@@ -37,7 +37,7 @@ class CharacterTypeHandlerTest extends BaseTypeHandlerTest {
   @Test
   public void shouldSetNullParameter() throws Exception {
     TYPE_HANDLER.setParameter(ps, 1, null, JdbcType.VARCHAR);
-    verify(ps).setNull(1, JdbcType.VARCHAR.TYPE_CODE);
+    verify(ps).setNull(1, JdbcType.VARCHAR.getTypeCode());
   }
 
   @Override
