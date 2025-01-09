@@ -16,6 +16,7 @@
 package org.apache.ibatis.session;
 
 import org.apache.ibatis.binding.MapperRegistry;
+import org.apache.ibatis.builder.BuilderException;
 import org.apache.ibatis.builder.CacheRefResolver;
 import org.apache.ibatis.builder.IncompleteElementException;
 import org.apache.ibatis.builder.ResultMapResolver;
@@ -47,6 +48,7 @@ import org.apache.ibatis.executor.statement.CallableStatementHandler;
 import org.apache.ibatis.executor.statement.PreparedStatementHandler;
 import org.apache.ibatis.executor.statement.SimpleStatementHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
+import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.io.VFS;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
@@ -600,8 +602,41 @@ public class Configuration {
     return typeAliasRegistry;
   }
 
+  public <T> Class<T> resolveAlias(String alias) {
+    return this.typeAliasRegistry.resolveAlias(alias);
+  }
+
+  public void registerAliases(String packageName) {
+    this.typeAliasRegistry.registerAliases(packageName, Object.class);
+  }
+
   public void registerAlias(Class<?> type) {
     this.typeAliasRegistry.registerAlias(type);
+  }
+
+  public void registerAlias(String alias, Class<?> value) {
+    this.typeAliasRegistry.registerAlias(alias, value);
+  }
+
+  public void registerTypeHandler(String javaTypeClassName, String typeHandlerClassName) throws ClassNotFoundException {
+    typeHandlerRegistry.register(Resources.classForName(javaTypeClassName), Resources.classForName(typeHandlerClassName));
+  }
+
+  public void registerTypeHandler(Class<?> javaTypeClass, Class<?> typeHandlerClass) {
+    typeHandlerRegistry.register(javaTypeClass, typeHandlerRegistry.getInstance(javaTypeClass, typeHandlerClass));
+  }
+
+  // java type + jdbc type + handler type
+  public void registerTypeHandler(Class<?> javaTypeClass, JdbcType jdbcType, Class<?> typeHandlerClass) {
+    typeHandlerRegistry.register(javaTypeClass, jdbcType, typeHandlerRegistry.getInstance(javaTypeClass, typeHandlerClass));
+  }
+
+  public void registerTypeHandler(Class<?> javaTypeClass) {
+    this.typeHandlerRegistry.register(javaTypeClass);
+  }
+
+  public void registerTypeHandler(String packageName) {
+    this.typeHandlerRegistry.register(packageName);
   }
 
   /**
@@ -694,17 +729,6 @@ public class Configuration {
     }
     languageRegistry.register(langClass);
     return languageRegistry.getDriver(langClass);
-  }
-
-  /**
-   * Gets the default scripting language instance.
-   *
-   * @return the default scripting language instance
-   * @deprecated Use {@link #getDefaultScriptingLanguageInstance()}
-   */
-  @Deprecated
-  public LanguageDriver getDefaultScriptingLanuageInstance() {
-    return getDefaultScriptingLanguageInstance();
   }
 
   public MetaObject newMetaObject(Object object) {
@@ -1120,6 +1144,76 @@ public class Configuration {
           }
         }
       }
+    }
+  }
+
+  public boolean hasTypeHandler(Class<?> parameterType) {
+    return typeHandlerRegistry.hasTypeHandler(parameterType);
+  }
+
+  public Object createInstance(String alias) {
+    Class<?> clazz = resolveClass(alias);
+    try {
+      return clazz == null ? null : clazz.getDeclaredConstructor().newInstance();
+    } catch (Exception e) {
+      throw new BuilderException("Error creating instance. Cause: " + e, e);
+    }
+  }
+
+  public <T> Class<? extends T> resolveClass(String alias) {
+    try {
+      return alias == null ? null : typeAliasRegistry.resolveAlias(alias);
+    } catch (Exception e) {
+      throw new BuilderException("Error resolving class. Cause: " + e, e);
+    }
+  }
+
+  public TypeHandler<?> resolveTypeHandler(Class<?> javaType, String typeHandlerAlias) {
+    if (typeHandlerAlias == null) {
+      return null;
+    }
+    Class<?> type = resolveClass(typeHandlerAlias);
+    if (type != null && !TypeHandler.class.isAssignableFrom(type)) {
+      throw new BuilderException(
+        "Type " + type.getName() + " is not a valid TypeHandler because it does not implement TypeHandler interface");
+    }
+    @SuppressWarnings("unchecked") // already verified it is a TypeHandler
+    Class<? extends TypeHandler<?>> typeHandlerType = (Class<? extends TypeHandler<?>>) type;
+    return resolveTypeHandler(javaType, typeHandlerType);
+  }
+
+  public TypeHandler<?> resolveTypeHandler(Class<?> javaType, Class<? extends TypeHandler<?>> typeHandlerType) {
+    if (typeHandlerType == null) {
+      return null;
+    }
+    // javaType ignored for injected handlers see issue #746 for full detail
+    TypeHandler<?> handler = typeHandlerRegistry.getMappingTypeHandler(typeHandlerType);
+    // if handler not in registry, create a new one, otherwise return directly
+    return handler == null ? typeHandlerRegistry.getInstance(javaType, typeHandlerType) : handler;
+  }
+
+  /**
+   * Resolves a JDBC type from a given alias. This method converts the provided alias
+   * string into a corresponding {@link JdbcType} enum value. If the alias is null,
+   * it returns null. If the alias does not match any valid {@link JdbcType} name,
+   * it throws a {@link BuilderException}.
+   *
+   * <p>Example usage:</p>
+   * <pre>
+   * String alias = "VARCHAR";
+   * JdbcType jdbcType = resolveJdbcType(alias);
+   * System.out.println(jdbcType); // Outputs: VARCHAR
+   * </pre>
+   *
+   * @param alias the alias string representing the JDBC type; may be null
+   * @return the corresponding {@link JdbcType} enum value, or null if the alias is null
+   * @throws BuilderException if the alias does not correspond to any valid {@link JdbcType}
+   */
+  public JdbcType resolveJdbcType(String alias) {
+    try {
+      return alias == null ? null : JdbcType.valueOf(alias);
+    } catch (IllegalArgumentException e) {
+      throw new BuilderException("Error resolving JdbcType. Cause: " + e, e);
     }
   }
 

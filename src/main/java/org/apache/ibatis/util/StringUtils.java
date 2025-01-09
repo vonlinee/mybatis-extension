@@ -2,6 +2,7 @@ package org.apache.ibatis.util;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.function.Predicate;
 
 public final class StringUtils {
@@ -296,5 +297,34 @@ public final class StringUtils {
     }
 
     return isDelimiter;
+  }
+
+  /**
+   * Removes extra whitespaces from a given string.
+   * This method eliminates leading, trailing, and multiple consecutive spaces,
+   * returning a string with single spaces between words.
+   *
+   * <p>Example usage:</p>
+   * <pre>
+   * String originalString = "   This   is  a   test   string.  ";
+   * String cleanedString = removeExtraWhitespaces(originalString);
+   * System.out.println(cleanedString); // Outputs: 'This is a test string.'
+   * </pre>
+   *
+   * @param original the original string from which to remove extra whitespaces
+   * @return a new string with extra whitespaces removed
+   */
+  public static String removeExtraWhitespaces(String original) {
+    StringTokenizer tokenizer = new StringTokenizer(original);
+    StringBuilder builder = new StringBuilder();
+    boolean hasMoreTokens = tokenizer.hasMoreTokens();
+    while (hasMoreTokens) {
+      builder.append(tokenizer.nextToken());
+      hasMoreTokens = tokenizer.hasMoreTokens();
+      if (hasMoreTokens) {
+        builder.append(' ');
+      }
+    }
+    return builder.toString();
   }
 }

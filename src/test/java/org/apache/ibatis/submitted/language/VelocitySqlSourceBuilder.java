@@ -74,7 +74,7 @@ public class VelocitySqlSourceBuilder extends BaseBuilder {
       String property = propertiesMap.get("property");
       String jdbcType = propertiesMap.get("jdbcType");
       Class<?> propertyType;
-      if (typeHandlerRegistry.hasTypeHandler(parameterType)) {
+      if (configuration.hasTypeHandler(parameterType)) {
         propertyType = parameterType;
       } else if (JdbcType.CURSOR.name().equals(jdbcType)) {
         propertyType = java.sql.ResultSet.class;
@@ -90,7 +90,7 @@ public class VelocitySqlSourceBuilder extends BaseBuilder {
       }
       ParameterMapping.Builder builder = new ParameterMapping.Builder(configuration, property, propertyType);
       if (jdbcType != null) {
-        builder.jdbcType(resolveJdbcType(jdbcType));
+        builder.jdbcType(configuration.resolveJdbcType(jdbcType));
       }
       Class<?> javaType = null;
       String typeHandlerAlias = null;
@@ -98,12 +98,12 @@ public class VelocitySqlSourceBuilder extends BaseBuilder {
         String name = entry.getKey();
         String value = entry.getValue();
         if ("javaType".equals(name)) {
-          javaType = resolveClass(value);
+          javaType = configuration.resolveClass(value);
           builder.javaType(javaType);
         } else if ("jdbcType".equals(name)) {
-          builder.jdbcType(resolveJdbcType(value));
+          builder.jdbcType(configuration.resolveJdbcType(value));
         } else if ("mode".equals(name)) {
-          builder.mode(resolveParameterMode(value));
+          builder.mode(BaseBuilder.resolveParameterMode(value));
         } else if ("numericScale".equals(name)) {
           builder.numericScale(Integer.valueOf(value));
         } else if ("resultMap".equals(name)) {
@@ -122,7 +122,7 @@ public class VelocitySqlSourceBuilder extends BaseBuilder {
         }
       }
       if (typeHandlerAlias != null) {
-        builder.typeHandler(resolveTypeHandler(javaType, typeHandlerAlias));
+        builder.typeHandler(configuration.resolveTypeHandler(javaType, typeHandlerAlias));
       }
       return builder.build();
     }

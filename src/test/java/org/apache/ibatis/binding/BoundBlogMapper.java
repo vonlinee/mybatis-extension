@@ -15,9 +15,6 @@
  */
 package org.apache.ibatis.binding;
 
-import java.util.List;
-import java.util.Map;
-
 import org.apache.ibatis.annotations.Arg;
 import org.apache.ibatis.annotations.CacheNamespace;
 import org.apache.ibatis.annotations.Case;
@@ -32,6 +29,7 @@ import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.annotations.TypeDiscriminator;
+import org.apache.ibatis.binding.param.BlogListParam;
 import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.domain.blog.Author;
 import org.apache.ibatis.domain.blog.Blog;
@@ -40,6 +38,9 @@ import org.apache.ibatis.domain.blog.Post;
 import org.apache.ibatis.mapping.FetchType;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
+
+import java.util.List;
+import java.util.Map;
 
 @CacheNamespace(readWrite = false)
 public interface BoundBlogMapper {
@@ -54,11 +55,11 @@ public interface BoundBlogMapper {
 
   // ======================================================
 
-  @Select({ "SELECT * FROM blog" })
+  @Select({"SELECT * FROM blog"})
   @MapKey("id")
   Map<Integer, Blog> selectBlogsAsMapById();
 
-  @Select({ "SELECT * FROM blog ORDER BY id" })
+  @Select({"SELECT * FROM blog ORDER BY id"})
   @MapKey("id")
   Map<Integer, Blog> selectRangeBlogsAsMapById(RowBounds rowBounds);
 
@@ -191,7 +192,7 @@ public interface BoundBlogMapper {
     + "post WHERE subject like #{subjectQuery} and body like #{bodyQuery}")
   // @formatter:on
   List<Post> selectPostsLikeSubjectAndBody(RowBounds bounds, @Param("subjectQuery") String subjectQuery,
-      @Param("bodyQuery") String bodyQuery);
+                                           @Param("bodyQuery") String bodyQuery);
 
   // ======================================================
 
@@ -239,7 +240,7 @@ public interface BoundBlogMapper {
       + "WHERE ${column} = #{id} AND title = #{value}")
   // @formatter:on
   Blog selectBlogWithAParamNamedValue(@Param("column") String column, @Param("id") int id,
-      @Param("value") String title);
+                                      @Param("value") String title);
 
   // ======================================================
 
@@ -266,5 +267,8 @@ public interface BoundBlogMapper {
   })
   // @formatter:on
   List<Blog> selectBlogsWithAutorAndPostsEagerly();
+
+
+  List<Blog> selectBlogList(@Param("param") BlogListParam blog);
 
 }

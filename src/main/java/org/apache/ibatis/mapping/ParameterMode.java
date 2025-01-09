@@ -24,6 +24,15 @@ public enum ParameterMode {
 
   OUT,
 
-  INOUT
+  INOUT;
+
+  public static ParameterMode findByAlias(String alias) {
+    for (ParameterMode pm : values()) {
+      if (pm.name().equals(alias)) {
+        return pm;
+      }
+    }
+    return null;
+  }
 
 }

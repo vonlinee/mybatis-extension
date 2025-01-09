@@ -96,9 +96,8 @@ class XmlMapperBuilderTest {
 
   @Test
   void resolveJdbcTypeWithUndefinedValue() {
-    BaseBuilder builder = new BaseBuilder(new Configuration()) {
-    };
-    when(() -> builder.resolveJdbcType("aaa"));
+    Configuration configuration = new Configuration();
+    when(() -> configuration.resolveJdbcType("aaa"));
     then(caughtException()).isInstanceOf(BuilderException.class)
         .hasMessageStartingWith("Error resolving JdbcType. Cause: java.lang.IllegalArgumentException: No enum")
         .hasMessageEndingWith("org.apache.ibatis.type.JdbcType.aaa");
@@ -106,9 +105,7 @@ class XmlMapperBuilderTest {
 
   @Test
   void resolveResultSetTypeWithUndefinedValue() {
-    BaseBuilder builder = new BaseBuilder(new Configuration()) {
-    };
-    when(() -> builder.resolveResultSetType("bbb"));
+    when(() -> BaseBuilder.resolveResultSetType("bbb"));
     then(caughtException()).isInstanceOf(BuilderException.class)
         .hasMessageStartingWith("Error resolving ResultSetType. Cause: java.lang.IllegalArgumentException: No enum")
         .hasMessageEndingWith("org.apache.ibatis.mapping.ResultSetType.bbb");
@@ -116,9 +113,7 @@ class XmlMapperBuilderTest {
 
   @Test
   void resolveParameterModeWithUndefinedValue() {
-    BaseBuilder builder = new BaseBuilder(new Configuration()) {
-    };
-    when(() -> builder.resolveParameterMode("ccc"));
+    when(() -> BaseBuilder.resolveParameterMode("ccc"));
     then(caughtException()).isInstanceOf(BuilderException.class)
         .hasMessageStartingWith("Error resolving ParameterMode. Cause: java.lang.IllegalArgumentException: No enum")
         .hasMessageEndingWith("org.apache.ibatis.mapping.ParameterMode.ccc");
@@ -126,35 +121,31 @@ class XmlMapperBuilderTest {
 
   @Test
   void createInstanceWithAbstractClass() {
-    BaseBuilder builder = new BaseBuilder(new Configuration()) {
-    };
-    when(() -> builder.createInstance("org.apache.ibatis.builder.BaseBuilder"));
+    Configuration configuration = new Configuration();
+    when(() -> configuration.createInstance("org.apache.ibatis.builder.BaseBuilder"));
     then(caughtException()).isInstanceOf(BuilderException.class).hasMessage(
         "Error creating instance. Cause: java.lang.NoSuchMethodException: org.apache.ibatis.builder.BaseBuilder.<init>()");
   }
 
   @Test
   void resolveClassWithNotFound() {
-    BaseBuilder builder = new BaseBuilder(new Configuration()) {
-    };
-    when(() -> builder.resolveClass("ddd"));
+    Configuration configuration = new Configuration();
+    when(() -> configuration.resolveClass("ddd"));
     then(caughtException()).isInstanceOf(BuilderException.class).hasMessage(
         "Error resolving class. Cause: org.apache.ibatis.type.TypeException: Could not resolve type alias 'ddd'.  Cause: java.lang.ClassNotFoundException: Cannot find class: ddd");
   }
 
   @Test
   void resolveTypeHandlerTypeHandlerAliasIsNull() {
-    BaseBuilder builder = new BaseBuilder(new Configuration()) {
-    };
-    TypeHandler<?> typeHandler = builder.resolveTypeHandler(String.class, (String) null);
+    Configuration configuration = new Configuration();
+    TypeHandler<?> typeHandler = configuration.resolveTypeHandler(String.class, (String) null);
     assertThat(typeHandler).isNull();
   }
 
   @Test
   void resolveTypeHandlerNoAssignable() {
-    BaseBuilder builder = new BaseBuilder(new Configuration()) {
-    };
-    when(() -> builder.resolveTypeHandler(String.class, "integer"));
+    Configuration configuration = new Configuration();
+    when(() -> configuration.resolveTypeHandler(String.class, "integer"));
     then(caughtException()).isInstanceOf(BuilderException.class).hasMessage(
         "Type java.lang.Integer is not a valid TypeHandler because it does not implement TypeHandler interface");
   }

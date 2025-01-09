@@ -82,7 +82,7 @@ public class ParameterMappingSourceParser {
       String property = propertiesMap.get("property");
       String jdbcType = propertiesMap.get("jdbcType");
       Class<?> propertyType;
-      if (this.typeHandlerRegistry.hasTypeHandler(this.parameterType)) {
+      if (this.configuration.hasTypeHandler(this.parameterType)) {
         propertyType = this.parameterType;
       } else if (JdbcType.CURSOR.name().equals(jdbcType)) {
         propertyType = java.sql.ResultSet.class;
@@ -99,7 +99,7 @@ public class ParameterMappingSourceParser {
       }
       ParameterMapping.Builder builder = new ParameterMapping.Builder(this.configuration, property, propertyType);
       if (jdbcType != null) {
-        builder.jdbcType(resolveJdbcType(jdbcType));
+        builder.jdbcType(configuration.resolveJdbcType(jdbcType));
       }
       Class<?> javaType = null;
       String typeHandlerAlias = null;
@@ -107,12 +107,12 @@ public class ParameterMappingSourceParser {
         String name = entry.getKey();
         String value = entry.getValue();
         if ("javaType".equals(name)) {
-          javaType = resolveClass(value);
+          javaType = configuration.resolveClass(value);
           builder.javaType(javaType);
         } else if ("jdbcType".equals(name)) {
-          builder.jdbcType(resolveJdbcType(value));
+          builder.jdbcType(configuration.resolveJdbcType(value));
         } else if ("mode".equals(name)) {
-          builder.mode(resolveParameterMode(value));
+          builder.mode(BaseBuilder.resolveParameterMode(value));
         } else if ("numericScale".equals(name)) {
           builder.numericScale(Integer.valueOf(value));
         } else if ("resultMap".equals(name)) {
@@ -131,7 +131,7 @@ public class ParameterMappingSourceParser {
         }
       }
       if (typeHandlerAlias != null) {
-        builder.typeHandler(resolveTypeHandler(javaType, typeHandlerAlias));
+        builder.typeHandler(configuration.resolveTypeHandler(javaType, typeHandlerAlias));
       }
       return builder.build();
     }

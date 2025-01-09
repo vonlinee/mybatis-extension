@@ -169,7 +169,7 @@ public class MapperAnnotationBuilder implements ConfigurationBuilder {
       }
       if (inputStream != null) {
         // 解析XML文件
-        XMLMapperBuilder xmlParser = new XMLMapperBuilder(inputStream, assistant.getConfiguration(), xmlResource,
+        XMLMapperBuilder xmlParser = new XMLMapperBuilder(inputStream, configuration, xmlResource,
           configuration.getSqlFragments(), type.getName());
         xmlParser.parse();
       }
@@ -594,7 +594,7 @@ public class MapperAnnotationBuilder implements ConfigurationBuilder {
     } else if (annotation instanceof SelectKey) {
       return buildSqlSourceFromStrings(((SelectKey) annotation).statement(), parameterType, languageDriver);
     }
-    return new ProviderSqlSource(assistant.getConfiguration(), annotation, type, method);
+    return new ProviderSqlSource(configuration, annotation, type, method);
   }
 
   private SqlSource buildSqlSourceFromStrings(String[] strings, Class<?> parameterTypeClass,

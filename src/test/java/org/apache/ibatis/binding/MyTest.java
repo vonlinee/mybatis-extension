@@ -16,6 +16,7 @@
 package org.apache.ibatis.binding;
 
 import org.apache.ibatis.BaseDataTest;
+import org.apache.ibatis.binding.param.BlogListParam;
 import org.apache.ibatis.domain.blog.Author;
 import org.apache.ibatis.domain.blog.Blog;
 import org.apache.ibatis.domain.blog.Post;
@@ -60,10 +61,11 @@ class MyTest {
   void testSessionCloseStatus() {
     try (SqlSession session = sqlSessionFactory.openSession()) {
       BoundBlogMapper mapper = session.getMapper(BoundBlogMapper.class);
+      BlogListParam param = new BlogListParam();
 
-      List<Blog> blogs = mapper.selectBlogs();
+      param.setId(1);
 
-      List<Blog> blogs1 = mapper.selectBlogs();
+      List<Blog> blogs = mapper.selectBlogList(param);
 
     }
   }

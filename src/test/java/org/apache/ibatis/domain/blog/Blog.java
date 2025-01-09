@@ -15,13 +15,26 @@
  */
 package org.apache.ibatis.domain.blog;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
 import java.util.List;
 
+@Entity
+@Table(name = "Blog")
 public class Blog {
 
+  @Column
   private int id;
+
+  @Column(name = "title")
   private String title;
+
   private Author author;
+
+  @ElementCollection
   private List<Post> posts;
 
   public Blog() {

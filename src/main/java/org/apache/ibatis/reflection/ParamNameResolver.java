@@ -17,7 +17,6 @@ package org.apache.ibatis.reflection;
 
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.binding.MapperMethod.ParamMap;
-import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 
@@ -62,10 +61,16 @@ public class ParamNameResolver {
 
   private boolean hasParamAnnotation;
 
-  public ParamNameResolver(Configuration config, Method method) {
-    this.useActualParamName = config.isUseActualParamName();
+  public ParamNameResolver(Method method, boolean useActualParamName) {
+    this.useActualParamName = useActualParamName;
     final Class<?>[] paramTypes = method.getParameterTypes();
     final Annotation[][] paramAnnotations = method.getParameterAnnotations();
+
+    if (paramAnnotations.length == 0) {
+      names = Collections.emptySortedMap();
+      return;
+    }
+
     final SortedMap<Integer, String> map = new TreeMap<>();
     int paramCount = paramAnnotations.length;
     // get names from @Param annotations
@@ -102,6 +107,13 @@ public class ParamNameResolver {
     return ReflectionUtils.getMethodParamNames(method).get(paramIndex);
   }
 
+  /**
+   * TODO Support parameter objects that inherit from special types
+   *
+   * @param clazz type
+   * @return whether the type is a special parameter type.
+   * @deprecated
+   */
   private static boolean isSpecialParameter(Class<?> clazz) {
     return RowBounds.class.isAssignableFrom(clazz) || ResultHandler.class.isAssignableFrom(clazz);
   }

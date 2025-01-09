@@ -163,9 +163,12 @@ class XmlConfigBuilderTest {
     // @formatter:on
 
     XMLConfigBuilder builder = new XMLConfigBuilder(new StringReader(MAPPER_CONFIG));
+    Configuration configuration = new Configuration();
+    builder.setConfiguration(configuration);
+
     builder.parse();
 
-    TypeHandlerRegistry typeHandlerRegistry = builder.getConfiguration().getTypeHandlerRegistry();
+    TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
     TypeHandler<MyEnum> typeHandler = typeHandlerRegistry.getTypeHandler(MyEnum.class);
 
     assertInstanceOf(EnumOrderTypeHandler.class, typeHandler);
@@ -308,6 +311,9 @@ class XmlConfigBuilderTest {
     // @formatter:on
 
     XMLConfigBuilder builder = new XMLConfigBuilder(new StringReader(MAPPER_CONFIG));
+    Configuration configuration = new Configuration();
+    builder.setConfiguration(configuration);
+
     when(builder::parse);
     then(caughtException()).isInstanceOf(BuilderException.class)
         .hasMessageContaining("Error registering typeAlias for 'null'. Cause: ");

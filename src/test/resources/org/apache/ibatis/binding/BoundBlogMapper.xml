@@ -136,4 +136,22 @@
       where b.id = #{id}
     </select>
 
+    <!--multiple condition -->
+    <select id="selectBlogList" parameterType="org.apache.ibatis.binding.param.BlogListParam" resultType="org.apache.ibatis.domain.blog.Blog">
+        select b.*, p.*,
+        a.id as author_id,
+        a.username as author_username,
+        a.password as author_password,
+        a.email as author_email,
+        a.bio as author_bio,
+        a.favourite_section
+        from Blog b
+        join Author a on b.author_id = a.id
+        join Post p on b.id = p.blog_id
+        where b.id = #{param.id}
+        <if test="param.username != null and param.username != ''">
+            AND a.username = #{param.username}
+        </if>
+    </select>
+
 </mapper>
