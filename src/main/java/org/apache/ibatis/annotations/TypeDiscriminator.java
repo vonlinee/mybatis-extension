@@ -35,7 +35,7 @@ import org.apache.ibatis.type.UnknownTypeHandler;
  * public interface UserMapper {
  *   &#064;Select("SELECT id, name, type FROM users ORDER BY id")
  *   &#064;TypeDiscriminator(
- *     column = "type",
+ *     column = Constants.TYPE,
  *     javaType = String.class,
  *     cases = {
  *       &#064;Case(value = "1", type = PremiumUser.class),

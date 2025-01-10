@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class ParameterMappingTokenHandler extends BaseBuilder implements TokenHandler {
+public class ParameterMappingTokenHandler implements TokenHandler {
 
   private static final String PARAMETER_PROPERTIES = "javaType,jdbcType,mode,numericScale,resultMap,typeHandler,jdbcTypeName";
 
@@ -22,7 +22,6 @@ public class ParameterMappingTokenHandler extends BaseBuilder implements TokenHa
 
   public ParameterMappingTokenHandler(Configuration configuration, Class<?> parameterType,
                                       Map<String, Object> additionalParameters) {
-    super(configuration);
     this.configuration = configuration;
     this.parameterType = parameterType;
     this.metaParameters = configuration.newMetaObject(additionalParameters);

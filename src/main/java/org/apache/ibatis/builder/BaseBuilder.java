@@ -46,11 +46,6 @@ public abstract class BaseBuilder {
     return value == null ? defaultValue : Integer.valueOf(value);
   }
 
-  public static Set<String> stringSetValueOf(String value, String defaultValue) {
-    value = value == null ? defaultValue : value;
-    return new HashSet<>(Arrays.asList(value.split(",")));
-  }
-
   public static ResultSetType resolveResultSetType(String alias) {
     try {
       return alias == null ? null : ResultSetType.valueOf(alias);

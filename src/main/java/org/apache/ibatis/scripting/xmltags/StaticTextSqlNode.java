@@ -16,7 +16,9 @@
 package org.apache.ibatis.scripting.xmltags;
 
 /**
- * the xml element does not contains ${foo}.
+ * the xml element does not contain ${foo} or #{xxx}
+ * Represents a static text SQL node. This class implements the {@link SqlNode} interface
+ * and holds a fixed text string that can be applied to a given {@link DynamicContext}.
  *
  * @author Clinton Begin
  */
@@ -28,9 +30,29 @@ public class StaticTextSqlNode implements SqlNode {
   }
 
   @Override
+  public String getName() {
+    return "text";
+  }
+
+  /**
+   * Checks if this SQL node is dynamic.
+   *
+   * @return false, as StaticTextSqlNode is not dynamic
+   */
+  @Override
+  public final boolean isDynamic() {
+    return false;
+  }
+
+  /**
+   * Applies the static text to the provided {@link DynamicContext}.
+   *
+   * @param context the {@link DynamicContext} to which the static text will be appended
+   * @return true after applying the static text
+   */
+  @Override
   public boolean apply(DynamicContext context) {
     context.appendSql(text);
     return true;
   }
-
 }

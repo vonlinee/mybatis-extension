@@ -30,6 +30,21 @@ public class ChooseSqlNode implements SqlNode {
   }
 
   @Override
+  public String getName() {
+    return "choose";
+  }
+
+  @Override
+  public boolean isDynamic() {
+    for (SqlNode ifSqlNode : ifSqlNodes) {
+      if (ifSqlNode.isDynamic()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @Override
   public boolean apply(DynamicContext context) {
     for (SqlNode sqlNode : ifSqlNodes) {
       if (sqlNode.apply(context)) {

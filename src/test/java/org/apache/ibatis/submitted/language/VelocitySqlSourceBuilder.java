@@ -15,14 +15,11 @@
  */
 package org.apache.ibatis.submitted.language;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.ibatis.builder.BaseBuilder;
 import org.apache.ibatis.builder.BuilderException;
 import org.apache.ibatis.builder.ParameterExpression;
 import org.apache.ibatis.builder.StaticSqlSource;
+import org.apache.ibatis.internal.StringConstant;
 import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.parsing.GenericTokenParser;
@@ -30,6 +27,10 @@ import org.apache.ibatis.parsing.TokenHandler;
 import org.apache.ibatis.reflection.MetaClass;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.JdbcType;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Just a test case. Not a real Velocity implementation.
@@ -66,13 +67,13 @@ public class VelocitySqlSourceBuilder extends BaseBuilder {
     @Override
     public String handleToken(String content) {
       parameterMappings.add(buildParameterMapping(content));
-      return "?";
+      return StringConstant.SQL_PARAM_PLACEHOLDER;
     }
 
     private ParameterMapping buildParameterMapping(String content) {
       Map<String, String> propertiesMap = parseParameterMapping(content);
-      String property = propertiesMap.get("property");
-      String jdbcType = propertiesMap.get("jdbcType");
+      String property = propertiesMap.get(StringConstant.PROPERTY);
+      String jdbcType = propertiesMap.get(StringConstant.JDBC_TYPE);
       Class<?> propertyType;
       if (configuration.hasTypeHandler(parameterType)) {
         propertyType = parameterType;
@@ -97,28 +98,28 @@ public class VelocitySqlSourceBuilder extends BaseBuilder {
       for (Map.Entry<String, String> entry : propertiesMap.entrySet()) {
         String name = entry.getKey();
         String value = entry.getValue();
-        if ("javaType".equals(name)) {
+        if (StringConstant.JAVA_TYPE.equals(name)) {
           javaType = configuration.resolveClass(value);
           builder.javaType(javaType);
-        } else if ("jdbcType".equals(name)) {
+        } else if (StringConstant.JDBC_TYPE.equals(name)) {
           builder.jdbcType(configuration.resolveJdbcType(value));
-        } else if ("mode".equals(name)) {
+        } else if (StringConstant.MODE.equals(name)) {
           builder.mode(BaseBuilder.resolveParameterMode(value));
-        } else if ("numericScale".equals(name)) {
+        } else if (StringConstant.NUMERIC_SCALE.equals(name)) {
           builder.numericScale(Integer.valueOf(value));
-        } else if ("resultMap".equals(name)) {
+        } else if (StringConstant.RESULT_MAP.equals(name)) {
           builder.resultMapId(value);
-        } else if ("typeHandler".equals(name)) {
+        } else if (StringConstant.TYPE_HANDLER.equals(name)) {
           typeHandlerAlias = value;
-        } else if ("jdbcTypeName".equals(name)) {
+        } else if (StringConstant.JDBC_TYPE_NAME.equals(name)) {
           builder.jdbcTypeName(value);
-        } else if ("property".equals(name)) {
+        } else if (StringConstant.PROPERTY.equals(name)) {
           // Do Nothing
-        } else if ("expression".equals(name)) {
+        } else if (StringConstant.EXPRESSION.equals(name)) {
           builder.expression(value);
         } else {
           throw new BuilderException("An invalid property '" + name + "' was found in mapping @{" + content
-              + "}.  Valid properties are " + parameterProperties);
+            + "}.  Valid properties are " + parameterProperties);
         }
       }
       if (typeHandlerAlias != null) {
@@ -134,7 +135,7 @@ public class VelocitySqlSourceBuilder extends BaseBuilder {
         throw ex;
       } catch (Exception ex) {
         throw new BuilderException("Parsing error was found in mapping @{" + content
-            + "}.  Check syntax #{property|(expression), var1=value1, var2=value2, ...} ", ex);
+          + "}.  Check syntax #{property|(expression), var1=value1, var2=value2, ...} ", ex);
       }
     }
   }

@@ -264,7 +264,7 @@
       <version>${mockito.version}</version>
       <scope>test</scope>
     </dependency>
-    <!-- postgresql driver is required to run the refcursor tests -->
+    <!-- postgresql driver is required to run the ref cursor tests -->
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>

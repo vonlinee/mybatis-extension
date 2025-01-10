@@ -18,6 +18,7 @@ package org.apache.ibatis.submitted.enumtypehandler_on_map;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.internal.StringConstant;
 
 public interface PersonMapper {
 
@@ -27,7 +28,7 @@ public interface PersonMapper {
     String getName();
   }
 
-  List<Person> getByType(@Param("type") Person.Type type, @Param("name") String name);
+  List<Person> getByType(@Param(StringConstant.ID) Person.Type type, @Param("name") String name);
 
   List<Person> getByTypeNoParam(TypeName typeName);
 

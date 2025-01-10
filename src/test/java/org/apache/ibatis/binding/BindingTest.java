@@ -420,13 +420,11 @@ class BindingTest {
   void shouldSelectOneBlogAsMap() {
     try (SqlSession session = sqlSessionFactory.openSession()) {
       BoundBlogMapper mapper = session.getMapper(BoundBlogMapper.class);
-      Map<String, Object> blog = mapper.selectBlogAsMap(new HashMap<>() {
-        private static final long serialVersionUID = 1L;
 
-        {
-          put("id", 1);
-        }
-      });
+      HashMap<String, Object> map = new HashMap<>();
+      map.put("id", 1);
+
+      Map<String, Object> blog = mapper.selectBlogAsMap(map);
       assertEquals(1, blog.get("ID"));
       assertEquals("Jim Business", blog.get("TITLE"));
     }

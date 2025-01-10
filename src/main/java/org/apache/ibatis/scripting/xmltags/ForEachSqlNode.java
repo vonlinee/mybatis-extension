@@ -26,7 +26,7 @@ import java.util.Optional;
 /**
  * @author Clinton Begin
  */
-public class ForEachSqlNode implements SqlNode {
+public class ForEachSqlNode extends DynamicSqlNode {
   public static final String ITEM_PREFIX = "__frch_";
 
   private final ExpressionEvaluator evaluator;
@@ -55,6 +55,11 @@ public class ForEachSqlNode implements SqlNode {
     this.index = index;
     this.item = item;
     this.configuration = configuration;
+  }
+
+  @Override
+  public String getName() {
+    return "foreach";
   }
 
   @Override

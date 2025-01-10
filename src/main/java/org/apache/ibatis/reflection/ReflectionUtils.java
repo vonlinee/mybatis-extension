@@ -52,7 +52,7 @@ public final class ReflectionUtils {
   public static <T> T instantiate(Class<T> type) {
     Objects.requireNonNull(type, "type cannot be null");
     try {
-      Constructor<?> constructor = type.getConstructor();
+      Constructor<?> constructor = type.getDeclaredConstructor();
       Object instance = constructor.newInstance();
       return (T) instance;
     } catch (NoSuchMethodException e) {
@@ -112,7 +112,6 @@ public final class ReflectionUtils {
     }
     throw new UndeclaredThrowableException(ex);
   }
-
 
   /**
    * Handle the given invocation target exception. Should only be called if no

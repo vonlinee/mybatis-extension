@@ -18,6 +18,10 @@ package org.apache.ibatis.scripting.xmltags;
 import java.util.List;
 
 /**
+ * Represents a mixed SQL node, which can contain multiple SQL nodes.
+ * This class implements the {@link SqlNode} interface and provides functionality
+ * to apply all contained SQL nodes to a given {@link DynamicContext}.
+ *
  * @author Clinton Begin
  */
 public class MixedSqlNode implements SqlNode {
@@ -27,6 +31,32 @@ public class MixedSqlNode implements SqlNode {
     this.contents = contents;
   }
 
+  @Override
+  public String getName() {
+    return "mixed";
+  }
+
+  /**
+   * Checks if this SQL node is dynamic.
+   *
+   * @return false, as MixedSqlNode is not dynamic
+   */
+  @Override
+  public boolean isDynamic() {
+    for (SqlNode contentNode : contents) {
+      if (contentNode.isDynamic()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Applies the contained SQL nodes to the provided {@link DynamicContext}.
+   *
+   * @param context the {@link DynamicContext} to which the contents will be applied
+   * @return true after applying all contained nodes
+   */
   @Override
   public boolean apply(DynamicContext context) {
     contents.forEach(node -> node.apply(context));

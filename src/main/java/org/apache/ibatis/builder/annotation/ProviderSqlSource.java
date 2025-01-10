@@ -17,6 +17,7 @@ package org.apache.ibatis.builder.annotation;
 
 import org.apache.ibatis.annotations.Lang;
 import org.apache.ibatis.builder.BuilderException;
+import org.apache.ibatis.internal.StringConstant;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.reflection.ParamNameResolver;
@@ -63,7 +64,7 @@ public class ProviderSqlSource implements SqlSource {
       Lang lang = mapperMethod == null ? null : mapperMethod.getAnnotation(Lang.class);
       this.languageDriver = configuration.getLanguageDriver(lang == null ? null : lang.value());
       this.providerType = getProviderType(configuration, provider, mapperMethod);
-      candidateProviderMethodName = (String) provider.annotationType().getMethod("method").invoke(provider);
+      candidateProviderMethodName = (String) provider.annotationType().getMethod(StringConstant.METHOD).invoke(provider);
 
       if (candidateProviderMethodName.isEmpty()
         && ProviderMethodResolver.class.isAssignableFrom(this.providerType)) {
@@ -211,8 +212,8 @@ public class ProviderSqlSource implements SqlSource {
 
   private Class<?> getProviderType(Configuration configuration, Annotation providerAnnotation, Method mapperMethod)
     throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-    Class<?> type = (Class<?>) providerAnnotation.annotationType().getMethod("type").invoke(providerAnnotation);
-    Class<?> value = (Class<?>) providerAnnotation.annotationType().getMethod("value").invoke(providerAnnotation);
+    Class<?> type = (Class<?>) providerAnnotation.annotationType().getMethod(StringConstant.TYPE).invoke(providerAnnotation);
+    Class<?> value = (Class<?>) providerAnnotation.annotationType().getMethod(StringConstant.VALUE).invoke(providerAnnotation);
     if (value == void.class && type == void.class) {
       if (configuration.getDefaultSqlProviderType() != null) {
         return configuration.getDefaultSqlProviderType();

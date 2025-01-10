@@ -20,6 +20,7 @@ import org.apache.ibatis.builder.BuilderException;
 import org.apache.ibatis.datasource.DataSourceFactory;
 import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.executor.loader.ProxyFactory;
+import org.apache.ibatis.internal.StringConstant;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.io.VFS;
 import org.apache.ibatis.logging.Log;
@@ -40,11 +41,14 @@ import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.LocalCacheScope;
 import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.type.JdbcType;
+import org.apache.ibatis.util.PropertiesWrapper;
 import org.jetbrains.annotations.NotNull;
 
 import javax.sql.DataSource;
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Properties;
 
 /**
@@ -97,6 +101,8 @@ public class XMLConfigBuilder extends BaseBuilder {
   private XMLConfigBuilder(Class<? extends Configuration> configClass, XPathParser parser, String environment,
                            Properties props) {
     super(newConfig(configClass));
+
+    this.configuration = newConfig(configClass);
     ErrorContext.instance().resource("SQL Mapper Configuration");
     this.configuration.setVariables(props);
     this.parsed = false;
@@ -120,21 +126,21 @@ public class XMLConfigBuilder extends BaseBuilder {
   private void parseConfiguration(XNode root) {
     try {
       // issue #117 read properties first
-      propertiesElement(root.evalNode("properties"));
-      Properties settings = settingsAsProperties(root.evalNode("settings"));
+      propertiesElement(root.evalNode(StringConstant.PROPERTIES));
+      Properties settings = settingsAsProperties(root.evalNode(StringConstant.SETTINGS));
       loadCustomVfsImpl(settings);
       loadCustomLogImpl(settings);
-      typeAliasesElement(root.evalNode("typeAliases"));
-      pluginsElement(root.evalNode("plugins"));
-      objectFactoryElement(root.evalNode("objectFactory"));
-      objectWrapperFactoryElement(root.evalNode("objectWrapperFactory"));
-      reflectorFactoryElement(root.evalNode("reflectorFactory"));
+      typeAliasesElement(root.evalNode(StringConstant.TYPE_ALIASES));
+      pluginsElement(root.evalNode(StringConstant.PLUGINS));
+      objectFactoryElement(root.evalNode(StringConstant.OBJECT_FACTORY));
+      objectWrapperFactoryElement(root.evalNode(StringConstant.OBJECT_WRAPPER_FACTORY));
+      reflectorFactoryElement(root.evalNode(StringConstant.REFLECTOR_FACTORY));
       settingsElement(settings);
       // read it after objectFactory and objectWrapperFactory issue #631
-      environmentsElement(root.evalNode("environments"));
-      databaseIdProviderElement(root.evalNode("databaseIdProvider"));
-      typeHandlersElement(root.evalNode("typeHandlers"));
-      mappersElement(root.evalNode("mappers"));
+      environmentsElement(root.evalNode(StringConstant.ENVIRONMENTS));
+      databaseIdProviderElement(root.evalNode(StringConstant.DATABASE_ID_PROVIDER));
+      typeHandlersElement(root.evalNode(StringConstant.TYPE_HANDLERS));
+      mappersElement(root.evalNode(StringConstant.MAPPERS));
     } catch (Exception e) {
       throw new BuilderException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
     }
@@ -157,11 +163,11 @@ public class XMLConfigBuilder extends BaseBuilder {
   }
 
   private void loadCustomVfsImpl(Properties props) throws ClassNotFoundException {
-    String value = props.getProperty("vfsImpl");
+    String value = props.getProperty(StringConstant.VFS_IMPL);
     if (value == null) {
       return;
     }
-    String[] classes = value.split(",");
+    String[] classes = value.split(StringConstant.ENGLISH_COMMA);
     for (String clazz : classes) {
       if (!clazz.isEmpty()) {
         @SuppressWarnings("unchecked")
@@ -181,12 +187,12 @@ public class XMLConfigBuilder extends BaseBuilder {
       return;
     }
     for (XNode child : context.getChildren()) {
-      if ("package".equals(child.getName())) {
-        String typeAliasPackage = child.getStringAttribute("name");
+      if (StringConstant.PACKAGE.equals(child.getName())) {
+        String typeAliasPackage = child.getStringAttribute(StringConstant.NAME);
         configuration.registerAliases(typeAliasPackage);
       } else {
-        String alias = child.getStringAttribute("alias");
-        String type = child.getStringAttribute("type");
+        String alias = child.getStringAttribute(StringConstant.ALIAS);
+        String type = child.getStringAttribute(StringConstant.TYPE);
         try {
           Class<?> clazz = Resources.classForName(type);
           if (alias == null) {
@@ -204,7 +210,7 @@ public class XMLConfigBuilder extends BaseBuilder {
   private void pluginsElement(XNode context) throws Exception {
     if (context != null) {
       for (XNode child : context.getChildren()) {
-        String interceptor = child.getStringAttribute("interceptor");
+        String interceptor = child.getStringAttribute(StringConstant.INTERCEPTOR);
         Properties properties = child.getChildrenAsProperties();
         Interceptor interceptorInstance = (Interceptor) configuration.resolveClass(interceptor).getDeclaredConstructor()
           .newInstance();
@@ -216,7 +222,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
   private void objectFactoryElement(XNode context) throws Exception {
     if (context != null) {
-      String type = context.getStringAttribute("type");
+      String type = context.getStringAttribute(StringConstant.TYPE);
       Properties properties = context.getChildrenAsProperties();
       ObjectFactory factory = (ObjectFactory) configuration.resolveClass(type).getDeclaredConstructor().newInstance();
       factory.setProperties(properties);
@@ -226,7 +232,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
   private void objectWrapperFactoryElement(XNode context) throws Exception {
     if (context != null) {
-      String type = context.getStringAttribute("type");
+      String type = context.getStringAttribute(StringConstant.TYPE);
       ObjectWrapperFactory factory = (ObjectWrapperFactory) configuration.resolveClass(type).getDeclaredConstructor().newInstance();
       configuration.setObjectWrapperFactory(factory);
     }
@@ -234,7 +240,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
   private void reflectorFactoryElement(XNode context) throws Exception {
     if (context != null) {
-      String type = context.getStringAttribute("type");
+      String type = context.getStringAttribute(StringConstant.TYPE);
       ReflectorFactory factory = (ReflectorFactory) configuration.resolveClass(type).getDeclaredConstructor().newInstance();
       configuration.setReflectorFactory(factory);
     }
@@ -271,39 +277,41 @@ public class XMLConfigBuilder extends BaseBuilder {
   }
 
   private void settingsElement(Properties props) {
-    configuration
-      .setAutoMappingBehavior(AutoMappingBehavior.valueOf(props.getProperty("autoMappingBehavior", "PARTIAL")));
-    configuration.setAutoMappingUnknownColumnBehavior(
-      AutoMappingUnknownColumnBehavior.valueOf(props.getProperty("autoMappingUnknownColumnBehavior", "NONE")));
-    configuration.setCacheEnabled(BaseBuilder.booleanValueOf(props.getProperty("cacheEnabled"), true));
-    configuration.setProxyFactory((ProxyFactory) configuration.createInstance(props.getProperty("proxyFactory")));
-    configuration.setLazyLoadingEnabled(BaseBuilder.booleanValueOf(props.getProperty("lazyLoadingEnabled"), false));
-    configuration.setAggressiveLazyLoading(BaseBuilder.booleanValueOf(props.getProperty("aggressiveLazyLoading"), false));
-    configuration.setUseColumnLabel(BaseBuilder.booleanValueOf(props.getProperty("useColumnLabel"), true));
-    configuration.setUseGeneratedKeys(BaseBuilder.booleanValueOf(props.getProperty("useGeneratedKeys"), false));
-    configuration.setDefaultExecutorType(ExecutorType.valueOf(props.getProperty("defaultExecutorType", "SIMPLE")));
-    configuration.setDefaultStatementTimeout(BaseBuilder.integerValueOf(props.getProperty("defaultStatementTimeout"), null));
-    configuration.setDefaultFetchSize(BaseBuilder.integerValueOf(props.getProperty("defaultFetchSize"), null));
+    PropertiesWrapper properties = new PropertiesWrapper(props);
+    configuration.setAutoMappingBehavior(properties.getEnum("autoMappingBehavior", AutoMappingBehavior.class, AutoMappingBehavior.PARTIAL));
+    configuration.setAutoMappingUnknownColumnBehavior(properties.getEnum("autoMappingUnknownColumnBehavior", AutoMappingUnknownColumnBehavior.class, "NONE"));
+    configuration.setCacheEnabled(properties.getBoolean("cacheEnabled", true));
+    configuration.setLazyLoadingEnabled(properties.getBoolean("lazyLoadingEnabled", false));
+    configuration.setAggressiveLazyLoading(properties.getBoolean("aggressiveLazyLoading", false));
+    configuration.setUseColumnLabel(properties.getBoolean("useColumnLabel", true));
+    configuration.setUseGeneratedKeys(properties.getBoolean("useGeneratedKeys", false));
+    configuration.setDefaultExecutorType(properties.getEnum("defaultExecutorType", ExecutorType.class, ExecutorType.SIMPLE));
+    configuration.setDefaultStatementTimeout(properties.getInteger("defaultStatementTimeout", null));
+    configuration.setDefaultFetchSize(properties.getInteger("defaultFetchSize", null));
     configuration.setDefaultResultSetType(BaseBuilder.resolveResultSetType(props.getProperty("defaultResultSetType")));
-    configuration.setMapUnderscoreToCamelCase(BaseBuilder.booleanValueOf(props.getProperty("mapUnderscoreToCamelCase"), false));
-    configuration.setSafeRowBoundsEnabled(BaseBuilder.booleanValueOf(props.getProperty("safeRowBoundsEnabled"), false));
-    configuration.setLocalCacheScope(LocalCacheScope.valueOf(props.getProperty("localCacheScope", "SESSION")));
-    configuration.setJdbcTypeForNull(JdbcType.valueOf(props.getProperty("jdbcTypeForNull", "OTHER")));
-    configuration.setLazyLoadTriggerMethods(
-      BaseBuilder.stringSetValueOf(props.getProperty("lazyLoadTriggerMethods"), "equals,clone,hashCode,toString"));
-    configuration.setSafeResultHandlerEnabled(BaseBuilder.booleanValueOf(props.getProperty("safeResultHandlerEnabled"), true));
+    configuration.setMapUnderscoreToCamelCase(properties.getBoolean("mapUnderscoreToCamelCase", false));
+    configuration.setSafeRowBoundsEnabled(properties.getBoolean("safeRowBoundsEnabled", false));
+    configuration.setLocalCacheScope(properties.getEnum("localCacheScope", LocalCacheScope.class, LocalCacheScope.SESSION));
+    configuration.setJdbcTypeForNull(properties.getEnum("jdbcTypeForNull", JdbcType.class, JdbcType.OTHER));
+
+    String lazyLoadTriggerMethods = props.getProperty("lazyLoadTriggerMethods", "equals,clone,hashCode,toString");
+    configuration.setLazyLoadTriggerMethods(new HashSet<>(Arrays.asList(lazyLoadTriggerMethods.split(","))));
+
+    configuration.setSafeResultHandlerEnabled(properties.getBoolean("safeResultHandlerEnabled", true));
+    configuration.setCallSettersOnNulls(properties.getBoolean("callSettersOnNulls", false));
+    configuration.setUseActualParamName(properties.getBoolean("useActualParamName", true));
+    configuration.setReturnInstanceForEmptyRow(properties.getBoolean("returnInstanceForEmptyRow", false));
+    configuration.setLogPrefix(properties.getString("logPrefix", null));
+    configuration.setShrinkWhitespacesInSql(properties.getBoolean("shrinkWhitespacesInSql", false));
+    configuration.setArgNameBasedConstructorAutoMapping(properties.getBoolean("argNameBasedConstructorAutoMapping", false));
+    configuration.setNullableOnForEach(properties.getBoolean("nullableOnForEach", false));
+
+
+    configuration.setProxyFactory((ProxyFactory) configuration.createInstance(props.getProperty("proxyFactory")));
     configuration.setDefaultScriptingLanguage(configuration.resolveClass(props.getProperty("defaultScriptingLanguage")));
     configuration.setDefaultEnumTypeHandler(configuration.resolveClass(props.getProperty("defaultEnumTypeHandler")));
-    configuration.setCallSettersOnNulls(BaseBuilder.booleanValueOf(props.getProperty("callSettersOnNulls"), false));
-    configuration.setUseActualParamName(BaseBuilder.booleanValueOf(props.getProperty("useActualParamName"), true));
-    configuration.setReturnInstanceForEmptyRow(BaseBuilder.booleanValueOf(props.getProperty("returnInstanceForEmptyRow"), false));
-    configuration.setLogPrefix(props.getProperty("logPrefix"));
     configuration.setConfigurationFactory(configuration.resolveClass(props.getProperty("configurationFactory")));
-    configuration.setShrinkWhitespacesInSql(BaseBuilder.booleanValueOf(props.getProperty("shrinkWhitespacesInSql"), false));
-    configuration.setArgNameBasedConstructorAutoMapping(
-      BaseBuilder.booleanValueOf(props.getProperty("argNameBasedConstructorAutoMapping"), false));
     configuration.setDefaultSqlProviderType(configuration.resolveClass(props.getProperty("defaultSqlProviderType")));
-    configuration.setNullableOnForEach(BaseBuilder.booleanValueOf(props.getProperty("nullableOnForEach"), false));
   }
 
   private void environmentsElement(XNode context) throws Exception {
@@ -311,10 +319,10 @@ public class XMLConfigBuilder extends BaseBuilder {
       return;
     }
     if (environment == null) {
-      environment = context.getStringAttribute("default");
+      environment = context.getStringAttribute(StringConstant.DEFAULT);
     }
     for (XNode child : context.getChildren()) {
-      String id = child.getStringAttribute("id");
+      String id = child.getStringAttribute(StringConstant.ID);
       if (isSpecifiedEnvironment(id)) {
         TransactionFactory txFactory = transactionManagerElement(child.evalNode("transactionManager"));
         DataSourceFactory dsFactory = dataSourceElement(child.evalNode("dataSource"));
@@ -331,10 +339,10 @@ public class XMLConfigBuilder extends BaseBuilder {
     if (context == null) {
       return;
     }
-    String type = context.getStringAttribute("type");
+    String type = context.getStringAttribute(StringConstant.TYPE);
     // awful patch to keep backward compatibility
-    if ("VENDOR".equals(type)) {
-      type = "DB_VENDOR";
+    if (StringConstant.VENDOR.equals(type)) {
+      type = StringConstant.DB_VENDOR;
     }
     Properties properties = context.getChildrenAsProperties();
     DatabaseIdProvider databaseIdProvider = (DatabaseIdProvider) configuration.resolveClass(type).getDeclaredConstructor()
@@ -349,7 +357,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
   private TransactionFactory transactionManagerElement(XNode context) throws Exception {
     if (context != null) {
-      String type = context.getStringAttribute("type");
+      String type = context.getStringAttribute(StringConstant.TYPE);
       Properties props = context.getChildrenAsProperties();
       TransactionFactory factory = (TransactionFactory) configuration.resolveClass(type).getDeclaredConstructor().newInstance();
       factory.setProperties(props);
@@ -360,7 +368,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
   private DataSourceFactory dataSourceElement(XNode context) throws Exception {
     if (context != null) {
-      String type = context.getStringAttribute("type");
+      String type = context.getStringAttribute(StringConstant.TYPE);
       Properties props = context.getChildrenAsProperties();
       DataSourceFactory factory = (DataSourceFactory) configuration.resolveClass(type).getDeclaredConstructor().newInstance();
       factory.setProperties(props);
@@ -374,13 +382,13 @@ public class XMLConfigBuilder extends BaseBuilder {
       return;
     }
     for (XNode child : context.getChildren()) {
-      if ("package".equals(child.getName())) {
-        String typeHandlerPackage = child.getStringAttribute("name");
+      if (StringConstant.PACKAGE.equals(child.getName())) {
+        String typeHandlerPackage = child.getStringAttribute(StringConstant.NAME);
         configuration.registerTypeHandler(typeHandlerPackage);
       } else {
-        String javaTypeName = child.getStringAttribute("javaType");
-        String jdbcTypeName = child.getStringAttribute("jdbcType");
-        String handlerTypeName = child.getStringAttribute("handler");
+        String javaTypeName = child.getStringAttribute(StringConstant.JAVA_TYPE);
+        String jdbcTypeName = child.getStringAttribute(StringConstant.JDBC_TYPE);
+        String handlerTypeName = child.getStringAttribute(StringConstant.HANDLER);
         Class<?> javaTypeClass = configuration.resolveClass(javaTypeName);
         JdbcType jdbcType = configuration.resolveJdbcType(jdbcTypeName);
         Class<?> typeHandlerClass = configuration.resolveClass(handlerTypeName);
@@ -402,13 +410,13 @@ public class XMLConfigBuilder extends BaseBuilder {
       return;
     }
     for (XNode child : context.getChildren()) {
-      if ("package".equals(child.getName())) {
-        String mapperPackage = child.getStringAttribute("name");
+      if (StringConstant.PACKAGE.equals(child.getName())) {
+        String mapperPackage = child.getStringAttribute(StringConstant.NAME);
         configuration.addMappers(mapperPackage);
       } else {
-        String resource = child.getStringAttribute("resource");
-        String url = child.getStringAttribute("url");
-        String mapperClass = child.getStringAttribute("class");
+        String resource = child.getStringAttribute(StringConstant.RESOURCE);
+        String url = child.getStringAttribute(StringConstant.URL);
+        String mapperClass = child.getStringAttribute(StringConstant.CLASS);
         if (resource != null && url == null && mapperClass == null) {
           ErrorContext.instance().resource(resource);
           try (InputStream inputStream = Resources.getResourceAsStream(resource)) {

@@ -20,7 +20,7 @@ import org.apache.ibatis.scripting.ExpressionEvaluator;
 /**
  * @author Frank D. Martinez [mnesarco]
  */
-public class VarDeclSqlNode implements SqlNode {
+public class VarDeclSqlNode extends DynamicSqlNode {
 
   private final String name;
   private final String expression;
@@ -30,6 +30,11 @@ public class VarDeclSqlNode implements SqlNode {
     this.evaluator = evaluator;
     this.name = name;
     this.expression = exp;
+  }
+
+  @Override
+  public String getName() {
+    return "";
   }
 
   @Override

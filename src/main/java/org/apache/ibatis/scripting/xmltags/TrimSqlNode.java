@@ -15,6 +15,9 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
+import org.apache.ibatis.session.Configuration;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,13 +25,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.apache.ibatis.session.Configuration;
-
 /**
  * @author Clinton Begin
  */
 public class TrimSqlNode implements SqlNode {
 
+  @NotNull
   private final SqlNode contents;
   private final String prefix;
   private final String suffix;
@@ -37,19 +39,29 @@ public class TrimSqlNode implements SqlNode {
   private final Configuration configuration;
 
   public TrimSqlNode(Configuration configuration, SqlNode contents, String prefix, String prefixesToOverride,
-      String suffix, String suffixesToOverride) {
+                     String suffix, String suffixesToOverride) {
     this(configuration, contents, prefix, parseOverrides(prefixesToOverride), suffix,
-        parseOverrides(suffixesToOverride));
+      parseOverrides(suffixesToOverride));
   }
 
-  protected TrimSqlNode(Configuration configuration, SqlNode contents, String prefix, List<String> prefixesToOverride,
-      String suffix, List<String> suffixesToOverride) {
+  protected TrimSqlNode(Configuration configuration, @NotNull SqlNode contents, String prefix, List<String> prefixesToOverride,
+                        String suffix, List<String> suffixesToOverride) {
     this.contents = contents;
     this.prefix = prefix;
     this.prefixesToOverride = prefixesToOverride;
     this.suffix = suffix;
     this.suffixesToOverride = suffixesToOverride;
     this.configuration = configuration;
+  }
+
+  @Override
+  public String getName() {
+    return "trim";
+  }
+
+  @Override
+  public boolean isDynamic() {
+    return contents.isDynamic();
   }
 
   @Override
@@ -128,7 +140,7 @@ public class TrimSqlNode implements SqlNode {
       prefixApplied = true;
       if (prefixesToOverride != null) {
         prefixesToOverride.stream().filter(trimmedUppercaseSql::startsWith).findFirst()
-            .ifPresent(toRemove -> sql.delete(0, toRemove.trim().length()));
+          .ifPresent(toRemove -> sql.delete(0, toRemove.trim().length()));
       }
       if (prefix != null) {
         sql.insert(0, " ").insert(0, prefix);
@@ -142,12 +154,12 @@ public class TrimSqlNode implements SqlNode {
       suffixApplied = true;
       if (suffixesToOverride != null) {
         suffixesToOverride.stream()
-            .filter(toRemove -> trimmedUppercaseSql.endsWith(toRemove) || trimmedUppercaseSql.endsWith(toRemove.trim()))
-            .findFirst().ifPresent(toRemove -> {
-              int start = sql.length() - toRemove.trim().length();
-              int end = sql.length();
-              sql.delete(start, end);
-            });
+          .filter(toRemove -> trimmedUppercaseSql.endsWith(toRemove) || trimmedUppercaseSql.endsWith(toRemove.trim()))
+          .findFirst().ifPresent(toRemove -> {
+            int start = sql.length() - toRemove.trim().length();
+            int end = sql.length();
+            sql.delete(start, end);
+          });
       }
       if (suffix != null) {
         sql.append(" ").append(suffix);

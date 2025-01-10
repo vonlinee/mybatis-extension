@@ -28,6 +28,10 @@ import java.util.Map;
  */
 public class SqlSourceBuilder {
 
+  public static SqlSource parse(Configuration configuration, String originalSql) {
+    return parse(configuration, originalSql, null, null);
+  }
+
   public static SqlSource parse(Configuration configuration, String originalSql, @Nullable Class<?> parameterType, Map<String, Object> additionalParameters) {
     ParameterMappingTokenHandler handler = new ParameterMappingTokenHandler(configuration, parameterType,
       additionalParameters);

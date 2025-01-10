@@ -16,8 +16,31 @@
 package org.apache.ibatis.scripting.xmltags;
 
 /**
+ * Represents a SQL node in a dynamic SQL statement. This interface defines the
+ * structure for SQL nodes that can be either static or dynamic in nature.
+ *
  * @author Clinton Begin
  */
 public interface SqlNode {
+
+  /**
+   * @return the name of this SQL node
+   */
+  String getName();
+
+  /**
+   * Checks if this SQL node is dynamic.
+   *
+   * @return true if the SQL node is dynamic; false otherwise
+   */
+  boolean isDynamic();
+
+  /**
+   * Applies the SQL node to the provided {@link DynamicContext}.
+   * This method is responsible for processing the SQL node and updating the context.
+   *
+   * @param context the {@link DynamicContext} to which this SQL node will be applied
+   * @return true if the application was successful; false otherwise
+   */
   boolean apply(DynamicContext context);
 }

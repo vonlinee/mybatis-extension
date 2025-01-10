@@ -20,7 +20,7 @@ import org.apache.ibatis.scripting.ExpressionEvaluator;
 /**
  * @author Clinton Begin
  */
-public class IfSqlNode implements SqlNode {
+public class IfSqlNode extends DynamicSqlNode {
   private final ExpressionEvaluator evaluator;
   private final String test;
   private final SqlNode contents;
@@ -29,6 +29,11 @@ public class IfSqlNode implements SqlNode {
     this.test = test;
     this.contents = contents;
     this.evaluator = evaluator;
+  }
+
+  @Override
+  public String getName() {
+    return "if";
   }
 
   @Override
