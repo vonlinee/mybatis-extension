@@ -49,7 +49,7 @@ class GenericTokenParserTest {
   @MethodSource("shouldDemonstrateGenericTokenReplacementProvider")
   void shouldDemonstrateGenericTokenReplacement(String expected, String text) {
     GenericTokenParser parser = new GenericTokenParser("${", "}",
-      new VariableTokenHandler(new HashMap<>() {
+      new VariableTokenHandler(new HashMap<String, String>() {
         {
           put("first_name", "James");
           put("initial", "T");
@@ -102,7 +102,7 @@ class GenericTokenParserTest {
     Assertions.assertTimeout(Duration.ofMillis(1000), () -> {
       // issue #760
       GenericTokenParser parser = new GenericTokenParser("${", "}",
-        new VariableTokenHandler(new HashMap<>() {
+        new VariableTokenHandler(new HashMap<String, String>() {
           {
             put("first_name", "James");
             put("initial", "T");

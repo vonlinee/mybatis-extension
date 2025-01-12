@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,7 +47,7 @@ class ExternalResourcesTest {
   }
 
   @Test
-  void testcopyExternalResource() {
+  void testCopyExternalResource() {
 
     try {
       ExternalResources.copyExternalResource(sourceFile, destFile);
@@ -83,15 +82,15 @@ class ExternalResourcesTest {
 
   @Test
   void testGetConfiguredTemplate() {
-    String templateName = "";
+    String templateName;
 
-    try (FileWriter fileWriter = new FileWriter(tempFile, StandardCharsets.UTF_8)) {
+    try (FileWriter fileWriter = new FileWriter(tempFile)) {
       fileWriter.append("new_command.template=templates/col_new_template_migration.sql");
       fileWriter.flush();
       templateName = ExternalResources.getConfiguredTemplate(tempFile.getAbsolutePath(), "new_command.template");
       assertEquals("templates/col_new_template_migration.sql", templateName);
     } catch (Exception e) {
-      fail("Test failed with execption: " + e.getMessage());
+      fail("Test failed with exception: " + e.getMessage());
     }
   }
 

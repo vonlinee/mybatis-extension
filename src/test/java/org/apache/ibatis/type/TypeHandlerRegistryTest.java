@@ -15,12 +15,6 @@
  */
 package org.apache.ibatis.type;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.net.URI;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
@@ -37,6 +31,8 @@ import java.util.stream.IntStream;
 import org.apache.ibatis.domain.misc.RichType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class TypeHandlerRegistryTest {
 
@@ -57,39 +53,40 @@ class TypeHandlerRegistryTest {
     assertFalse(typeHandlerRegistry.hasTypeHandler(RichType.class));
     assertTrue(typeHandlerRegistry.hasTypeHandler(String.class, JdbcType.LONGVARCHAR));
     assertTrue(typeHandlerRegistry.hasTypeHandler(String.class, JdbcType.INTEGER));
-    assertTrue(typeHandlerRegistry.getUnknownTypeHandler() instanceof UnknownTypeHandler);
+    assertInstanceOf(UnknownTypeHandler.class, typeHandlerRegistry.getUnknownTypeHandler());
   }
+
+  TypeHandler<List<URI>> fakeHandler = new TypeHandler<List<URI>>() {
+
+    @Override
+    public void setParameter(PreparedStatement ps, int i, List<URI> parameter, JdbcType jdbcType) {
+      // do nothing, fake method
+    }
+
+    @Override
+    public List<URI> getResult(CallableStatement cs, int columnIndex) {
+      // do nothing, fake method
+      return null;
+    }
+
+    @Override
+    public List<URI> getResult(ResultSet rs, int columnIndex) {
+      // do nothing, fake method
+      return null;
+    }
+
+    @Override
+    public List<URI> getResult(ResultSet rs, String columnName) {
+      // do nothing, fake method
+      return null;
+    }
+  };
 
   @Test
   void shouldRegisterAndRetrieveComplexTypeHandler() {
-    TypeHandler<List<URI>> fakeHandler = new TypeHandler<>() {
 
-      @Override
-      public void setParameter(PreparedStatement ps, int i, List<URI> parameter, JdbcType jdbcType) {
-        // do nothing, fake method
-      }
 
-      @Override
-      public List<URI> getResult(CallableStatement cs, int columnIndex) {
-        // do nothing, fake method
-        return null;
-      }
-
-      @Override
-      public List<URI> getResult(ResultSet rs, int columnIndex) {
-        // do nothing, fake method
-        return null;
-      }
-
-      @Override
-      public List<URI> getResult(ResultSet rs, String columnName) {
-        // do nothing, fake method
-        return null;
-      }
-
-    };
-
-    TypeReference<List<URI>> type = new TypeReference<>() {
+    TypeReference<List<URI>> type = new TypeReference<List<URI>>() {
     };
 
     typeHandlerRegistry.register(type, fakeHandler);
@@ -98,7 +95,7 @@ class TypeHandlerRegistryTest {
 
   @Test
   void shouldAutoRegisterAndRetrieveComplexTypeHandler() {
-    TypeHandler<List<URI>> fakeHandler = new BaseTypeHandler<>() {
+    TypeHandler<List<URI>> fakeHandler = new BaseTypeHandler<List<URI>>() {
 
       @Override
       public void setNonNullParameter(PreparedStatement ps, int i, List<URI> parameter, JdbcType jdbcType) {
@@ -181,7 +178,7 @@ class TypeHandlerRegistryTest {
   enum NoTypeHandlerInterfaceEnum implements NoTypeHandlerInterface {
   }
 
-  class SomeClass implements SomeInterface {
+  static class SomeClass implements SomeInterface {
   }
 
   @MappedTypes(SomeInterface.class)

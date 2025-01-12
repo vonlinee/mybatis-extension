@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -97,13 +98,7 @@ class BindingTest {
   void shouldFindPostsInList() {
     try (SqlSession session = sqlSessionFactory.openSession()) {
       BoundAuthorMapper mapper = session.getMapper(BoundAuthorMapper.class);
-      List<Post> posts = mapper.findPostsInList(new ArrayList<>() {
-        {
-          add(1);
-          add(3);
-          add(5);
-        }
-      });
+      List<Post> posts = mapper.findPostsInList(new ArrayList<>(Arrays.asList(1, 3, 5)));
       assertEquals(3, posts.size());
       session.rollback();
     }

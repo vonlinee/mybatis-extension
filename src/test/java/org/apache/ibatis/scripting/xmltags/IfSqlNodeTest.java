@@ -53,7 +53,7 @@ class IfSqlNodeTest extends SqlNodeTest {
   @Test
   @Override
   public void shouldApply() throws Exception {
-    when(context.getBindings()).thenReturn(new HashMap<>() {
+    when(context.getBindings()).thenReturn(new HashMap<String, Object>() {
       {
         put("title", "ENGLISH");
       }
@@ -67,7 +67,7 @@ class IfSqlNodeTest extends SqlNodeTest {
 
   @Test
   public void shouldAppendNone() {
-    when(context.getBindings()).thenReturn(new HashMap<>() {
+    when(context.getBindings()).thenReturn(new HashMap<String, Object>() {
       {
         put("title", null);
       }

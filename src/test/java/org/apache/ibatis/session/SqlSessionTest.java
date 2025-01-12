@@ -748,13 +748,7 @@ class SqlSessionTest extends BaseDataTest {
       List<Post> posts = session.selectList("org.apache.ibatis.domain.blog.mappers.PostMapper.findPost",
         new HashMap<String, List<Integer>>() {
           {
-            put("ids", new ArrayList<>() {
-              {
-                add(1);
-                add(2);
-                add(3);
-              }
-            });
+            put("ids", new ArrayList<>(Arrays.asList(1, 2, 3)));
           }
         });
       assertEquals(3, posts.size());
@@ -793,13 +787,7 @@ class SqlSessionTest extends BaseDataTest {
       List<Post> posts = session.selectList("org.apache.ibatis.domain.blog.mappers.PostMapper.findPost",
         new HashMap<String, Object>() {
           {
-            put("ids", new ArrayList<Integer>() {
-              {
-                add(1);
-                add(2);
-                add(3);
-              }
-            });
+            put("ids", new ArrayList<>(Arrays.asList(1, 2, 3)));
             put("blog_id", 1);
           }
         });
@@ -811,13 +799,7 @@ class SqlSessionTest extends BaseDataTest {
   void shouldFindPostsInList() {
     try (SqlSession session = sqlMapper.openSession()) {
       List<Post> posts = session.selectList("org.apache.ibatis.domain.blog.mappers.PostMapper.selectPostIn",
-        new ArrayList<Integer>() {
-          {
-            add(1);
-            add(3);
-            add(5);
-          }
-        });
+        new ArrayList<>(Arrays.asList(1, 3, 5)));
       assertEquals(3, posts.size());
     }
   }
@@ -826,15 +808,7 @@ class SqlSessionTest extends BaseDataTest {
   void shouldFindOddPostsInList() {
     try (SqlSession session = sqlMapper.openSession()) {
       List<Post> posts = session.selectList("org.apache.ibatis.domain.blog.mappers.PostMapper.selectOddPostsIn",
-        new ArrayList<Integer>() {
-          {
-            add(0);
-            add(1);
-            add(2);
-            add(3);
-            add(4);
-          }
-        });
+        new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4)));
       // we're getting odd indexes, not odd values, 0 is not odd
       assertEquals(2, posts.size());
       assertEquals(1, posts.get(0).getId());
@@ -848,15 +822,7 @@ class SqlSessionTest extends BaseDataTest {
       List<Post> posts = session.selectList("org.apache.ibatis.domain.blog.mappers.PostMapper.selectOddPostsInKeysList",
         new HashMap<String, List<Integer>>() {
           {
-            put("keys", new ArrayList<>() {
-              {
-                add(0);
-                add(1);
-                add(2);
-                add(3);
-                add(4);
-              }
-            });
+            put("keys", new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4)));
           }
         });
       // we're getting odd indexes, not odd values, 0 is not odd

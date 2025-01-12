@@ -90,14 +90,10 @@ class DynamicSqlSourceTest extends BaseDataTest {
   void shouldConditionallyDefault() throws Exception {
     final String expected = "SELECT * FROM BLOG WHERE CATEGORY = 'DEFAULT'";
     DynamicSqlSource source = createDynamicSqlSource(new TextSqlNode(evaluator, "SELECT * FROM BLOG"),
-      new ChooseSqlNode(new ArrayList<>() {
-        private static final long serialVersionUID = 1L;
-
-        {
-          add(new IfSqlNode(evaluator, mixedContents(new TextSqlNode(evaluator, "WHERE CATEGORY = ?")), "false"));
-          add(new IfSqlNode(evaluator, mixedContents(new TextSqlNode(evaluator, "WHERE CATEGORY = 'NONE'")), "false"));
-        }
-      }, mixedContents(new TextSqlNode(evaluator, "WHERE CATEGORY = 'DEFAULT'"))));
+      new ChooseSqlNode(new ArrayList<>(Arrays.asList(
+        new IfSqlNode(evaluator, mixedContents(new TextSqlNode(evaluator, "WHERE CATEGORY = ?")), "false"),
+        new IfSqlNode(evaluator, mixedContents(new TextSqlNode(evaluator, "WHERE CATEGORY = 'NONE'")), "false")
+      )), mixedContents(new TextSqlNode(evaluator, "WHERE CATEGORY = 'DEFAULT'"))));
     BoundSql boundSql = source.getBoundSql(null);
     assertEquals(expected, boundSql.getSql());
   }
@@ -106,14 +102,13 @@ class DynamicSqlSourceTest extends BaseDataTest {
   void shouldConditionallyChooseFirst() throws Exception {
     final String expected = "SELECT * FROM BLOG WHERE CATEGORY = ?";
     DynamicSqlSource source = createDynamicSqlSource(new TextSqlNode(evaluator, "SELECT * FROM BLOG"),
-      new ChooseSqlNode(new ArrayList<>() {
-        private static final long serialVersionUID = 1L;
-
-        {
-          add(new IfSqlNode(evaluator, mixedContents(new TextSqlNode(evaluator, "WHERE CATEGORY = ?")), "true"));
-          add(new IfSqlNode(evaluator, mixedContents(new TextSqlNode(evaluator, "WHERE CATEGORY = 'NONE'")), "false"));
-        }
-      }, mixedContents(new TextSqlNode(evaluator, "WHERE CATEGORY = 'DEFAULT'"))));
+      new ChooseSqlNode(new ArrayList<>(Arrays.asList
+        (
+          new IfSqlNode(evaluator, mixedContents(new TextSqlNode(evaluator, "WHERE CATEGORY = ?")), "true"),
+          new IfSqlNode(evaluator, mixedContents(new TextSqlNode(evaluator, "WHERE CATEGORY = 'NONE'")), "false")
+        )
+      )
+        , mixedContents(new TextSqlNode(evaluator, "WHERE CATEGORY = 'DEFAULT'"))));
     BoundSql boundSql = source.getBoundSql(null);
     assertEquals(expected, boundSql.getSql());
   }
@@ -121,15 +116,12 @@ class DynamicSqlSourceTest extends BaseDataTest {
   @Test
   void shouldConditionallyChooseSecond() throws Exception {
     final String expected = "SELECT * FROM BLOG WHERE CATEGORY = 'NONE'";
-    DynamicSqlSource source = createDynamicSqlSource(new TextSqlNode(evaluator, "SELECT * FROM BLOG"),
-      new ChooseSqlNode(new ArrayList<>() {
-        private static final long serialVersionUID = 1L;
 
-        {
-          add(new IfSqlNode(evaluator, mixedContents(new TextSqlNode(evaluator, "WHERE CATEGORY = ?")), "false"));
-          add(new IfSqlNode(evaluator, mixedContents(new TextSqlNode(evaluator, "WHERE CATEGORY = 'NONE'")), "true"));
-        }
-      }, mixedContents(new TextSqlNode(evaluator, "WHERE CATEGORY = 'DEFAULT'"))));
+    ArrayList<SqlNode> list = new ArrayList<>();
+    list.add(new IfSqlNode(evaluator, mixedContents(new TextSqlNode(evaluator, "WHERE CATEGORY = ?")), "false"));
+    list.add(new IfSqlNode(evaluator, mixedContents(new TextSqlNode(evaluator, "WHERE CATEGORY = 'NONE'")), "true"));
+    DynamicSqlSource source = createDynamicSqlSource(new TextSqlNode(evaluator, "SELECT * FROM BLOG"),
+      new ChooseSqlNode(list, mixedContents(new TextSqlNode(evaluator, "WHERE CATEGORY = 'DEFAULT'"))));
     BoundSql boundSql = source.getBoundSql(null);
     assertEquals(expected, boundSql.getSql());
   }
@@ -271,13 +263,9 @@ class DynamicSqlSourceTest extends BaseDataTest {
 
   @Test
   void shouldIterateOnceForEachItemInCollection() throws Exception {
-    final HashMap<String, String[]> parameterObject = new HashMap<>() {
-      private static final long serialVersionUID = 1L;
+    final HashMap<String, String[]> parameterObject = new HashMap<>();
+    parameterObject.put("array", new String[]{"one", "two", "three"});
 
-      {
-        put("array", new String[]{"one", "two", "three"});
-      }
-    };
     final String expected = "SELECT * FROM BLOG WHERE ID in (  one = ? AND two = ? AND three = ? )";
     DynamicSqlSource source = createDynamicSqlSource(new TextSqlNode(evaluator, "SELECT * FROM BLOG WHERE ID in"),
       new ForEachSqlNode(new Configuration(), mixedContents(new TextSqlNode(evaluator, "${item} = #{item}")), "array", false, "index",
@@ -292,13 +280,9 @@ class DynamicSqlSourceTest extends BaseDataTest {
 
   @Test
   void shouldHandleOgnlExpression() throws Exception {
-    final HashMap<String, String> parameterObject = new HashMap<>() {
-      private static final long serialVersionUID = 1L;
+    final HashMap<String, String> parameterObject = new HashMap<>();
+    parameterObject.put("name", "Steve");
 
-      {
-        put("name", "Steve");
-      }
-    };
     final String expected = "Expression test: 3 / yes.";
     DynamicSqlSource source = createDynamicSqlSource(
       new TextSqlNode(evaluator, "Expression test: ${name.indexOf('v')} / ${name in {'Bob', 'Steve'\\} ? 'yes' : 'no'}."));
@@ -308,13 +292,8 @@ class DynamicSqlSourceTest extends BaseDataTest {
 
   @Test
   void shouldSkipForEachWhenCollectionIsEmpty() throws Exception {
-    final HashMap<String, Integer[]> parameterObject = new HashMap<>() {
-      private static final long serialVersionUID = 1L;
-
-      {
-        put("array", new Integer[]{});
-      }
-    };
+    final HashMap<String, Integer[]> parameterObject = new HashMap<>();
+    parameterObject.put("array", new Integer[]{});
     final String expected = "SELECT * FROM BLOG";
     DynamicSqlSource source = createDynamicSqlSource(new TextSqlNode(evaluator, "SELECT * FROM BLOG"),
       new ForEachSqlNode(new Configuration(), mixedContents(new TextSqlNode(evaluator, "#{item}")), "array", false, null, "item",

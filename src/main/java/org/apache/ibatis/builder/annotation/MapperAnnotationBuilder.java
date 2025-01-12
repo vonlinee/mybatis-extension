@@ -603,8 +603,8 @@ public class MapperAnnotationBuilder implements ConfigurationBuilder {
   }
 
   @SafeVarargs
-  private Optional<AnnotationWrapper> getAnnotationWrapper(Method method, boolean errorIfNoMatch,
-                                                           Class<? extends Annotation>... targetTypes) {
+  private final Optional<AnnotationWrapper> getAnnotationWrapper(Method method, boolean errorIfNoMatch,
+                                                                 Class<? extends Annotation>... targetTypes) {
     return getAnnotationWrapper(method, errorIfNoMatch, Arrays.asList(targetTypes));
   }
 

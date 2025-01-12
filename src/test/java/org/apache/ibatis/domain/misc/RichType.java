@@ -30,12 +30,11 @@ public class RichType {
 
   private Map<String, Object> richMap = new HashMap<>();
 
-  private List<Object> richList = new ArrayList<>() {
-    private static final long serialVersionUID = 1L;
-    {
-      add("bar");
-    }
-  };
+  private List<Object> richList = new ArrayList<>();
+
+  {
+    richList.add("bar");
+  }
 
   public RichType getRichType() {
     return richType;

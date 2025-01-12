@@ -1,6 +1,7 @@
 package org.apache.ibatis.reflection;
 
-import org.springframework.lang.Nullable;
+import org.apache.ibatis.util.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
@@ -29,7 +30,7 @@ public final class ReflectionUtils {
    * @throws IllegalArgumentException   参数为空
    */
   public static <T> T instantiate(String fullQualifiedClassName) throws ReflectionRuntimeException {
-    if (fullQualifiedClassName == null || fullQualifiedClassName.isBlank()) {
+    if (StringUtils.isBlank(fullQualifiedClassName)) {
       throw new IllegalArgumentException("type name cannot be null or blank");
     }
     Class<?> type;

@@ -22,6 +22,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -102,7 +103,7 @@ class MapWrapperUnitTest extends ObjectWrapperBaseTest {
   void shouldSetWhichContainsDelim() {
     wrapper.set(new PropertyTokenizer("author.id"), 1);
 
-    verify(map).put("author", new HashMap<>() {
+    verify(map).put("author", new HashMap<String, Object>() {
       {
         put("id", 1);
       }
@@ -128,12 +129,7 @@ class MapWrapperUnitTest extends ObjectWrapperBaseTest {
   @Test
   @Override
   void shouldGetGetterNames() {
-    Set<String> sets = new HashSet<>() {
-      {
-        add("key1");
-        add("key2");
-      }
-    };
+    Set<String> sets = new HashSet<String>(Arrays.asList("key1", "key2"));
     when(map.keySet()).thenReturn(sets);
 
     String[] getterNames = wrapper.getGetterNames();
@@ -145,12 +141,7 @@ class MapWrapperUnitTest extends ObjectWrapperBaseTest {
   @Test
   @Override
   void shouldGetSetterNames() {
-    Set<String> sets = new HashSet<>() {
-      {
-        add("key1");
-        add("key2");
-      }
-    };
+    Set<String> sets = new HashSet<>(Arrays.asList("key1", "key2"));
     when(map.keySet()).thenReturn(sets);
 
     String[] setterNames = wrapper.getSetterNames();

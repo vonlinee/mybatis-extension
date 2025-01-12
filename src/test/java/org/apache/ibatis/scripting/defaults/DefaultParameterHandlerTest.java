@@ -84,7 +84,7 @@ class DefaultParameterHandlerTest {
       defaultParameterHandler.setParameters(ps);
       Assertions.fail("Should have thrown TypeException");
     } catch (Exception e) {
-      Assertions.assertTrue(e instanceof TypeException, "expected TypeException");
+      Assertions.assertInstanceOf(TypeException.class, e, "expected TypeException");
       Assertions.assertTrue(e.getMessage().contains("mapping: ParameterMapping"));
     }
 
@@ -94,13 +94,9 @@ class DefaultParameterHandlerTest {
     final Configuration config = new Configuration();
     final TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
     return new MappedStatement.Builder(config, "testSelect", new StaticSqlSource(config, "some select statement"),
-        SqlCommandType.SELECT).resultMaps(new ArrayList<>() {
-      private static final long serialVersionUID = 1L;
-
+        SqlCommandType.SELECT).resultMaps(new ArrayList<ResultMap>() {
       {
-        add(new ResultMap.Builder(config, "testMap", HashMap.class, new ArrayList<>() {
-          private static final long serialVersionUID = 1L;
-
+        add(new ResultMap.Builder(config, "testMap", HashMap.class, new ArrayList<ResultMapping>() {
           {
             add(new ResultMapping.Builder(config, "cOlUmN1", "CoLuMn1", registry.getTypeHandler(Integer.class))
               .build());
@@ -120,7 +116,7 @@ class DefaultParameterHandlerTest {
 
     Object parameterObject = 1;
 
-    BoundSql boundSql = new BoundSql(config, "some select statement", new ArrayList<>() {
+    BoundSql boundSql = new BoundSql(config, "some select statement", new ArrayList<ParameterMapping>() {
       {
         add(new ParameterMapping.Builder(config, "id", registry.getTypeHandler(int.class)).build());
       }
@@ -150,7 +146,7 @@ class DefaultParameterHandlerTest {
 
     Object parameterObject = null;
 
-    BoundSql boundSql = new BoundSql(config, "some select statement", new ArrayList<>() {
+    BoundSql boundSql = new BoundSql(config, "some select statement", new ArrayList<ParameterMapping>() {
       {
         add(new ParameterMapping.Builder(config, "id", registry.getTypeHandler(int.class)).build());
       }
@@ -176,7 +172,7 @@ class DefaultParameterHandlerTest {
 
     Integer parameterObject = 1;
 
-    BoundSql boundSql = new BoundSql(config, "some select statement", new ArrayList<>() {
+    BoundSql boundSql = new BoundSql(config, "some select statement", new ArrayList<ParameterMapping>() {
       {
         add(new ParameterMapping.Builder(config, "id", registry.getTypeHandler(int.class)).build());
       }
@@ -202,7 +198,7 @@ class DefaultParameterHandlerTest {
 
     Author parameterObject = new Author(-1, "cbegin", "******", "cbegin@nowhere.com", "N/A", Section.NEWS);
 
-    BoundSql boundSql = new BoundSql(config, "some select statement", new ArrayList<>() {
+    BoundSql boundSql = new BoundSql(config, "some select statement", new ArrayList<ParameterMapping>() {
       {
         add(new ParameterMapping.Builder(config, "id", registry.getTypeHandler(int.class)).build());
         add(new ParameterMapping.Builder(config, "username", registry.getTypeHandler(String.class)).build());
@@ -250,7 +246,7 @@ class DefaultParameterHandlerTest {
     MappedStatement mappedStatement = new MappedStatement.Builder(mockConfig, "testSelect",
         new StaticSqlSource(mockConfig, "some select statement"), SqlCommandType.SELECT).build();
 
-    BoundSql boundSql = new BoundSql(mockConfig, "some select statement", new ArrayList<>() {
+    BoundSql boundSql = new BoundSql(mockConfig, "some select statement", new ArrayList<ParameterMapping>() {
       {
         add(new ParameterMapping.Builder(mockConfig, "id", registry.getTypeHandler(int.class))
           .jdbcType(JdbcType.INTEGER).build());
