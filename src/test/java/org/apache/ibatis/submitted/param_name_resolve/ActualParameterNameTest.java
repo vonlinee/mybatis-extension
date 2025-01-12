@@ -32,7 +32,7 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class ActualParamNameTest {
+class ActualParameterNameTest {
 
   private static SqlSessionFactory sqlSessionFactory;
 

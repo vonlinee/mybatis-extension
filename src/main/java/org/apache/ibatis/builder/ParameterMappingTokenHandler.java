@@ -1,5 +1,6 @@
 package org.apache.ibatis.builder;
 
+import org.apache.ibatis.internal.Constants;
 import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.parsing.TokenHandler;
 import org.apache.ibatis.reflection.MetaClass;
@@ -43,13 +44,13 @@ public class ParameterMappingTokenHandler implements TokenHandler {
 
   private ParameterMapping buildParameterMapping(String content) {
     Map<String, String> propertiesMap = parseParameterMapping(content);
-    String property = propertiesMap.get("property");
+    String property = propertiesMap.get(Constants.PROPERTY);
     Class<?> propertyType;
     if (metaParameters.hasGetter(property)) { // issue #448 get type from additional params
       propertyType = metaParameters.getGetterType(property);
     } else if (configuration.hasTypeHandler(parameterType)) {
       propertyType = parameterType;
-    } else if (JdbcType.CURSOR.name().equals(propertiesMap.get("jdbcType"))) {
+    } else if (JdbcType.CURSOR.name().equals(propertiesMap.get(Constants.JDBC_TYPE))) {
       propertyType = java.sql.ResultSet.class;
     } else if (property == null || Map.class.isAssignableFrom(parameterType)) {
       propertyType = Object.class;
@@ -67,24 +68,24 @@ public class ParameterMappingTokenHandler implements TokenHandler {
     for (Map.Entry<String, String> entry : propertiesMap.entrySet()) {
       String name = entry.getKey();
       String value = entry.getValue();
-      if ("javaType".equals(name)) {
+      if (Constants.JAVA_TYPE.equals(name)) {
         javaType = configuration.resolveClass(value);
         builder.javaType(javaType);
-      } else if ("jdbcType".equals(name)) {
+      } else if (Constants.JDBC_TYPE.equals(name)) {
         builder.jdbcType(configuration.resolveJdbcType(value));
-      } else if ("mode".equals(name)) {
+      } else if (Constants.MODE.equals(name)) {
         builder.mode(BaseBuilder.resolveParameterMode(value));
-      } else if ("numericScale".equals(name)) {
+      } else if (Constants.NUMERIC_SCALE.equals(name)) {
         builder.numericScale(Integer.valueOf(value));
-      } else if ("resultMap".equals(name)) {
+      } else if (Constants.RESULT_MAP.equals(name)) {
         builder.resultMapId(value);
-      } else if ("typeHandler".equals(name)) {
+      } else if (Constants.TYPE_HANDLER.equals(name)) {
         typeHandlerAlias = value;
-      } else if ("jdbcTypeName".equals(name)) {
+      } else if (Constants.JDBC_TYPE_NAME.equals(name)) {
         builder.jdbcTypeName(value);
-      } else if ("property".equals(name)) {
+      } else if (Constants.PROPERTY.equals(name)) {
         // Do Nothing
-      } else if ("expression".equals(name)) {
+      } else if (Constants.EXPRESSION.equals(name)) {
         throw new BuilderException("Expression based parameters are not supported yet");
       } else {
         throw new BuilderException("An invalid property '" + name + "' was found in mapping #{" + content

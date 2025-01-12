@@ -30,7 +30,7 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class NoParamTypeTest {
+class NoParameterTypeTest {
 
   private static SqlSessionFactory sqlSessionFactory;
 

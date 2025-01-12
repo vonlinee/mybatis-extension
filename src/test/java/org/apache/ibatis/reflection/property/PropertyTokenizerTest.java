@@ -15,22 +15,21 @@
  */
 package org.apache.ibatis.reflection.property;
 
+import org.junit.jupiter.api.Test;
+
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.Test;
-
 /**
  * @author <a href="1181963012mw@gmail.com">mawen12</a>
- *
  * @see PropertyTokenizer
  */
 class PropertyTokenizerTest {
 
   @Test
   void shouldParsePropertySuccessfully() {
-    String fullname = "id";
-    PropertyTokenizer tokenizer = new PropertyTokenizer(fullname);
+    String fullName = "id";
+    PropertyTokenizer tokenizer = new PropertyTokenizer(fullName);
 
     assertEquals("id", tokenizer.getIndexedName());
     assertEquals("id", tokenizer.getName());
@@ -41,13 +40,13 @@ class PropertyTokenizerTest {
     assertNull(tokenizer.getIndex());
 
     assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(tokenizer::remove)
-        .withMessage("Remove is not supported, as it has no meaning in the context of properties.");
+      .withMessage("Remove is not supported, as it has no meaning in the context of properties.");
   }
 
   @Test
-  void shouldParsePropertyWhichContainsDelimSuccessfully() {
-    String fullname = "person.id";
-    PropertyTokenizer tokenizer = new PropertyTokenizer(fullname);
+  void shouldParsePropertyWhichContainsDelimiterSuccessfully() {
+    String fullName = "person.id";
+    PropertyTokenizer tokenizer = new PropertyTokenizer(fullName);
 
     assertEquals("person", tokenizer.getIndexedName());
     assertEquals("person", tokenizer.getName());
@@ -57,13 +56,13 @@ class PropertyTokenizerTest {
     assertNull(tokenizer.getIndex());
 
     assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(tokenizer::remove)
-        .withMessage("Remove is not supported, as it has no meaning in the context of properties.");
+      .withMessage("Remove is not supported, as it has no meaning in the context of properties.");
   }
 
   @Test
   void shouldParsePropertyWhichContainsIndexSuccessfully() {
-    String fullname = "array[0]";
-    PropertyTokenizer tokenizer = new PropertyTokenizer(fullname);
+    String fullName = "array[0]";
+    PropertyTokenizer tokenizer = new PropertyTokenizer(fullName);
 
     assertEquals("array[0]", tokenizer.getIndexedName());
     assertEquals("array", tokenizer.getName());
@@ -73,6 +72,22 @@ class PropertyTokenizerTest {
     assertNull(tokenizer.getChildren());
 
     assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(tokenizer::remove)
-        .withMessage("Remove is not supported, as it has no meaning in the context of properties.");
+      .withMessage("Remove is not supported, as it has no meaning in the context of properties.");
+  }
+
+  @Test
+  void test_nested_property() {
+    String fullName = "array[0]";
+    PropertyTokenizer tokenizer = new PropertyTokenizer(fullName);
+
+    assertEquals("array[0]", tokenizer.getIndexedName());
+    assertEquals("array", tokenizer.getName());
+    assertEquals("0", tokenizer.getIndex());
+
+    assertFalse(tokenizer.hasNext());
+    assertNull(tokenizer.getChildren());
+
+    assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(tokenizer::remove)
+      .withMessage("Remove is not supported, as it has no meaning in the context of properties.");
   }
 }

@@ -1,6 +1,6 @@
 package org.apache.ibatis.internal;
 
-public interface StringConstant {
+public interface Constants {
 
   String JDBC_TYPE = "jdbcType";
   String JAVA_TYPE = "javaType";
@@ -48,6 +48,9 @@ public interface StringConstant {
 
   String VFS_IMPL = "vfsImpl";
 
-  String ENGLISH_COMMA = ",";
+  char ENGLISH_COMMA = ',';
   String SQL_PARAM_PLACEHOLDER = "?";
+  char OPEN_PARENTHESIS = '(';
+  char CLOSE_PARENTHESIS = ')';
+  char COLON = ':';
 }

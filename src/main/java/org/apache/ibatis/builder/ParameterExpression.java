@@ -15,6 +15,8 @@
  */
 package org.apache.ibatis.builder;
 
+import org.apache.ibatis.internal.Constants;
+
 import java.util.HashMap;
 
 /**
@@ -39,27 +41,36 @@ public class ParameterExpression extends HashMap<String, String> {
     parse(expression);
   }
 
-  private void parse(String expression) {
+  /**
+   * entry method
+   *
+   * @param expression expression
+   */
+  private Parameter parse(String expression) {
     int p = skipWS(expression, 0);
-    if (expression.charAt(p) == '(') {
+
+    Parameter param = new Parameter();
+    if (expression.charAt(p) == Constants.OPEN_PARENTHESIS) {
       expression(expression, p + 1);
     } else {
       property(expression, p);
     }
+
+    return param;
   }
 
   private void expression(String expression, int left) {
     int match = 1;
     int right = left + 1;
     while (match > 0) {
-      if (expression.charAt(right) == ')') {
+      if (expression.charAt(right) == Constants.CLOSE_PARENTHESIS) {
         match--;
       } else if (expression.charAt(right) == '(') {
         match++;
       }
       right++;
     }
-    put("expression", expression.substring(left, right - 1));
+    this.put("expression", expression.substring(left, right - 1));
     jdbcTypeOpt(expression, right);
   }
 
@@ -71,7 +82,15 @@ public class ParameterExpression extends HashMap<String, String> {
     }
   }
 
-  private int skipWS(String expression, int p) {
+  /**
+   * Skips whitespace characters in the given expression starting from the specified index.
+   *
+   * @param expression The string in which to skip whitespace.
+   * @param p          The starting index from which to begin skipping whitespace.
+   * @return The index of the first non-whitespace character, or the length of the string
+   * if no non-whitespace character is found.
+   */
+  private static int skipWS(String expression, int p) {
     for (int i = p; i < expression.length(); i++) {
       if (expression.charAt(i) > 0x20) {
         return i;
@@ -80,7 +99,7 @@ public class ParameterExpression extends HashMap<String, String> {
     return expression.length();
   }
 
-  private int skipUntil(String expression, int p, final String endChars) {
+  private static int skipUntil(String expression, int p, final String endChars) {
     for (int i = p; i < expression.length(); i++) {
       char c = expression.charAt(i);
       if (endChars.indexOf(c) > -1) {
@@ -93,9 +112,9 @@ public class ParameterExpression extends HashMap<String, String> {
   private void jdbcTypeOpt(String expression, int p) {
     p = skipWS(expression, p);
     if (p < expression.length()) {
-      if (expression.charAt(p) == ':') {
+      if (expression.charAt(p) == Constants.COLON) {
         jdbcType(expression, p + 1);
-      } else if (expression.charAt(p) == ',') {
+      } else if (expression.charAt(p) == Constants.ENGLISH_COMMA) {
         option(expression, p + 1);
       } else {
         throw new BuilderException("Parsing error in {" + expression + "} in position " + p);
@@ -126,7 +145,7 @@ public class ParameterExpression extends HashMap<String, String> {
     }
   }
 
-  private String trimmedStr(String str, int start, int end) {
+  private static String trimmedStr(String str, int start, int end) {
     while (str.charAt(start) <= 0x20) {
       start++;
     }

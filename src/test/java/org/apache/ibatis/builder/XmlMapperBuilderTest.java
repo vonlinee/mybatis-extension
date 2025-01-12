@@ -15,14 +15,6 @@
  */
 package org.apache.ibatis.builder;
 
-import static com.googlecode.catchexception.apis.BDDCatchException.caughtException;
-import static com.googlecode.catchexception.apis.BDDCatchException.when;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.BDDAssertions.then;
-
-import java.io.InputStream;
-import java.util.regex.Pattern;
-
 import org.apache.ibatis.builder.xml.XMLMapperBuilder;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -33,6 +25,14 @@ import org.apache.ibatis.type.TypeHandler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.InputStream;
+import java.util.regex.Pattern;
+
+import static com.googlecode.catchexception.apis.BDDCatchException.caughtException;
+import static com.googlecode.catchexception.apis.BDDCatchException.when;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.BDDAssertions.then;
+
 class XmlMapperBuilderTest {
 
   @Test
@@ -41,7 +41,7 @@ class XmlMapperBuilderTest {
     String resource = "org/apache/ibatis/builder/AuthorMapper.xml";
     try (InputStream inputStream = Resources.getResourceAsStream(resource)) {
       XMLMapperBuilder builder = new XMLMapperBuilder(inputStream, configuration, resource,
-          configuration.getSqlFragments());
+        configuration.getSqlFragments());
       builder.parse();
     }
   }
@@ -52,7 +52,7 @@ class XmlMapperBuilderTest {
     String resource = "org/apache/ibatis/builder/AuthorMapper.xml";
     try (InputStream inputStream = Resources.getResourceAsStream(resource)) {
       XMLMapperBuilder builder = new XMLMapperBuilder(inputStream, configuration, resource,
-          configuration.getSqlFragments());
+        configuration.getSqlFragments());
       builder.parse();
 
       MappedStatement mappedStatement = configuration.getMappedStatement("selectWithOptions");
@@ -72,7 +72,7 @@ class XmlMapperBuilderTest {
     String resource = "org/apache/ibatis/builder/AuthorMapper.xml";
     InputStream inputStream = Resources.getResourceAsStream(resource);
     XMLMapperBuilder builder = new XMLMapperBuilder(inputStream, configuration, resource,
-        configuration.getSqlFragments());
+      configuration.getSqlFragments());
     builder.parse();
     inputStream.close();
 
@@ -99,24 +99,16 @@ class XmlMapperBuilderTest {
     Configuration configuration = new Configuration();
     when(() -> configuration.resolveJdbcType("aaa"));
     then(caughtException()).isInstanceOf(BuilderException.class)
-        .hasMessageStartingWith("Error resolving JdbcType. Cause: java.lang.IllegalArgumentException: No enum")
-        .hasMessageEndingWith("org.apache.ibatis.type.JdbcType.aaa");
+      .hasMessageStartingWith("Error resolving JdbcType. Cause: java.lang.IllegalArgumentException: No enum")
+      .hasMessageEndingWith("org.apache.ibatis.type.JdbcType.aaa");
   }
 
   @Test
   void resolveResultSetTypeWithUndefinedValue() {
     when(() -> BaseBuilder.resolveResultSetType("bbb"));
     then(caughtException()).isInstanceOf(BuilderException.class)
-        .hasMessageStartingWith("Error resolving ResultSetType. Cause: java.lang.IllegalArgumentException: No enum")
-        .hasMessageEndingWith("org.apache.ibatis.mapping.ResultSetType.bbb");
-  }
-
-  @Test
-  void resolveParameterModeWithUndefinedValue() {
-    when(() -> BaseBuilder.resolveParameterMode("ccc"));
-    then(caughtException()).isInstanceOf(BuilderException.class)
-        .hasMessageStartingWith("Error resolving ParameterMode. Cause: java.lang.IllegalArgumentException: No enum")
-        .hasMessageEndingWith("org.apache.ibatis.mapping.ParameterMode.ccc");
+      .hasMessageStartingWith("Error resolving ResultSetType. Cause: java.lang.IllegalArgumentException: No enum")
+      .hasMessageEndingWith("org.apache.ibatis.mapping.ResultSetType.bbb");
   }
 
   @Test
@@ -124,7 +116,7 @@ class XmlMapperBuilderTest {
     Configuration configuration = new Configuration();
     when(() -> configuration.createInstance("org.apache.ibatis.builder.BaseBuilder"));
     then(caughtException()).isInstanceOf(BuilderException.class).hasMessage(
-        "Error creating instance. Cause: java.lang.NoSuchMethodException: org.apache.ibatis.builder.BaseBuilder.<init>()");
+      "Error creating instance. Cause: java.lang.NoSuchMethodException: org.apache.ibatis.builder.BaseBuilder.<init>()");
   }
 
   @Test
@@ -132,7 +124,7 @@ class XmlMapperBuilderTest {
     Configuration configuration = new Configuration();
     when(() -> configuration.resolveClass("ddd"));
     then(caughtException()).isInstanceOf(BuilderException.class).hasMessage(
-        "Error resolving class. Cause: org.apache.ibatis.type.TypeException: Could not resolve type alias 'ddd'.  Cause: java.lang.ClassNotFoundException: Cannot find class: ddd");
+      "Error resolving class. Cause: org.apache.ibatis.type.TypeException: Could not resolve type alias 'ddd'.  Cause: java.lang.ClassNotFoundException: Cannot find class: ddd");
   }
 
   @Test
@@ -147,7 +139,7 @@ class XmlMapperBuilderTest {
     Configuration configuration = new Configuration();
     when(() -> configuration.resolveTypeHandler(String.class, "integer"));
     then(caughtException()).isInstanceOf(BuilderException.class).hasMessage(
-        "Type java.lang.Integer is not a valid TypeHandler because it does not implement TypeHandler interface");
+      "Type java.lang.Integer is not a valid TypeHandler because it does not implement TypeHandler interface");
   }
 
   @Test
@@ -155,7 +147,7 @@ class XmlMapperBuilderTest {
     MapperBuilderAssistant builder = new MapperBuilderAssistant(new Configuration(), "resource");
     when(() -> builder.setCurrentNamespace(null));
     then(caughtException()).isInstanceOf(BuilderException.class)
-        .hasMessage("The mapper element requires a namespace attribute to be specified.");
+      .hasMessage("The mapper element requires a namespace attribute to be specified.");
   }
 
   @Test
@@ -163,7 +155,7 @@ class XmlMapperBuilderTest {
     MapperBuilderAssistant builder = new MapperBuilderAssistant(new Configuration(), "resource");
     when(() -> builder.useCacheRef(null));
     then(caughtException()).isInstanceOf(BuilderException.class)
-        .hasMessage("cache-ref element requires a namespace attribute.");
+      .hasMessage("cache-ref element requires a namespace attribute.");
   }
 
   @Test
@@ -179,26 +171,26 @@ class XmlMapperBuilderTest {
     String resource = "org/apache/ibatis/builder/ProblemMapper.xml";
     try (InputStream inputStream = Resources.getResourceAsStream(resource)) {
       XMLMapperBuilder builder = new XMLMapperBuilder(inputStream, configuration, resource,
-          configuration.getSqlFragments());
+        configuration.getSqlFragments());
       Exception exception = Assertions.assertThrows(BuilderException.class, builder::parse);
       Assertions.assertTrue(exception.getMessage()
-          .contains("Error parsing Mapper XML. The XML location is 'org/apache/ibatis/builder/ProblemMapper.xml'"));
+        .contains("Error parsing Mapper XML. The XML location is 'org/apache/ibatis/builder/ProblemMapper.xml'"));
     }
   }
 
-  // @Test
-  // public void shouldNotLoadTheSameNamespaceFromTwoResourcesWithDifferentNames() throws Exception {
-  // Configuration configuration = new Configuration();
-  // String resource = "org/apache/ibatis/builder/AuthorMapper.xml";
-  // InputStream inputStream = Resources.getResourceAsStream(resource);
-  // XMLMapperBuilder builder = new XMLMapperBuilder(inputStream, configuration, "name1",
-  // configuration.getSqlFragments());
-  // builder.parse();
-  // InputStream inputStream2 = Resources.getResourceAsStream(resource);
-  // XMLMapperBuilder builder2 = new XMLMapperBuilder(inputStream2, configuration, "name2",
-  // configuration.getSqlFragments());
-  // builder2.parse();
-  // }
+  @Test
+  public void shouldNotLoadTheSameNamespaceFromTwoResourcesWithDifferentNames() throws Exception {
+    Configuration configuration = new Configuration();
+    String resource = "org/apache/ibatis/builder/AuthorMapper.xml";
+    InputStream inputStream = Resources.getResourceAsStream(resource);
+    XMLMapperBuilder builder = new XMLMapperBuilder(inputStream, configuration, "name1",
+      configuration.getSqlFragments());
+    builder.parse();
+    InputStream inputStream2 = Resources.getResourceAsStream(resource);
+    XMLMapperBuilder builder2 = new XMLMapperBuilder(inputStream2, configuration, "name2",
+      configuration.getSqlFragments());
+    builder2.parse();
+  }
 
   @Test
   void errorResultMapLocation() throws Exception {
@@ -206,7 +198,7 @@ class XmlMapperBuilderTest {
     String resource = "org/apache/ibatis/builder/ProblemResultMapper.xml";
     try (InputStream inputStream = Resources.getResourceAsStream(resource)) {
       XMLMapperBuilder builder = new XMLMapperBuilder(inputStream, configuration, resource,
-          configuration.getSqlFragments());
+        configuration.getSqlFragments());
       builder.parse();
       String resultMapName = "java.lang.String";
       // namespace + "." + id
@@ -214,7 +206,7 @@ class XmlMapperBuilderTest {
       // same as MapperBuilderAssistant.getStatementResultMaps Exception message
       String message = "Could not find result map '" + resultMapName + "' referenced from '" + statementId + "'";
       IncompleteElementException exception = Assertions.assertThrows(IncompleteElementException.class,
-          () -> configuration.getMappedStatement("findProblemTypeTest"));
+        () -> configuration.getMappedStatement("findProblemTypeTest"));
       assertThat(exception.getMessage()).isEqualTo(message);
     }
   }

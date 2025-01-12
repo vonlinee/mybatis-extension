@@ -35,7 +35,7 @@ import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class MapperMethodParamTest {
+class MapperMethodParameterTest {
 
   private static SqlSessionFactory sqlSessionFactory;
 

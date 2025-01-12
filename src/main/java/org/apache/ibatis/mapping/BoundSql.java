@@ -15,13 +15,13 @@
  */
 package org.apache.ibatis.mapping;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.property.PropertyTokenizer;
 import org.apache.ibatis.session.Configuration;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * An actual SQL String got from an {@link SqlSource} after having processed any dynamic content. The SQL may have SQL
@@ -41,7 +41,7 @@ public class BoundSql {
   private final MetaObject metaParameters;
 
   public BoundSql(Configuration configuration, String sql, List<ParameterMapping> parameterMappings,
-      Object parameterObject) {
+                  Object parameterObject) {
     this.sql = sql;
     this.parameterMappings = parameterMappings;
     this.parameterObject = parameterObject;
@@ -61,6 +61,10 @@ public class BoundSql {
     return parameterObject;
   }
 
+  /**
+   * @param name for example user.name
+   * @return whether contains the param of specified name
+   */
   public boolean hasAdditionalParameter(String name) {
     String paramName = new PropertyTokenizer(name).getName();
     return additionalParameters.containsKey(paramName);
@@ -72,9 +76,5 @@ public class BoundSql {
 
   public Object getAdditionalParameter(String name) {
     return metaParameters.getValue(name);
-  }
-
-  public Map<String, Object> getAdditionalParameters() {
-    return additionalParameters;
   }
 }

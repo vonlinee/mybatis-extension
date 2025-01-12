@@ -23,6 +23,12 @@ import org.junit.jupiter.api.Test;
 class ParameterExpressionTest {
 
   @Test
+  void testWhitespaceCheck() {
+    System.out.println(Character.isWhitespace(32));
+    System.out.println(0x20);
+  }
+
+  @Test
   void simpleProperty() {
     Map<String, String> result = new ParameterExpression("id");
     Assertions.assertEquals(1, result.size());

@@ -38,14 +38,6 @@ public abstract class BaseBuilder {
     return Pattern.compile(regex == null ? defaultValue : regex);
   }
 
-  public static Boolean booleanValueOf(String value, Boolean defaultValue) {
-    return value == null ? defaultValue : Boolean.valueOf(value);
-  }
-
-  public static Integer integerValueOf(String value, Integer defaultValue) {
-    return value == null ? defaultValue : Integer.valueOf(value);
-  }
-
   public static ResultSetType resolveResultSetType(String alias) {
     try {
       return alias == null ? null : ResultSetType.valueOf(alias);

@@ -34,6 +34,7 @@ import org.apache.ibatis.session.Configuration;
  *   <if test="expression">where id = #{id}</if>
  * </select>
  * </pre></blockquote>
+ *
  * @author Clinton Begin
  */
 public class DynamicSqlSource implements SqlSource {
@@ -53,7 +54,7 @@ public class DynamicSqlSource implements SqlSource {
     rootSqlNode.apply(context);
 
     String sql = context.getSql();
-
+    // the sql left may contain ${xxx} or #{xxx}, so we have to parse again
     Class<?> parameterType = parameterObject == null ? Object.class : parameterObject.getClass();
     SqlSource sqlSource = SqlSourceBuilder.parse(configuration, sql, parameterType, context.getBindings());
     BoundSql boundSql = sqlSource.getBoundSql(parameterObject);
