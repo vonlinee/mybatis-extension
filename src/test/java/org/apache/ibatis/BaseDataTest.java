@@ -21,6 +21,7 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.jdbc.ScriptRunner;
 
 import javax.sql.DataSource;
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.sql.Connection;
@@ -62,7 +63,7 @@ public abstract class BaseDataTest {
    *
    * @param ds       data source
    * @param resource resource path from classpath
-   * @throws IOException error when reading file
+   * @throws IOException  error when reading file
    * @throws SQLException error during run the script
    */
   public static void runScript(DataSource ds, String resource) throws IOException, SQLException {

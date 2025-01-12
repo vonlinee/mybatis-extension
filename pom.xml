@@ -343,7 +343,7 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>2.0.16</version>
+      <version>${slf4j-api.version}</version>
       <optional>true</optional>
     </dependency>
 
@@ -490,6 +490,7 @@
         <mockito.version>3.12.4</mockito.version>
         <mockito-subclass.version>4.10.0</mockito-subclass.version>
         <logback-classic.version>1.2.4</logback-classic.version>
+        <slf4j-api.version>1.7.34</slf4j-api.version>
       </properties>
       <build>
         <pluginManagement>
@@ -530,6 +531,7 @@
         <mockito.version>5.14.2</mockito.version>
         <mockito-subclass.version>5.14.2</mockito-subclass.version>
         <logback-classic.version>1.5.16</logback-classic.version>
+        <slf4j-api.version>1.3.4</slf4j-api.version>
       </properties>
       <build>
         <pluginManagement>
@@ -573,6 +575,7 @@
         <mockito.version>5.14.2</mockito.version>
         <mockito-subclass.version>5.14.2</mockito-subclass.version>
         <logback-classic.version>1.5.16</logback-classic.version>
+        <slf4j-api.version>1.3.4</slf4j-api.version>
       </properties>
     </profile>
     <profile>
@@ -588,6 +591,7 @@
         <mockito.version>5.14.2</mockito.version>
         <mockito-subclass.version>5.14.2</mockito-subclass.version>
         <logback-classic.version>1.5.16</logback-classic.version>
+        <slf4j-api.version>1.3.4</slf4j-api.version>
       </properties>
     </profile>
     <profile>
@@ -603,6 +607,7 @@
         <mockito.version>5.14.2</mockito.version>
         <mockito-subclass.version>5.14.2</mockito-subclass.version>
         <logback-classic.version>1.5.16</logback-classic.version>
+        <slf4j-api.version>1.3.4</slf4j-api.version>
       </properties>
     </profile>
 
