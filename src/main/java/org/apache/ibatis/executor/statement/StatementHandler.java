@@ -43,7 +43,4 @@ public interface StatementHandler {
   <E> Cursor<E> queryCursor(Statement statement) throws SQLException;
 
   BoundSql getBoundSql();
-
-  ParameterHandler getParameterHandler();
-
 }

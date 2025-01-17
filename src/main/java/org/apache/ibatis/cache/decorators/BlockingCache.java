@@ -112,7 +112,7 @@ public class BlockingCache implements Cache {
   private void releaseLock(Object key) {
     CountDownLatch latch = locks.remove(key);
     if (latch == null) {
-      throw new IllegalStateException("Detected an attempt at releasing unacquired lock. This should never happen.");
+      throw new IllegalStateException("Detected an attempt at releasing un-acquired lock. This should never happen.");
     }
     latch.countDown();
   }

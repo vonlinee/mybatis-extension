@@ -140,7 +140,10 @@ public class DefaultVFS extends VFS {
             if (log.isDebugEnabled()) {
               log.debug("Listing " + url);
             }
-            children = Arrays.asList(file.list());
+            String[] files = file.list();
+            if (files != null) {
+              children = Arrays.asList(files);
+            }
           }
         }
 
@@ -338,7 +341,7 @@ public class DefaultVFS extends VFS {
    *          A buffer into which the first few bytes of the resource are read. The buffer must be at least the size of
    *          {@link #JAR_MAGIC}. (The same buffer may be reused for multiple calls as an optimization.)
    *
-   * @return true, if is jar
+   * @return true, if is a jar
    */
   protected boolean isJar(URL url, byte[] buffer) {
     try (InputStream is = url.openStream()) {

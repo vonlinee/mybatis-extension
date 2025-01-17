@@ -313,7 +313,4 @@ public class DefaultSqlSession implements SqlSession {
   private Object wrapCollection(final Object object) {
     return ParamNameResolver.wrapToMapIfCollection(object, null);
   }
-
-
-
 }

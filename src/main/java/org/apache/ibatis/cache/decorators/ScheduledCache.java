@@ -79,6 +79,9 @@ public class ScheduledCache implements Cache {
 
   @Override
   public boolean equals(Object obj) {
+    if (!(obj instanceof ScheduledCache)) {
+      return false;
+    }
     return delegate.equals(obj);
   }
 

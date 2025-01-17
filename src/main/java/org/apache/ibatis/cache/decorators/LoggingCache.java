@@ -79,6 +79,9 @@ public class LoggingCache implements Cache {
 
   @Override
   public boolean equals(Object obj) {
+    if (!(obj instanceof LoggingCache)) {
+      return false;
+    }
     return delegate.equals(obj);
   }
 

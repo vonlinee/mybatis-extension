@@ -147,12 +147,12 @@ public class ResultMapping {
         throw new IllegalStateException(
             "Cannot define both nestedQueryId and nestedResultMapId in property " + resultMapping.property);
       }
-      // Issue #5: there should be no mappings without typehandler
+      // Issue #5: there should be no mappings without type handler
       if (resultMapping.nestedQueryId == null && resultMapping.nestedResultMapId == null
           && resultMapping.typeHandler == null) {
-        throw new IllegalStateException("No typehandler found for property " + resultMapping.property);
+        throw new IllegalStateException("No type handler found for property " + resultMapping.property);
       }
-      // Issue #4 and GH #39: column is optional only in nested resultmaps but not in the rest
+      // Issue #4 and GH #39: column is optional only in nested result maps but not in the rest
       if (resultMapping.nestedResultMapId == null && resultMapping.column == null
           && resultMapping.composites.isEmpty()) {
         throw new IllegalStateException("Mapping is missing column attribute for property " + resultMapping.property);
@@ -287,24 +287,22 @@ public class ResultMapping {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("ResultMapping{");
-    // sb.append("configuration=").append(configuration); // configuration doesn't have a useful .toString()
-    sb.append("property='").append(property).append('\'');
-    sb.append(", column='").append(column).append('\'');
-    sb.append(", javaType=").append(javaType);
-    sb.append(", jdbcType=").append(jdbcType);
-    // sb.append(", typeHandler=").append(typeHandler); // typeHandler also doesn't have a useful .toString()
-    sb.append(", nestedResultMapId='").append(nestedResultMapId).append('\'');
-    sb.append(", nestedQueryId='").append(nestedQueryId).append('\'');
-    sb.append(", notNullColumns=").append(notNullColumns);
-    sb.append(", columnPrefix='").append(columnPrefix).append('\'');
-    sb.append(", flags=").append(flags);
-    sb.append(", composites=").append(composites);
-    sb.append(", resultSet='").append(resultSet).append('\'');
-    sb.append(", foreignColumn='").append(foreignColumn).append('\'');
-    sb.append(", lazy=").append(lazy);
-    sb.append('}');
-    return sb.toString();
+    return "ResultMapping{" + "configuration=" + configuration + // configuration doesn't have a useful .toString()
+      "property='" + property + '\'' +
+      ", column='" + column + '\'' +
+      ", javaType=" + javaType +
+      ", jdbcType=" + jdbcType +
+      ", typeHandler=" + typeHandler + // typeHandler also doesn't have a useful .toString()
+      ", nestedResultMapId='" + nestedResultMapId + '\'' +
+      ", nestedQueryId='" + nestedQueryId + '\'' +
+      ", notNullColumns=" + notNullColumns +
+      ", columnPrefix='" + columnPrefix + '\'' +
+      ", flags=" + flags +
+      ", composites=" + composites +
+      ", resultSet='" + resultSet + '\'' +
+      ", foreignColumn='" + foreignColumn + '\'' +
+      ", lazy=" + lazy +
+      '}';
   }
 
 }
