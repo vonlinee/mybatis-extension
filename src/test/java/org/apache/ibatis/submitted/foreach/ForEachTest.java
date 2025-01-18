@@ -30,6 +30,7 @@ import java.util.List;
 import org.apache.ibatis.BaseDataTest;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.logging.stdout.StdOutImpl;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
@@ -46,6 +47,7 @@ class ForEachTest {
     // create a SqlSessionFactory
     try (Reader reader = Resources.getResourceAsReader("org/apache/ibatis/submitted/foreach/mybatis-config.xml")) {
       sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
+      sqlSessionFactory.getConfiguration().setLogImpl(StdOutImpl.class);
     }
 
     // populate in-memory database
@@ -207,7 +209,7 @@ class ForEachTest {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       User user = new User();
       user.setFriendList(null);
-      mapper.countUserWithNullableIsFalse(user);
+      int result = mapper.countUserWithNullableIsFalse(user);
       Assertions.fail();
     } catch (PersistenceException e) {
       Assertions.assertEquals("The expression 'friendList' evaluated to a null value.", e.getCause().getMessage());

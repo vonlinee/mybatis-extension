@@ -18,22 +18,58 @@ package org.apache.ibatis.scripting;
 /**
  * @author Clinton Begin
  */
-public interface SqlBuilderContext {
+public interface SqlBuildContext {
 
   String PARAMETER_OBJECT_KEY = "_parameter";
   String DATABASE_ID_KEY = "_databaseId";
 
+  /**
+   * Sets the database identifier for the current context.
+   *
+   * @param databaseId the identifier of the database
+   */
   void setDatabaseId(String databaseId);
 
+  /**
+   * Retrieves the database identifier for the current context.
+   *
+   * @return the database identifier
+   */
   String getDatabaseId();
 
+  /**
+   * Retrieves the current binding context, which holds the parameter bindings.
+   *
+   * @return the binding context
+   */
   BindingContext getBindings();
 
+  /**
+   * Binds a value to a given name in the current context.
+   *
+   * @param name  the name to bind the value to
+   * @param value the value to bind
+   */
   void bind(String name, Object value);
 
+  /**
+   * Appends a SQL fragment to the current SQL statement being built.
+   *
+   * @param sql the SQL fragment to append
+   */
   void appendSql(String sql);
 
+  /**
+   * Retrieves the complete SQL statement constructed so far.
+   *
+   * @return the constructed SQL statement
+   */
   String getSql();
 
+  /**
+   * Retrieves a unique number that may be used to identify this context instance.
+   *
+   * @return a unique number
+   */
   int getUniqueNumber();
 }

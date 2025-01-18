@@ -15,7 +15,7 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
-import org.apache.ibatis.scripting.SqlBuilderContext;
+import org.apache.ibatis.scripting.SqlBuildContext;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -39,13 +39,13 @@ public interface SqlNode {
   boolean isDynamic();
 
   /**
-   * Applies the SQL node to the provided {@link SqlBuilderContext}.
+   * Applies the SQL node to the provided {@link SqlBuildContext}.
    * This method is responsible for processing the SQL node and updating the context.
    *
-   * @param context the {@link SqlBuilderContext} to which this SQL node will be applied
+   * @param context the {@link SqlBuildContext} to which this SQL node will be applied
    * @return true if the application was successful; false otherwise
    */
-  boolean apply(SqlBuilderContext context);
+  boolean apply(SqlBuildContext context);
 
   /**
    * Retrieves the generated SQL statement from the given dynamic context.
@@ -54,7 +54,7 @@ public interface SqlNode {
    * @return The generated SQL statement as a String.
    */
   @NotNull
-  default String getSql(SqlBuilderContext context) {
+  default String getSql(SqlBuildContext context) {
     apply(context);
     return context.getSql();
   }

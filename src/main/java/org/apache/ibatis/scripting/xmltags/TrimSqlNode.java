@@ -15,9 +15,8 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
-import org.apache.ibatis.scripting.BindingContext;
-import org.apache.ibatis.scripting.SqlBuilderContext;
-import org.apache.ibatis.scripting.SqlBuilderContextDelegator;
+import org.apache.ibatis.scripting.SqlBuildContext;
+import org.apache.ibatis.scripting.SqlBuildContextDelegator;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -60,8 +59,8 @@ public class TrimSqlNode implements SqlNode {
   }
 
   @Override
-  public boolean apply(SqlBuilderContext context) {
-    FilteredSqlBuilderContext filteredDynamicContext = new FilteredSqlBuilderContext(context);
+  public boolean apply(SqlBuildContext context) {
+    FilteredSqlBuildContext filteredDynamicContext = new FilteredSqlBuildContext(context);
     boolean result = contents.apply(filteredDynamicContext);
     filteredDynamicContext.applyAll();
     return result;
@@ -79,13 +78,13 @@ public class TrimSqlNode implements SqlNode {
     return Collections.emptyList();
   }
 
-  private class FilteredSqlBuilderContext extends SqlBuilderContextDelegator {
-    private final SqlBuilderContext delegate;
+  private class FilteredSqlBuildContext extends SqlBuildContextDelegator {
+    private final SqlBuildContext delegate;
     private boolean prefixApplied;
     private boolean suffixApplied;
     private StringBuilder sqlBuffer;
 
-    public FilteredSqlBuilderContext(SqlBuilderContext delegate) {
+    public FilteredSqlBuildContext(SqlBuildContext delegate) {
       super(delegate);
       this.delegate = delegate;
       this.prefixApplied = false;
@@ -104,28 +103,8 @@ public class TrimSqlNode implements SqlNode {
     }
 
     @Override
-    public BindingContext getBindings() {
-      return delegate.getBindings();
-    }
-
-    @Override
-    public void bind(String name, Object value) {
-      delegate.bind(name, value);
-    }
-
-    @Override
-    public int getUniqueNumber() {
-      return delegate.getUniqueNumber();
-    }
-
-    @Override
     public void appendSql(String sql) {
       sqlBuffer.append(sql);
-    }
-
-    @Override
-    public String getSql() {
-      return delegate.getSql();
     }
 
     private void applyPrefix(StringBuilder sql, String trimmedUppercaseSql) {
@@ -160,7 +139,5 @@ public class TrimSqlNode implements SqlNode {
         sql.append(" ").append(suffix);
       }
     }
-
   }
-
 }

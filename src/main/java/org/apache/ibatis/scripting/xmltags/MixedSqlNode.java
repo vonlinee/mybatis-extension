@@ -15,14 +15,14 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
-import org.apache.ibatis.scripting.SqlBuilderContext;
+import org.apache.ibatis.scripting.SqlBuildContext;
 
 import java.util.List;
 
 /**
  * Represents a mixed SQL node, which can contain multiple SQL nodes.
  * This class implements the {@link SqlNode} interface and provides functionality
- * to apply all contained SQL nodes to a given {@link SqlBuilderContext}.
+ * to apply all contained SQL nodes to a given {@link SqlBuildContext}.
  *
  * @author Clinton Begin
  */
@@ -54,13 +54,13 @@ public class MixedSqlNode implements SqlNode {
   }
 
   /**
-   * Applies the contained SQL nodes to the provided {@link SqlBuilderContext}.
+   * Applies the contained SQL nodes to the provided {@link SqlBuildContext}.
    *
-   * @param context the {@link SqlBuilderContext} to which the contents will be applied
+   * @param context the {@link SqlBuildContext} to which the contents will be applied
    * @return true after applying all contained nodes
    */
   @Override
-  public boolean apply(SqlBuilderContext context) {
+  public boolean apply(SqlBuildContext context) {
     contents.forEach(node -> node.apply(context));
     return true;
   }

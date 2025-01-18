@@ -18,7 +18,7 @@ package org.apache.ibatis.scripting.xmltags;
 import org.apache.ibatis.builder.SqlSourceBuilder;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.SqlSource;
-import org.apache.ibatis.scripting.SqlBuilderContext;
+import org.apache.ibatis.scripting.SqlBuildContext;
 import org.apache.ibatis.session.Configuration;
 
 /**
@@ -50,7 +50,7 @@ public class DynamicSqlSource implements SqlSource {
 
   @Override
   public BoundSql getBoundSql(Object parameterObject) {
-    SqlBuilderContext context = configuration.createDynamicContext(parameterObject);
+    SqlBuildContext context = configuration.createDynamicContext(parameterObject);
     // calculate all dynamic content
     rootSqlNode.apply(context);
 

@@ -120,7 +120,7 @@
                separator="," close=")">
         #{item.id}
       </foreach>
-      <in property="value" column="optionalValue"/>
+      <in property="friendList" />
     </where>
   </select>
 </mapper>

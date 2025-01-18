@@ -15,7 +15,7 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
-import org.apache.ibatis.scripting.SqlBuilderContext;
+import org.apache.ibatis.scripting.SqlBuildContext;
 import org.apache.ibatis.session.Configuration;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -31,7 +31,7 @@ abstract class SqlNodeTest {
   protected Configuration configuration;
 
   @Mock
-  protected SqlBuilderContext context;
+  protected SqlBuildContext context;
 
   public abstract void shouldApply() throws Exception;
 }

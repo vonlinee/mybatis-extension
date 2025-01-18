@@ -18,7 +18,7 @@ package org.mybatis.scripting.template;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.mapping.SqlSource;
-import org.apache.ibatis.scripting.SqlBuilderContext;
+import org.apache.ibatis.scripting.SqlBuildContext;
 import org.apache.ibatis.session.Configuration;
 
 import java.io.StringWriter;
@@ -49,8 +49,8 @@ public class TemplateScriptSqlSource implements SqlSource {
     final ParameterMappingCollector pmc = new ParameterMappingCollector(this.parameterMappingSources, context,
       this.configuration);
 
-    context.put(SqlBuilderContext.DATABASE_ID_KEY, this.configuration.getDatabaseId());
-    context.put(SqlBuilderContext.PARAMETER_OBJECT_KEY, parameterObject);
+    context.put(SqlBuildContext.DATABASE_ID_KEY, this.configuration.getDatabaseId());
+    context.put(SqlBuildContext.PARAMETER_OBJECT_KEY, parameterObject);
     context.put(MAPPING_COLLECTOR_KEY, pmc);
     context.put(VARIABLES_KEY, this.configuration.getVariables());
     StringWriter stringWriter = new StringWriter();

@@ -48,6 +48,10 @@ public interface StringKey {
   String PROPERTIES = "properties";
 
   String VFS_IMPL = "vfsImpl";
+  String PREFIX = "prefix";
+  String SUFFIX = "suffix";
+  String PREFIX_OVERRIDES = "prefixOverrides";
+  String SUFFIX_OVERRIDES = "suffixOverrides";
 
   char ENGLISH_COMMA = ',';
   String SQL_PARAM_PLACEHOLDER = "?";

@@ -2,12 +2,12 @@ package org.apache.ibatis.scripting;
 
 import org.jetbrains.annotations.NotNull;
 
-public class SqlBuilderContextDelegator implements SqlBuilderContext {
+public class SqlBuildContextDelegator implements SqlBuildContext {
 
   @NotNull
-  private final SqlBuilderContext delegator;
+  private final SqlBuildContext delegator;
 
-  public SqlBuilderContextDelegator(@NotNull SqlBuilderContext delegator) {
+  public SqlBuildContextDelegator(@NotNull SqlBuildContext delegator) {
     this.delegator = delegator;
   }
 

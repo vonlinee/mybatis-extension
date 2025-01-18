@@ -21,7 +21,7 @@ import org.apache.ibatis.internal.StringKey;
 import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.parsing.DynamicCheckerTokenParser;
 import org.apache.ibatis.parsing.XNode;
-import org.apache.ibatis.scripting.SqlBuilderContext;
+import org.apache.ibatis.scripting.SqlBuildContext;
 import org.apache.ibatis.scripting.ExpressionEvaluator;
 import org.apache.ibatis.scripting.defaults.RawSqlSource;
 import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
@@ -41,10 +41,6 @@ public class XMLScriptBuilder extends BaseBuilder {
   private final Class<?> parameterType;
   private final Map<String, NodeHandler> nodeHandlerMap = new HashMap<>();
   private final ExpressionEvaluator evaluator = new OgnlExpressionEvaluator();
-
-  public XMLScriptBuilder(Configuration configuration, XNode context) {
-    this(configuration, context, null);
-  }
 
   public XMLScriptBuilder(Configuration configuration, XNode context, Class<?> parameterType) {
     super(configuration);
@@ -69,7 +65,7 @@ public class XMLScriptBuilder extends BaseBuilder {
     if (isDynamic) {
       sqlSource = new DynamicSqlSource(configuration, rootSqlNode);
     } else {
-      SqlBuilderContext context = configuration.createDynamicContext(null);
+      SqlBuildContext context = configuration.createDynamicContext(null);
       rootSqlNode.apply(context);
       String sql = rootSqlNode.getSql(context);
       sqlSource = new RawSqlSource(configuration, sql, parameterType);
@@ -119,8 +115,8 @@ public class XMLScriptBuilder extends BaseBuilder {
 
     @Override
     public void handleNode(XNode nodeToHandle, List<SqlNode> targetContents) {
-      final String name = nodeToHandle.getStringAttribute("name");
-      final String expression = nodeToHandle.getStringAttribute("value");
+      final String name = nodeToHandle.getStringAttribute(StringKey.NAME);
+      final String expression = nodeToHandle.getStringAttribute(StringKey.VALUE);
       final VarDeclSqlNode node = new VarDeclSqlNode(this.evaluator, name, expression);
       targetContents.add(node);
     }
@@ -134,10 +130,10 @@ public class XMLScriptBuilder extends BaseBuilder {
     @Override
     public void handleNode(XNode nodeToHandle, List<SqlNode> targetContents) {
       MixedSqlNode mixedSqlNode = parseDynamicTags(nodeToHandle);
-      String prefix = nodeToHandle.getStringAttribute("prefix");
-      String prefixOverrides = nodeToHandle.getStringAttribute("prefixOverrides");
-      String suffix = nodeToHandle.getStringAttribute("suffix");
-      String suffixOverrides = nodeToHandle.getStringAttribute("suffixOverrides");
+      String prefix = nodeToHandle.getStringAttribute(StringKey.PREFIX);
+      String prefixOverrides = nodeToHandle.getStringAttribute(StringKey.PREFIX_OVERRIDES);
+      String suffix = nodeToHandle.getStringAttribute(StringKey.SUFFIX);
+      String suffixOverrides = nodeToHandle.getStringAttribute(StringKey.SUFFIX_OVERRIDES);
       TrimSqlNode trim = new TrimSqlNode(mixedSqlNode, prefix, prefixOverrides, suffix, suffixOverrides);
       targetContents.add(trim);
     }

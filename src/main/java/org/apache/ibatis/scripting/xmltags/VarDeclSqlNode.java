@@ -15,7 +15,7 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
-import org.apache.ibatis.scripting.SqlBuilderContext;
+import org.apache.ibatis.scripting.SqlBuildContext;
 import org.apache.ibatis.scripting.ExpressionEvaluator;
 
 /**
@@ -39,7 +39,7 @@ public class VarDeclSqlNode extends DynamicSqlNode {
   }
 
   @Override
-  public boolean apply(SqlBuilderContext context) {
+  public boolean apply(SqlBuildContext context) {
     final Object value = evaluator.getValue(expression, context.getBindings());
     context.bind(name, value);
     return true;

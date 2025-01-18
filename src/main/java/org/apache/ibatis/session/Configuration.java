@@ -87,6 +87,7 @@ import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeAliasRegistry;
 import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mybatis.scripting.template.velocity.VelocityTemplateEngine;
 
@@ -1192,7 +1193,7 @@ public class Configuration {
     return handler == null ? typeHandlerRegistry.getInstance(javaType, typeHandlerType) : handler;
   }
 
-  public SqlBuilderContext createDynamicContext(@Nullable Object parameterObject) {
+  public SqlBuildContext createDynamicContext(@Nullable Object parameterObject) {
     BindingContext bindings;
     if (parameterObject != null && !(parameterObject instanceof Map)) {
       MetaObject metaObject = this.newMetaObject(parameterObject);
@@ -1203,7 +1204,7 @@ public class Configuration {
     }
     bindings.put("_parameter", parameterObject);
     bindings.put("_databaseId", this.getDatabaseId());
-    return new DefaultSqlBuilderContext(bindings);
+    return new DefaultSqlBuildContext(bindings);
   }
 
   /**
@@ -1272,7 +1273,7 @@ public class Configuration {
 
     @Override
     @SuppressWarnings("unchecked")
-    public V put(String key, V value) {
+    public V put(@NotNull String key, @NotNull V value) {
       if (containsKey(key)) {
         throw new IllegalArgumentException(name + " already contains key " + key
           + (conflictMessageProducer == null ? "" : conflictMessageProducer.apply(super.get(key), value)));

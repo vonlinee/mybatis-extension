@@ -2,14 +2,14 @@ package org.apache.ibatis.scripting;
 
 import java.util.StringJoiner;
 
-public class DefaultSqlBuilderContext implements SqlBuilderContext {
+public final class DefaultSqlBuildContext implements SqlBuildContext {
 
   private final BindingContext bindings;
   private final StringJoiner sqlBuilder = new StringJoiner(" ");
   private int uniqueNumber;
   private String databaseId;
 
-  public DefaultSqlBuilderContext(BindingContext bindings) {
+  public DefaultSqlBuildContext(BindingContext bindings) {
     this.bindings = bindings;
   }
 
