@@ -17,8 +17,9 @@ package org.apache.ibatis.scripting.xmltags;
 
 import org.apache.ibatis.parsing.GenericTokenParser;
 import org.apache.ibatis.scripting.BindingContext;
-import org.apache.ibatis.scripting.DynamicContext;
+import org.apache.ibatis.scripting.SqlBuilderContext;
 import org.apache.ibatis.scripting.ExpressionEvaluator;
+import org.apache.ibatis.scripting.SqlBuilderContextDelegator;
 import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
 import org.apache.ibatis.session.Configuration;
 
@@ -40,23 +41,21 @@ public class ForEachSqlNode extends DynamicSqlNode {
   private final String separator;
   private final String item;
   private final String index;
-  private final Configuration configuration;
 
   /**
    * @since 3.5.9
    */
-  public ForEachSqlNode(Configuration configuration, SqlNode contents, String collectionExpression, Boolean nullable,
+  public ForEachSqlNode(SqlNode contents, String collectionExpression, Boolean nullable,
                         String index, String item, String open, String close, String separator) {
     this.evaluator = new OgnlExpressionEvaluator();
     this.collectionExpression = collectionExpression;
-    this.nullable = Optional.ofNullable(nullable).orElseGet(configuration::isNullableOnForEach);
+    this.nullable = nullable;
     this.contents = contents;
     this.open = open;
     this.close = close;
     this.separator = separator;
     this.index = index;
     this.item = item;
-    this.configuration = configuration;
   }
 
   @Override
@@ -65,7 +64,7 @@ public class ForEachSqlNode extends DynamicSqlNode {
   }
 
   @Override
-  public boolean apply(DynamicContext context) {
+  public boolean apply(SqlBuilderContext context) {
     BindingContext bindings = context.getBindings();
     final Iterable<?> iterable = evaluator.evaluateIterable(collectionExpression, bindings, nullable);
     if (iterable == null || !iterable.iterator().hasNext()) {
@@ -75,11 +74,11 @@ public class ForEachSqlNode extends DynamicSqlNode {
     applyOpen(context);
     int i = 0;
     for (Object o : iterable) {
-      DynamicContext oldContext = context;
+      SqlBuilderContext oldContext = context;
       if (first || separator == null) {
-        context = new PrefixedContext(context, "");
+        context = new PrefixedSqlBuilderContext(context, "");
       } else {
-        context = new PrefixedContext(context, separator);
+        context = new PrefixedSqlBuilderContext(context, separator);
       }
       int uniqueNumber = context.getUniqueNumber();
       // Issue #709
@@ -92,9 +91,9 @@ public class ForEachSqlNode extends DynamicSqlNode {
         applyIndex(context, i, uniqueNumber);
         applyItem(context, o, uniqueNumber);
       }
-      contents.apply(new FilteredDynamicContext(configuration, context, index, item, uniqueNumber));
+      contents.apply(new FilteredSqlBuilderContext(context, index, item, uniqueNumber));
       if (first) {
-        first = !((PrefixedContext) context).isPrefixApplied();
+        first = !((PrefixedSqlBuilderContext) context).isPrefixApplied();
       }
       context = oldContext;
       i++;
@@ -105,27 +104,27 @@ public class ForEachSqlNode extends DynamicSqlNode {
     return true;
   }
 
-  private void applyIndex(DynamicContext context, Object o, int i) {
+  private void applyIndex(SqlBuilderContext context, Object o, int i) {
     if (index != null) {
       context.bind(index, o);
       context.bind(itemizeItem(index, i), o);
     }
   }
 
-  private void applyItem(DynamicContext context, Object o, int i) {
+  private void applyItem(SqlBuilderContext context, Object o, int i) {
     if (item != null) {
       context.bind(item, o);
       context.bind(itemizeItem(item, i), o);
     }
   }
 
-  private void applyOpen(DynamicContext context) {
+  private void applyOpen(SqlBuilderContext context) {
     if (open != null) {
       context.appendSql(open);
     }
   }
 
-  private void applyClose(DynamicContext context) {
+  private void applyClose(SqlBuilderContext context) {
     if (close != null) {
       context.appendSql(close);
     }
@@ -135,34 +134,19 @@ public class ForEachSqlNode extends DynamicSqlNode {
     return ITEM_PREFIX + item + "_" + i;
   }
 
-  private static class FilteredDynamicContext extends DynamicContext {
-    private final DynamicContext delegate;
+  private static class FilteredSqlBuilderContext extends SqlBuilderContextDelegator {
+    private final SqlBuilderContext delegate;
     private final int index;
     private final String itemIndex;
     private final String item;
 
-    public FilteredDynamicContext(Configuration configuration, DynamicContext delegate, String itemIndex, String item,
-                                  int i) {
-      super(configuration, null);
+    public FilteredSqlBuilderContext(SqlBuilderContext delegate, String itemIndex, String item,
+                                     int i) {
+      super(delegate);
       this.delegate = delegate;
       this.index = i;
       this.itemIndex = itemIndex;
       this.item = item;
-    }
-
-    @Override
-    public BindingContext getBindings() {
-      return delegate.getBindings();
-    }
-
-    @Override
-    public void bind(String name, Object value) {
-      delegate.bind(name, value);
-    }
-
-    @Override
-    public String getSql() {
-      return delegate.getSql();
     }
 
     @Override
@@ -174,24 +158,17 @@ public class ForEachSqlNode extends DynamicSqlNode {
         }
         return "#{" + newContent + "}";
       });
-
       delegate.appendSql(parser.parse(sql));
     }
-
-    @Override
-    public int getUniqueNumber() {
-      return delegate.getUniqueNumber();
-    }
-
   }
 
-  private class PrefixedContext extends DynamicContext {
-    private final DynamicContext delegate;
+  private static class PrefixedSqlBuilderContext extends SqlBuilderContextDelegator {
+    private final SqlBuilderContext delegate;
     private final String prefix;
     private boolean prefixApplied;
 
-    public PrefixedContext(DynamicContext delegate, String prefix) {
-      super(configuration, null);
+    public PrefixedSqlBuilderContext(SqlBuilderContext delegate, String prefix) {
+      super(delegate);
       this.delegate = delegate;
       this.prefix = prefix;
       this.prefixApplied = false;
@@ -202,16 +179,6 @@ public class ForEachSqlNode extends DynamicSqlNode {
     }
 
     @Override
-    public BindingContext getBindings() {
-      return delegate.getBindings();
-    }
-
-    @Override
-    public void bind(String name, Object value) {
-      delegate.bind(name, value);
-    }
-
-    @Override
     public void appendSql(String sql) {
       if (!prefixApplied && sql != null && !sql.trim().isEmpty()) {
         delegate.appendSql(prefix);
@@ -219,16 +186,5 @@ public class ForEachSqlNode extends DynamicSqlNode {
       }
       delegate.appendSql(sql);
     }
-
-    @Override
-    public String getSql() {
-      return delegate.getSql();
-    }
-
-    @Override
-    public int getUniqueNumber() {
-      return delegate.getUniqueNumber();
-    }
   }
-
 }

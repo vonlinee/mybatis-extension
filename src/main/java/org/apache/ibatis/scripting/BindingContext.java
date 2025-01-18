@@ -45,4 +45,11 @@ public interface BindingContext {
    * @param key the key of the key-value pair to be removed
    */
   void remove(String key);
+
+  /**
+   * Removes the key-value pair associated with the specified key from the context.
+   *
+   * @param keys the key of the key-value pair to be removed
+   */
+  void removeKeys(String... keys);
 }

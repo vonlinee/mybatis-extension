@@ -15,7 +15,7 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
-import org.apache.ibatis.scripting.DynamicContext;
+import org.apache.ibatis.scripting.SqlBuilderContext;
 
 import java.util.List;
 
@@ -47,7 +47,7 @@ public class ChooseSqlNode implements SqlNode {
   }
 
   @Override
-  public boolean apply(DynamicContext context) {
+  public boolean apply(SqlBuilderContext context) {
     for (SqlNode sqlNode : ifSqlNodes) {
       if (sqlNode.apply(context)) {
         return true;

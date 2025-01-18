@@ -59,7 +59,7 @@ class SetSqlNodeTest extends SqlNodeTest {
     SqlNode second = new IfSqlNode(evaluator, new StaticTextSqlNode(SECOND_TEXT), "password != null");
     SqlNode contents = new MixedSqlNode(Arrays.asList(first, second));
 
-    this.sqlNode = new SetSqlNode(configuration, contents);
+    this.sqlNode = new SetSqlNode(contents);
   }
 
   @Test

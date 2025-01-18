@@ -62,7 +62,7 @@ class TrimSqlNodeTest extends SqlNodeTest {
     SqlNode second = new IfSqlNode(evaluator, new StaticTextSqlNode(SECOND_TEXT), "name != null");
     SqlNode contents = new MixedSqlNode(Arrays.asList(first, second));
 
-    this.sqlNode = new TrimSqlNode(configuration, contents, PREFIX, PREFIX_OVERRIDES, null, null);
+    this.sqlNode = new TrimSqlNode(contents, PREFIX, PREFIX_OVERRIDES, null, null);
   }
 
   @Test

@@ -13,23 +13,27 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package org.apache.ibatis.scripting.xmltags;
-
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.ibatis.session.Configuration;
+package org.apache.ibatis.scripting;
 
 /**
  * @author Clinton Begin
  */
-public class WhereSqlNode extends TrimSqlNode {
+public interface SqlBuilderContext {
 
-  private static final List<String> prefixList = Arrays.asList("AND ", "OR ", "AND\n", "OR\n", "AND\r", "OR\r", "AND\t",
-      "OR\t");
+  String PARAMETER_OBJECT_KEY = "_parameter";
+  String DATABASE_ID_KEY = "_databaseId";
 
-  public WhereSqlNode(SqlNode contents) {
-    super(contents, "WHERE", prefixList, null, null);
-  }
+  void setDatabaseId(String databaseId);
 
+  String getDatabaseId();
+
+  BindingContext getBindings();
+
+  void bind(String name, Object value);
+
+  void appendSql(String sql);
+
+  String getSql();
+
+  int getUniqueNumber();
 }

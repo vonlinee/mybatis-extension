@@ -58,7 +58,7 @@ class WhereSqlNodeTest extends SqlNodeTest {
     SqlNode second = new IfSqlNode(evaluator, new StaticTextSqlNode(SECOND_TEXT), "name != null");
     SqlNode contents = new MixedSqlNode(Arrays.asList(first, second));
 
-    this.sqlNode = new WhereSqlNode(configuration, contents);
+    this.sqlNode = new WhereSqlNode(contents);
   }
 
   @Test

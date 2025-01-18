@@ -69,4 +69,18 @@ class MyTest {
 
     }
   }
+
+  @Test
+  void testForeach() {
+    try (SqlSession session = sqlSessionFactory.openSession()) {
+      BoundBlogMapper mapper = session.getMapper(BoundBlogMapper.class);
+      BlogListParam param = new BlogListParam();
+
+      param.setId(1);
+
+      List<Blog> blogs = mapper.selectBlogList(param);
+
+    }
+  }
+
 }

@@ -16,16 +16,11 @@
 package org.apache.ibatis.scripting.xmltags;
 
 import org.apache.ibatis.scripting.BindingContext;
-import org.apache.ibatis.scripting.DynamicContext;
-import org.apache.ibatis.session.Configuration;
+import org.apache.ibatis.scripting.SqlBuilderContext;
+import org.apache.ibatis.scripting.SqlBuilderContextDelegator;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * @author Clinton Begin
@@ -38,22 +33,20 @@ public class TrimSqlNode implements SqlNode {
   private final String suffix;
   private final List<String> prefixesToOverride;
   private final List<String> suffixesToOverride;
-  private final Configuration configuration;
 
-  public TrimSqlNode(Configuration configuration, SqlNode contents, String prefix, String prefixesToOverride,
+  public TrimSqlNode(SqlNode contents, String prefix, String prefixesToOverride,
                      String suffix, String suffixesToOverride) {
-    this(configuration, contents, prefix, parseOverrides(prefixesToOverride), suffix,
+    this(contents, prefix, parseOverrides(prefixesToOverride), suffix,
       parseOverrides(suffixesToOverride));
   }
 
-  protected TrimSqlNode(Configuration configuration, @NotNull SqlNode contents, String prefix, List<String> prefixesToOverride,
+  protected TrimSqlNode(@NotNull SqlNode contents, String prefix, List<String> prefixesToOverride,
                         String suffix, List<String> suffixesToOverride) {
     this.contents = contents;
     this.prefix = prefix;
     this.prefixesToOverride = prefixesToOverride;
     this.suffix = suffix;
     this.suffixesToOverride = suffixesToOverride;
-    this.configuration = configuration;
   }
 
   @Override
@@ -67,8 +60,8 @@ public class TrimSqlNode implements SqlNode {
   }
 
   @Override
-  public boolean apply(DynamicContext context) {
-    FilteredDynamicContext filteredDynamicContext = new FilteredDynamicContext(context);
+  public boolean apply(SqlBuilderContext context) {
+    FilteredSqlBuilderContext filteredDynamicContext = new FilteredSqlBuilderContext(context);
     boolean result = contents.apply(filteredDynamicContext);
     filteredDynamicContext.applyAll();
     return result;
@@ -86,14 +79,14 @@ public class TrimSqlNode implements SqlNode {
     return Collections.emptyList();
   }
 
-  private class FilteredDynamicContext extends DynamicContext {
-    private final DynamicContext delegate;
+  private class FilteredSqlBuilderContext extends SqlBuilderContextDelegator {
+    private final SqlBuilderContext delegate;
     private boolean prefixApplied;
     private boolean suffixApplied;
     private StringBuilder sqlBuffer;
 
-    public FilteredDynamicContext(DynamicContext delegate) {
-      super(configuration, null);
+    public FilteredSqlBuilderContext(SqlBuilderContext delegate) {
+      super(delegate);
       this.delegate = delegate;
       this.prefixApplied = false;
       this.suffixApplied = false;

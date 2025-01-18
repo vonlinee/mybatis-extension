@@ -16,6 +16,7 @@ public interface StringKey {
   String OBJECT_WRAPPER_FACTORY = "objectWrapperFactory";
   String NUMERIC_SCALE = "numericScale";
   String PROPERTY = "property";
+  String NULLABLE = "nullable";
   String EXPRESSION = "expression";
   String RESULT_MAP = "resultMap";
   String CASE = "case";

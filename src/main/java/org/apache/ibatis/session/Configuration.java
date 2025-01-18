@@ -77,8 +77,7 @@ import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
 import org.apache.ibatis.reflection.factory.ObjectFactory;
 import org.apache.ibatis.reflection.wrapper.DefaultObjectWrapperFactory;
 import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
-import org.apache.ibatis.scripting.LanguageDriver;
-import org.apache.ibatis.scripting.LanguageDriverRegistry;
+import org.apache.ibatis.scripting.*;
 import org.apache.ibatis.scripting.defaults.RawLanguageDriver;
 import org.apache.ibatis.scripting.xmltags.XMLLanguageDriver;
 import org.apache.ibatis.transaction.Transaction;
@@ -88,6 +87,7 @@ import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeAliasRegistry;
 import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
+import org.jetbrains.annotations.Nullable;
 import org.mybatis.scripting.template.velocity.VelocityTemplateEngine;
 
 import java.util.Arrays;
@@ -1190,6 +1190,20 @@ public class Configuration {
     TypeHandler<?> handler = typeHandlerRegistry.getMappingTypeHandler(typeHandlerType);
     // if handler not in registry, create a new one, otherwise return directly
     return handler == null ? typeHandlerRegistry.getInstance(javaType, typeHandlerType) : handler;
+  }
+
+  public SqlBuilderContext createDynamicContext(@Nullable Object parameterObject) {
+    BindingContext bindings;
+    if (parameterObject != null && !(parameterObject instanceof Map)) {
+      MetaObject metaObject = this.newMetaObject(parameterObject);
+      boolean existsTypeHandler = this.hasTypeHandler(parameterObject.getClass());
+      bindings = new ContextMap(metaObject, existsTypeHandler);
+    } else {
+      bindings = new ContextMap(null, false);
+    }
+    bindings.put("_parameter", parameterObject);
+    bindings.put("_databaseId", this.getDatabaseId());
+    return new DefaultSqlBuilderContext(bindings);
   }
 
   /**

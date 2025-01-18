@@ -17,10 +17,11 @@ package org.apache.ibatis.scripting.xmltags;
 
 import org.apache.ibatis.builder.BaseBuilder;
 import org.apache.ibatis.builder.BuilderException;
+import org.apache.ibatis.internal.StringKey;
 import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.parsing.DynamicCheckerTokenParser;
 import org.apache.ibatis.parsing.XNode;
-import org.apache.ibatis.scripting.DynamicContext;
+import org.apache.ibatis.scripting.SqlBuilderContext;
 import org.apache.ibatis.scripting.ExpressionEvaluator;
 import org.apache.ibatis.scripting.defaults.RawSqlSource;
 import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
@@ -28,10 +29,7 @@ import org.apache.ibatis.session.Configuration;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Clinton Begin
@@ -62,6 +60,7 @@ public class XMLScriptBuilder extends BaseBuilder {
     nodeHandlerMap.put("when", new IfHandler(this.evaluator));
     nodeHandlerMap.put("otherwise", new OtherwiseHandler());
     nodeHandlerMap.put("bind", new BindHandler(this.evaluator));
+    nodeHandlerMap.put("in", new InHandler());
   }
 
   public SqlSource parseScriptNode() {
@@ -70,7 +69,7 @@ public class XMLScriptBuilder extends BaseBuilder {
     if (isDynamic) {
       sqlSource = new DynamicSqlSource(configuration, rootSqlNode);
     } else {
-      DynamicContext context = new DynamicContext(configuration, null);
+      SqlBuilderContext context = configuration.createDynamicContext(null);
       rootSqlNode.apply(context);
       String sql = rootSqlNode.getSql(context);
       sqlSource = new RawSqlSource(configuration, sql, parameterType);
@@ -139,7 +138,7 @@ public class XMLScriptBuilder extends BaseBuilder {
       String prefixOverrides = nodeToHandle.getStringAttribute("prefixOverrides");
       String suffix = nodeToHandle.getStringAttribute("suffix");
       String suffixOverrides = nodeToHandle.getStringAttribute("suffixOverrides");
-      TrimSqlNode trim = new TrimSqlNode(configuration, mixedSqlNode, prefix, prefixOverrides, suffix, suffixOverrides);
+      TrimSqlNode trim = new TrimSqlNode(mixedSqlNode, prefix, prefixOverrides, suffix, suffixOverrides);
       targetContents.add(trim);
     }
   }
@@ -152,7 +151,7 @@ public class XMLScriptBuilder extends BaseBuilder {
     @Override
     public void handleNode(XNode nodeToHandle, List<SqlNode> targetContents) {
       MixedSqlNode mixedSqlNode = parseDynamicTags(nodeToHandle);
-      WhereSqlNode where = new WhereSqlNode(configuration, mixedSqlNode);
+      WhereSqlNode where = new WhereSqlNode(mixedSqlNode);
       targetContents.add(where);
     }
   }
@@ -165,7 +164,7 @@ public class XMLScriptBuilder extends BaseBuilder {
     @Override
     public void handleNode(XNode nodeToHandle, List<SqlNode> targetContents) {
       MixedSqlNode mixedSqlNode = parseDynamicTags(nodeToHandle);
-      SetSqlNode set = new SetSqlNode(configuration, mixedSqlNode);
+      SetSqlNode set = new SetSqlNode(mixedSqlNode);
       targetContents.add(set);
     }
   }
@@ -185,7 +184,10 @@ public class XMLScriptBuilder extends BaseBuilder {
       String open = nodeToHandle.getStringAttribute("open");
       String close = nodeToHandle.getStringAttribute("close");
       String separator = nodeToHandle.getStringAttribute("separator");
-      ForEachSqlNode forEachSqlNode = new ForEachSqlNode(configuration, mixedSqlNode, collection, nullable, index, item,
+
+      nullable = Optional.ofNullable(nullable).orElseGet(configuration::isNullableOnForEach);
+
+      ForEachSqlNode forEachSqlNode = new ForEachSqlNode(mixedSqlNode, collection, nullable, index, item,
         open, close, separator);
       targetContents.add(forEachSqlNode);
     }
@@ -260,4 +262,22 @@ public class XMLScriptBuilder extends BaseBuilder {
     }
   }
 
+  /**
+   * @see ForEachHandler
+   */
+  private class InHandler implements NodeHandler {
+
+    @Override
+    public void handleNode(XNode nodeToHandle, List<SqlNode> targetContents) {
+      MixedSqlNode mixedSqlNode = parseDynamicTags(nodeToHandle);
+      String collection = nodeToHandle.getStringAttribute(StringKey.PROPERTY);
+      String column = nodeToHandle.getStringAttribute(StringKey.COLUMN);
+      Boolean nullable = nodeToHandle.getBooleanAttribute(StringKey.NULLABLE, false);
+
+      nullable = Optional.ofNullable(nullable).orElseGet(configuration::isNullableOnForEach);
+
+      InSqlNode forEachSqlNode = new InSqlNode(mixedSqlNode, collection, nullable, column);
+      targetContents.add(forEachSqlNode);
+    }
+  }
 }

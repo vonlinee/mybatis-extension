@@ -18,7 +18,7 @@ package org.apache.ibatis.scripting.xmltags;
 import org.apache.ibatis.parsing.DynamicCheckerTokenParser;
 import org.apache.ibatis.parsing.GenericTokenParser;
 import org.apache.ibatis.parsing.TokenHandler;
-import org.apache.ibatis.scripting.DynamicContext;
+import org.apache.ibatis.scripting.SqlBuilderContext;
 import org.apache.ibatis.scripting.ExpressionEvaluator;
 
 import java.util.regex.Pattern;
@@ -67,7 +67,7 @@ public class TextSqlNode implements SqlNode {
   }
 
   @Override
-  public boolean apply(DynamicContext context) {
+  public boolean apply(SqlBuilderContext context) {
     GenericTokenParser parser = createParser(new BindingTokenParser(this.evaluator, context, injectionFilter));
     context.appendSql(parser.parse(text));
     return true;

@@ -38,4 +38,14 @@ public class MapBinding implements BindingContext {
   public void remove(String key) {
     backingMap.remove(key);
   }
+
+  @Override
+  public void removeKeys(String... keys) {
+    if (keys == null) {
+      return;
+    }
+    for (String key : keys) {
+      remove(key);
+    }
+  }
 }

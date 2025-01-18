@@ -21,7 +21,7 @@ import ognl.PropertyAccessor;
 import org.apache.ibatis.builder.BuilderException;
 import org.apache.ibatis.scripting.ExpressionEvaluator;
 import org.apache.ibatis.scripting.ContextMap;
-import org.apache.ibatis.scripting.DynamicContext;
+import org.apache.ibatis.scripting.SqlBuilderContext;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
@@ -101,7 +101,7 @@ public class OgnlExpressionEvaluator implements ExpressionEvaluator {
         return result;
       }
 
-      Object parameterObject = map.get(DynamicContext.PARAMETER_OBJECT_KEY);
+      Object parameterObject = map.get(SqlBuilderContext.PARAMETER_OBJECT_KEY);
       if (parameterObject instanceof Map) {
         return ((Map) parameterObject).get(name);
       }

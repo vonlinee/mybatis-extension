@@ -15,12 +15,12 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
-import org.apache.ibatis.scripting.DynamicContext;
+import org.apache.ibatis.scripting.SqlBuilderContext;
 
 /**
  * the xml element does not contain ${foo} or #{xxx}
  * Represents a static text SQL node. This class implements the {@link SqlNode} interface
- * and holds a fixed text string that can be applied to a given {@link DynamicContext}.
+ * and holds a fixed text string that can be applied to a given {@link SqlBuilderContext}.
  *
  * @author Clinton Begin
  */
@@ -47,13 +47,13 @@ public class StaticTextSqlNode implements SqlNode {
   }
 
   /**
-   * Applies the static text to the provided {@link DynamicContext}.
+   * Applies the static text to the provided {@link SqlBuilderContext}.
    *
-   * @param context the {@link DynamicContext} to which the static text will be appended
+   * @param context the {@link SqlBuilderContext} to which the static text will be appended
    * @return true after applying the static text
    */
   @Override
-  public boolean apply(DynamicContext context) {
+  public boolean apply(SqlBuilderContext context) {
     context.appendSql(text);
     return true;
   }

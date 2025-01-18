@@ -48,7 +48,7 @@ class ForEachSqlNodeTest extends SqlNodeTest {
   @BeforeEach
   void setup() {
     SqlNode contents = new StaticTextSqlNode("#{name}");
-    this.sqlNode = new ForEachSqlNode(configuration, contents, "list", false, "index", "item", "ID in (", ")", ",");
+    this.sqlNode = new ForEachSqlNode(contents, "list", false, "index", "item", "ID in (", ")", ",");
   }
 
   @Test
