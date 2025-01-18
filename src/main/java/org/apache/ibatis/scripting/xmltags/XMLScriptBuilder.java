@@ -265,13 +265,14 @@ public class XMLScriptBuilder extends BaseBuilder {
     @Override
     public void handleNode(XNode nodeToHandle, List<SqlNode> targetContents) {
       MixedSqlNode mixedSqlNode = parseDynamicTags(nodeToHandle);
-      String collection = nodeToHandle.getStringAttribute(StringKey.PROPERTY);
+      String collection = nodeToHandle.getStringAttribute(StringKey.COLLECTION);
       String column = nodeToHandle.getStringAttribute(StringKey.COLUMN);
+      String item = nodeToHandle.getStringAttribute(StringKey.ITEM);
       Boolean nullable = nodeToHandle.getBooleanAttribute(StringKey.NULLABLE, false);
 
       nullable = Optional.ofNullable(nullable).orElseGet(configuration::isNullableOnForEach);
 
-      InSqlNode forEachSqlNode = new InSqlNode(mixedSqlNode, collection, nullable, column);
+      InSqlNode forEachSqlNode = new InSqlNode(mixedSqlNode, collection, item, nullable, column);
       targetContents.add(forEachSqlNode);
     }
   }

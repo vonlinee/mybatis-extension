@@ -16,6 +16,7 @@ public interface StringKey {
   String OBJECT_WRAPPER_FACTORY = "objectWrapperFactory";
   String NUMERIC_SCALE = "numericScale";
   String PROPERTY = "property";
+  String COLLECTION = "collection";
   String NULLABLE = "nullable";
   String EXPRESSION = "expression";
   String RESULT_MAP = "resultMap";
@@ -46,6 +47,7 @@ public interface StringKey {
   String TYPE_ALIASES = "typeAliases";
   String SETTINGS = "settings";
   String PROPERTIES = "properties";
+  String ITEM = "item";
 
   String VFS_IMPL = "vfsImpl";
   String PREFIX = "prefix";

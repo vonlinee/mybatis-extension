@@ -169,7 +169,8 @@ type CDATA #REQUIRED
 
 <!ELEMENT in EMPTY>
 <!ATTLIST in
-property CDATA #REQUIRED
+collection CDATA #REQUIRED
+item CDATA #IMPLIED
 column CDATA #IMPLIED
 nullable CDATA #IMPLIED
 >

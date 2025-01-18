@@ -54,6 +54,7 @@ public class OgnlExpressionEvaluator implements ExpressionEvaluator {
    * @since 3.5.9
    */
   @Override
+  @SuppressWarnings("rawtypes")
   public Iterable<?> evaluateIterable(String expression, Object parameterObject, boolean nullable) {
     Object value = OgnlCache.getValue(expression, parameterObject);
     if (value == null) {
@@ -93,6 +94,7 @@ public class OgnlExpressionEvaluator implements ExpressionEvaluator {
   static class ContextAccessor implements PropertyAccessor {
 
     @Override
+    @SuppressWarnings("rawtypes")
     public Object getProperty(OgnlContext context, Object target, Object name) {
       Map map = (Map) target;
 
@@ -110,6 +112,7 @@ public class OgnlExpressionEvaluator implements ExpressionEvaluator {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void setProperty(OgnlContext context, Object target, Object name, Object value) {
       Map<Object, Object> map = (Map<Object, Object>) target;
       map.put(name, value);

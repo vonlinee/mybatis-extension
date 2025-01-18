@@ -20,16 +20,12 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="org.apache.ibatis.submitted.foreach.Mapper">
+<mapper namespace="org.apache.ibatis.submitted.in.Mapper">
 
-  <select id="getUser" resultType="org.apache.ibatis.submitted.foreach.User">
+  <select id="getUser" resultType="org.apache.ibatis.submitted.in.User">
     select * from users
-    WHERE id in (
-    <foreach item="item" index="index" collection="friendList"
-             separator=",">
-      #{item.id}
-    </foreach>
-    )
+    WHERE id
+    <in collection="friendList"/>
   </select>
 
   <select id="countByUserList" resultType="_int" parameterType="list">
@@ -116,24 +112,7 @@
   <select id="countUserWithNullableIsFalse" resultType="_int">
     select count(*) from users
     <where>
-      <foreach item="item" index="index" collection="friendList" nullable="false" open="id in ("
-               separator="," close=")">
-        #{item.id}
-      </foreach>
+      t.user_id <in collection="friendList" item="item.id"/>
     </where>
-  </select>
-
-  <select id="dynamicForeach2Test" resultType="Blog">
-    select * from t_blog where id in
-    <foreach collection="array" index="index" item="item" open="(" separator="," close=")">
-      #{item}
-    </foreach>
-  </select>
-
-  <select id="dynamicForeach3Test" resultType="Blog">
-    select * from t_blog where title like "%"#{title}"%" and id in
-    <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
-      #{item}
-    </foreach>
   </select>
 </mapper>

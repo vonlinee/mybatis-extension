@@ -15,20 +15,19 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
 import org.apache.ibatis.domain.blog.Author;
 import org.apache.ibatis.scripting.ExpressionEvaluator;
 import org.apache.ibatis.scripting.MapBinding;
 import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * <pre>{@code
@@ -87,7 +86,7 @@ class ChooseSqlNodeTest extends SqlNodeTest {
   }
 
   @Test
-  public void shouldAppendSecond() throws Exception {
+  public void shouldAppendSecond() {
     when(context.getBindings()).thenReturn(new MapBinding() {
       {
         put("author", new Author(1, "mybatis", "***", null, null, null));
@@ -101,7 +100,7 @@ class ChooseSqlNodeTest extends SqlNodeTest {
   }
 
   @Test
-  public void shouldAppendOtherwise() throws Exception {
+  public void shouldAppendOtherwise() {
     when(context.getBindings()).thenReturn(new MapBinding());
 
     boolean result = sqlNode.apply(context);
