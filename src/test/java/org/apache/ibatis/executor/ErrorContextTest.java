@@ -61,7 +61,6 @@ class ErrorContextTest {
     contextString = context.toString();
     Assertions.assertTrue(contextString.contains("### Cause: java.lang.Exception: " + EXCEPTION_MESSAGE));
     context.reset();
-
   }
 
   @Test

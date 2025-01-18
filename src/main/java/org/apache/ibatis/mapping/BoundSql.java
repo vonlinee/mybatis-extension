@@ -15,9 +15,11 @@
  */
 package org.apache.ibatis.mapping;
 
+import org.apache.ibatis.executor.SqlStatement;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.property.PropertyTokenizer;
 import org.apache.ibatis.session.Configuration;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +34,7 @@ import java.util.Map;
  *
  * @author Clinton Begin
  */
-public class BoundSql {
+public class BoundSql implements SqlStatement {
 
   private final String sql;
   private final List<ParameterMapping> parameterMappings;
@@ -49,6 +51,8 @@ public class BoundSql {
     this.metaParameters = configuration.newMetaObject(additionalParameters);
   }
 
+  @Override
+  @NotNull
   public String getSql() {
     return sql;
   }
