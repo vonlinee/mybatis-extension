@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class ParamMap {
+public class ParamMap extends HashMap<String, Object> {
 
   Map<String, Object> parameters = new HashMap<>();
 

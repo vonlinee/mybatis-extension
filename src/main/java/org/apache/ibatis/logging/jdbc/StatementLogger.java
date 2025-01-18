@@ -23,6 +23,7 @@ import java.sql.Statement;
 
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.reflection.ExceptionUtil;
+import org.apache.ibatis.reflection.ReflectionUtils;
 
 /**
  * Statement proxy to add logging.
@@ -70,19 +71,13 @@ public final class StatementLogger extends BaseJdbcLogger implements InvocationH
   /**
    * Creates a logging version of a Statement.
    *
-   * @param stmt
-   *          the statement
-   * @param statementLog
-   *          the statement log
-   * @param queryStack
-   *          the query stack
-   *
+   * @param stmt         the statement
+   * @param statementLog the statement log
+   * @param queryStack   the query stack
    * @return the proxy
    */
   public static Statement newInstance(Statement stmt, Log statementLog, int queryStack) {
-    InvocationHandler handler = new StatementLogger(stmt, statementLog, queryStack);
-    ClassLoader cl = Statement.class.getClassLoader();
-    return (Statement) Proxy.newProxyInstance(cl, new Class[] { Statement.class }, handler);
+    return ReflectionUtils.createJdkProxy(Statement.class, new StatementLogger(stmt, statementLog, queryStack));
   }
 
   /**

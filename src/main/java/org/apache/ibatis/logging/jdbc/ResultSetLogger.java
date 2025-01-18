@@ -28,6 +28,7 @@ import java.util.StringJoiner;
 
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.reflection.ExceptionUtil;
+import org.apache.ibatis.reflection.ReflectionUtils;
 
 /**
  * ResultSet proxy to add logging.
@@ -120,19 +121,13 @@ public final class ResultSetLogger extends BaseJdbcLogger implements InvocationH
   /**
    * Creates a logging version of a ResultSet.
    *
-   * @param rs
-   *          the ResultSet to proxy
-   * @param statementLog
-   *          the statement log
-   * @param queryStack
-   *          the query stack
-   *
+   * @param rs           the ResultSet to proxy
+   * @param statementLog the statement log
+   * @param queryStack   the query stack
    * @return the ResultSet with logging
    */
   public static ResultSet newInstance(ResultSet rs, Log statementLog, int queryStack) {
-    InvocationHandler handler = new ResultSetLogger(rs, statementLog, queryStack);
-    ClassLoader cl = ResultSet.class.getClassLoader();
-    return (ResultSet) Proxy.newProxyInstance(cl, new Class[] { ResultSet.class }, handler);
+    return ReflectionUtils.createJdkProxy(ResultSet.class, new ResultSetLogger(rs, statementLog, queryStack));
   }
 
   /**

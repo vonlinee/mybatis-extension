@@ -304,18 +304,6 @@ public final class MappedStatement {
     return dirtySelect;
   }
 
-  /**
-   * Gets the resul sets.
-   *
-   * @return the resul sets
-   *
-   * @deprecated Use {@link #getResultSets()}
-   */
-  @Deprecated
-  public String[] getResulSets() {
-    return resultSets;
-  }
-
   public BoundSql getBoundSql(Object parameterObject) {
     BoundSql boundSql = sqlSource.getBoundSql(parameterObject);
     List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();

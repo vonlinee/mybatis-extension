@@ -24,6 +24,7 @@ import java.sql.Statement;
 
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.reflection.ExceptionUtil;
+import org.apache.ibatis.reflection.ReflectionUtils;
 
 /**
  * Connection proxy to add logging.
@@ -66,28 +67,13 @@ public final class ConnectionLogger extends BaseJdbcLogger implements Invocation
   /**
    * Creates a logging version of a connection.
    *
-   * @param conn
-   *          the original connection
-   * @param statementLog
-   *          the statement log
-   * @param queryStack
-   *          the query stack
-   *
+   * @param conn         the original connection
+   * @param statementLog the statement log
+   * @param queryStack   the query stack
    * @return the connection with logging
    */
   public static Connection newInstance(Connection conn, Log statementLog, int queryStack) {
     InvocationHandler handler = new ConnectionLogger(conn, statementLog, queryStack);
-    ClassLoader cl = Connection.class.getClassLoader();
-    return (Connection) Proxy.newProxyInstance(cl, new Class[] { Connection.class }, handler);
+    return ReflectionUtils.createJdkProxy(Connection.class, handler);
   }
-
-  /**
-   * return the wrapped connection.
-   *
-   * @return the connection
-   */
-  public Connection getConnection() {
-    return connection;
-  }
-
 }
