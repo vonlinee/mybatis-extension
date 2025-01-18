@@ -20,7 +20,7 @@ import org.apache.ibatis.builder.BuilderException;
 import org.apache.ibatis.datasource.DataSourceFactory;
 import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.executor.loader.ProxyFactory;
-import org.apache.ibatis.internal.Constants;
+import org.apache.ibatis.internal.StringKey;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.io.VFS;
 import org.apache.ibatis.logging.Log;
@@ -126,21 +126,21 @@ public class XMLConfigBuilder extends BaseBuilder {
   private void parseConfiguration(XNode root) {
     try {
       // issue #117 read properties first
-      propertiesElement(root.evalNode(Constants.PROPERTIES));
-      Properties settings = settingsAsProperties(root.evalNode(Constants.SETTINGS));
+      propertiesElement(root.evalNode(StringKey.PROPERTIES));
+      Properties settings = settingsAsProperties(root.evalNode(StringKey.SETTINGS));
       loadCustomVfsImpl(settings);
       loadCustomLogImpl(settings);
-      typeAliasesElement(root.evalNode(Constants.TYPE_ALIASES));
-      pluginsElement(root.evalNode(Constants.PLUGINS));
-      objectFactoryElement(root.evalNode(Constants.OBJECT_FACTORY));
-      objectWrapperFactoryElement(root.evalNode(Constants.OBJECT_WRAPPER_FACTORY));
-      reflectorFactoryElement(root.evalNode(Constants.REFLECTOR_FACTORY));
+      typeAliasesElement(root.evalNode(StringKey.TYPE_ALIASES));
+      pluginsElement(root.evalNode(StringKey.PLUGINS));
+      objectFactoryElement(root.evalNode(StringKey.OBJECT_FACTORY));
+      objectWrapperFactoryElement(root.evalNode(StringKey.OBJECT_WRAPPER_FACTORY));
+      reflectorFactoryElement(root.evalNode(StringKey.REFLECTOR_FACTORY));
       settingsElement(settings);
       // read it after objectFactory and objectWrapperFactory issue #631
-      environmentsElement(root.evalNode(Constants.ENVIRONMENTS));
-      databaseIdProviderElement(root.evalNode(Constants.DATABASE_ID_PROVIDER));
-      typeHandlersElement(root.evalNode(Constants.TYPE_HANDLERS));
-      mappersElement(root.evalNode(Constants.MAPPERS));
+      environmentsElement(root.evalNode(StringKey.ENVIRONMENTS));
+      databaseIdProviderElement(root.evalNode(StringKey.DATABASE_ID_PROVIDER));
+      typeHandlersElement(root.evalNode(StringKey.TYPE_HANDLERS));
+      mappersElement(root.evalNode(StringKey.MAPPERS));
     } catch (Exception e) {
       throw new BuilderException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
     }
@@ -163,11 +163,11 @@ public class XMLConfigBuilder extends BaseBuilder {
   }
 
   private void loadCustomVfsImpl(Properties props) throws ClassNotFoundException {
-    String value = props.getProperty(Constants.VFS_IMPL);
+    String value = props.getProperty(StringKey.VFS_IMPL);
     if (value == null) {
       return;
     }
-    String[] classes = value.split(String.valueOf(Constants.ENGLISH_COMMA));
+    String[] classes = value.split(String.valueOf(StringKey.ENGLISH_COMMA));
     for (String clazz : classes) {
       if (!clazz.isEmpty()) {
         @SuppressWarnings("unchecked")
@@ -187,12 +187,12 @@ public class XMLConfigBuilder extends BaseBuilder {
       return;
     }
     for (XNode child : context.getChildren()) {
-      if (Constants.PACKAGE.equals(child.getName())) {
-        String typeAliasPackage = child.getStringAttribute(Constants.NAME);
+      if (StringKey.PACKAGE.equals(child.getName())) {
+        String typeAliasPackage = child.getStringAttribute(StringKey.NAME);
         configuration.registerAliases(typeAliasPackage);
       } else {
-        String alias = child.getStringAttribute(Constants.ALIAS);
-        String type = child.getStringAttribute(Constants.TYPE);
+        String alias = child.getStringAttribute(StringKey.ALIAS);
+        String type = child.getStringAttribute(StringKey.TYPE);
         try {
           Class<?> clazz = Resources.classForName(type);
           if (alias == null) {
@@ -210,7 +210,7 @@ public class XMLConfigBuilder extends BaseBuilder {
   private void pluginsElement(XNode context) throws Exception {
     if (context != null) {
       for (XNode child : context.getChildren()) {
-        String interceptor = child.getStringAttribute(Constants.INTERCEPTOR);
+        String interceptor = child.getStringAttribute(StringKey.INTERCEPTOR);
         Properties properties = child.getChildrenAsProperties();
         Interceptor interceptorInstance = (Interceptor) configuration.resolveClass(interceptor).getDeclaredConstructor()
           .newInstance();
@@ -222,7 +222,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
   private void objectFactoryElement(XNode context) throws Exception {
     if (context != null) {
-      String type = context.getStringAttribute(Constants.TYPE);
+      String type = context.getStringAttribute(StringKey.TYPE);
       Properties properties = context.getChildrenAsProperties();
       ObjectFactory factory = (ObjectFactory) configuration.resolveClass(type).getDeclaredConstructor().newInstance();
       factory.setProperties(properties);
@@ -232,7 +232,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
   private void objectWrapperFactoryElement(XNode context) throws Exception {
     if (context != null) {
-      String type = context.getStringAttribute(Constants.TYPE);
+      String type = context.getStringAttribute(StringKey.TYPE);
       ObjectWrapperFactory factory = (ObjectWrapperFactory) configuration.resolveClass(type).getDeclaredConstructor().newInstance();
       configuration.setObjectWrapperFactory(factory);
     }
@@ -240,7 +240,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
   private void reflectorFactoryElement(XNode context) throws Exception {
     if (context != null) {
-      String type = context.getStringAttribute(Constants.TYPE);
+      String type = context.getStringAttribute(StringKey.TYPE);
       ReflectorFactory factory = (ReflectorFactory) configuration.resolveClass(type).getDeclaredConstructor().newInstance();
       configuration.setReflectorFactory(factory);
     }
@@ -319,10 +319,10 @@ public class XMLConfigBuilder extends BaseBuilder {
       return;
     }
     if (environment == null) {
-      environment = context.getStringAttribute(Constants.DEFAULT);
+      environment = context.getStringAttribute(StringKey.DEFAULT);
     }
     for (XNode child : context.getChildren()) {
-      String id = child.getStringAttribute(Constants.ID);
+      String id = child.getStringAttribute(StringKey.ID);
       if (isSpecifiedEnvironment(id)) {
         TransactionFactory txFactory = transactionManagerElement(child.evalNode("transactionManager"));
         DataSourceFactory dsFactory = dataSourceElement(child.evalNode("dataSource"));
@@ -339,10 +339,10 @@ public class XMLConfigBuilder extends BaseBuilder {
     if (context == null) {
       return;
     }
-    String type = context.getStringAttribute(Constants.TYPE);
+    String type = context.getStringAttribute(StringKey.TYPE);
     // awful patch to keep backward compatibility
-    if (Constants.VENDOR.equals(type)) {
-      type = Constants.DB_VENDOR;
+    if (StringKey.VENDOR.equals(type)) {
+      type = StringKey.DB_VENDOR;
     }
     Properties properties = context.getChildrenAsProperties();
     DatabaseIdProvider databaseIdProvider = (DatabaseIdProvider) configuration.resolveClass(type).getDeclaredConstructor()
@@ -357,7 +357,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
   private TransactionFactory transactionManagerElement(XNode context) throws Exception {
     if (context != null) {
-      String type = context.getStringAttribute(Constants.TYPE);
+      String type = context.getStringAttribute(StringKey.TYPE);
       Properties props = context.getChildrenAsProperties();
       TransactionFactory factory = (TransactionFactory) configuration.resolveClass(type).getDeclaredConstructor().newInstance();
       factory.setProperties(props);
@@ -368,7 +368,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
   private DataSourceFactory dataSourceElement(XNode context) throws Exception {
     if (context != null) {
-      String type = context.getStringAttribute(Constants.TYPE);
+      String type = context.getStringAttribute(StringKey.TYPE);
       Properties props = context.getChildrenAsProperties();
       DataSourceFactory factory = (DataSourceFactory) configuration.resolveClass(type).getDeclaredConstructor().newInstance();
       factory.setProperties(props);
@@ -382,13 +382,13 @@ public class XMLConfigBuilder extends BaseBuilder {
       return;
     }
     for (XNode child : context.getChildren()) {
-      if (Constants.PACKAGE.equals(child.getName())) {
-        String typeHandlerPackage = child.getStringAttribute(Constants.NAME);
+      if (StringKey.PACKAGE.equals(child.getName())) {
+        String typeHandlerPackage = child.getStringAttribute(StringKey.NAME);
         configuration.registerTypeHandler(typeHandlerPackage);
       } else {
-        String javaTypeName = child.getStringAttribute(Constants.JAVA_TYPE);
-        String jdbcTypeName = child.getStringAttribute(Constants.JDBC_TYPE);
-        String handlerTypeName = child.getStringAttribute(Constants.HANDLER);
+        String javaTypeName = child.getStringAttribute(StringKey.JAVA_TYPE);
+        String jdbcTypeName = child.getStringAttribute(StringKey.JDBC_TYPE);
+        String handlerTypeName = child.getStringAttribute(StringKey.HANDLER);
         Class<?> javaTypeClass = configuration.resolveClass(javaTypeName);
         JdbcType jdbcType = configuration.resolveJdbcType(jdbcTypeName);
         Class<?> typeHandlerClass = configuration.resolveClass(handlerTypeName);
@@ -410,13 +410,13 @@ public class XMLConfigBuilder extends BaseBuilder {
       return;
     }
     for (XNode child : context.getChildren()) {
-      if (Constants.PACKAGE.equals(child.getName())) {
-        String mapperPackage = child.getStringAttribute(Constants.NAME);
+      if (StringKey.PACKAGE.equals(child.getName())) {
+        String mapperPackage = child.getStringAttribute(StringKey.NAME);
         configuration.addMappers(mapperPackage);
       } else {
-        String resource = child.getStringAttribute(Constants.RESOURCE);
-        String url = child.getStringAttribute(Constants.URL);
-        String mapperClass = child.getStringAttribute(Constants.CLASS);
+        String resource = child.getStringAttribute(StringKey.RESOURCE);
+        String url = child.getStringAttribute(StringKey.URL);
+        String mapperClass = child.getStringAttribute(StringKey.CLASS);
         if (resource != null && url == null && mapperClass == null) {
           ErrorContext.instance().resource(resource);
           try (InputStream inputStream = Resources.getResourceAsStream(resource)) {

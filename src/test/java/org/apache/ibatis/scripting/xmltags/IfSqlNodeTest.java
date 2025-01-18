@@ -22,6 +22,7 @@ import static org.mockito.Mockito.*;
 import java.util.HashMap;
 
 import org.apache.ibatis.scripting.ExpressionEvaluator;
+import org.apache.ibatis.scripting.MapBinding;
 import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,7 +54,7 @@ class IfSqlNodeTest extends SqlNodeTest {
   @Test
   @Override
   public void shouldApply() throws Exception {
-    when(context.getBindings()).thenReturn(new HashMap<String, Object>() {
+    when(context.getBindings()).thenReturn(new MapBinding() {
       {
         put("title", "ENGLISH");
       }
@@ -67,7 +68,7 @@ class IfSqlNodeTest extends SqlNodeTest {
 
   @Test
   public void shouldAppendNone() {
-    when(context.getBindings()).thenReturn(new HashMap<String, Object>() {
+    when(context.getBindings()).thenReturn(new MapBinding() {
       {
         put("title", null);
       }

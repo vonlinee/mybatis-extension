@@ -13,7 +13,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package org.apache.ibatis.scripting.xmltags;
+package org.apache.ibatis.scripting;
 
 import java.util.Map;
 import java.util.StringJoiner;
@@ -29,14 +29,14 @@ public class DynamicContext {
   public static final String PARAMETER_OBJECT_KEY = "_parameter";
   public static final String DATABASE_ID_KEY = "_databaseId";
 
-  private final ContextMap bindings;
+  private final BindingContext bindings;
   private final StringJoiner sqlBuilder = new StringJoiner(" ");
   private int uniqueNumber;
 
   public DynamicContext(Configuration configuration, Object parameterObject) {
     if (parameterObject != null && !(parameterObject instanceof Map)) {
       MetaObject metaObject = configuration.newMetaObject(parameterObject);
-      boolean existsTypeHandler = configuration.getTypeHandlerRegistry().hasTypeHandler(parameterObject.getClass());
+      boolean existsTypeHandler = configuration.hasTypeHandler(parameterObject.getClass());
       bindings = new ContextMap(metaObject, existsTypeHandler);
     } else {
       bindings = new ContextMap(null, false);
@@ -45,8 +45,13 @@ public class DynamicContext {
     bindings.put(DATABASE_ID_KEY, configuration.getDatabaseId());
   }
 
-  public Map<String, Object> getBindings() {
+  public BindingContext getBindings() {
     return bindings;
+  }
+
+  public DynamicContext setValue(String key, Object value) {
+    this.bindings.put(key, value);
+    return this;
   }
 
   public void bind(String name, Object value) {

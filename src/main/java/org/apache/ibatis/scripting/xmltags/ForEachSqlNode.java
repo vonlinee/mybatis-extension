@@ -16,6 +16,8 @@
 package org.apache.ibatis.scripting.xmltags;
 
 import org.apache.ibatis.parsing.GenericTokenParser;
+import org.apache.ibatis.scripting.BindingContext;
+import org.apache.ibatis.scripting.DynamicContext;
 import org.apache.ibatis.scripting.ExpressionEvaluator;
 import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
 import org.apache.ibatis.session.Configuration;
@@ -64,7 +66,7 @@ public class ForEachSqlNode extends DynamicSqlNode {
 
   @Override
   public boolean apply(DynamicContext context) {
-    Map<String, Object> bindings = context.getBindings();
+    BindingContext bindings = context.getBindings();
     final Iterable<?> iterable = evaluator.evaluateIterable(collectionExpression, bindings, nullable);
     if (iterable == null || !iterable.iterator().hasNext()) {
       return true;
@@ -149,7 +151,7 @@ public class ForEachSqlNode extends DynamicSqlNode {
     }
 
     @Override
-    public Map<String, Object> getBindings() {
+    public BindingContext getBindings() {
       return delegate.getBindings();
     }
 
@@ -200,7 +202,7 @@ public class ForEachSqlNode extends DynamicSqlNode {
     }
 
     @Override
-    public Map<String, Object> getBindings() {
+    public BindingContext getBindings() {
       return delegate.getBindings();
     }
 

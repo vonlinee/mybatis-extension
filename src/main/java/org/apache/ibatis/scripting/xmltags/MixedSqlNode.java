@@ -15,6 +15,8 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
+import org.apache.ibatis.scripting.DynamicContext;
+
 import java.util.List;
 
 /**

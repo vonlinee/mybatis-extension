@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.ibatis.domain.blog.Author;
 import org.apache.ibatis.scripting.ExpressionEvaluator;
+import org.apache.ibatis.scripting.MapBinding;
 import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,7 +49,6 @@ import org.junit.jupiter.api.Test;
  * }</pre>
  *
  * @author <a href="1181963012mw@gmail.com">mawen12</a>
- *
  * @see <a href="https://mybatis.org/mybatis-3/dynamic-sql.html#choose-when-otherwise">choose</a>
  */
 class ChooseSqlNodeTest extends SqlNodeTest {
@@ -73,7 +73,7 @@ class ChooseSqlNodeTest extends SqlNodeTest {
   @Test
   @Override
   public void shouldApply() throws Exception {
-    when(context.getBindings()).thenReturn(new HashMap<String, Object>() {
+    when(context.getBindings()).thenReturn(new MapBinding() {
       {
         put("title", "abc");
         put("author", new Author(1, "mybatis", "***", null, null, null));
@@ -88,7 +88,7 @@ class ChooseSqlNodeTest extends SqlNodeTest {
 
   @Test
   public void shouldAppendSecond() throws Exception {
-    when(context.getBindings()).thenReturn(new HashMap<String, Object>() {
+    when(context.getBindings()).thenReturn(new MapBinding() {
       {
         put("author", new Author(1, "mybatis", "***", null, null, null));
       }
@@ -102,7 +102,7 @@ class ChooseSqlNodeTest extends SqlNodeTest {
 
   @Test
   public void shouldAppendOtherwise() throws Exception {
-    when(context.getBindings()).thenReturn(new HashMap<>());
+    when(context.getBindings()).thenReturn(new MapBinding());
 
     boolean result = sqlNode.apply(context);
 

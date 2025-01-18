@@ -1,6 +1,8 @@
 package org.apache.ibatis.scripting.xmltags;
 
+import org.apache.ibatis.internal.StringKey;
 import org.apache.ibatis.parsing.TokenHandler;
+import org.apache.ibatis.scripting.DynamicContext;
 import org.apache.ibatis.scripting.ExpressionEvaluator;
 import org.apache.ibatis.scripting.ScriptingException;
 import org.apache.ibatis.type.SimpleTypeRegistry;
@@ -23,9 +25,9 @@ public class BindingTokenParser implements TokenHandler {
   public String handleToken(String content) {
     Object parameter = context.getBindings().get(DynamicContext.PARAMETER_OBJECT_KEY);
     if (parameter == null) {
-      context.getBindings().put("value", null);
+      context.setValue(StringKey.VALUE, null);
     } else if (SimpleTypeRegistry.isSimpleType(parameter.getClass())) {
-      context.getBindings().put("value", parameter);
+      context.setValue(StringKey.VALUE, parameter);
     }
     Object value = evaluator.getValue(content, context.getBindings());
     String srtValue = value == null ? "" : String.valueOf(value); // issue #274 return "" instead of "null"

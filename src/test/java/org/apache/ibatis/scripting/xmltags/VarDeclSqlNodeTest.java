@@ -21,6 +21,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 
+import org.apache.ibatis.scripting.MapBinding;
 import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,7 +49,7 @@ class VarDeclSqlNodeTest extends SqlNodeTest {
   @Test
   @Override
   public void shouldApply() throws Exception {
-    when(context.getBindings()).thenReturn(new HashMap<String, Object>() {
+    when(context.getBindings()).thenReturn(new MapBinding() {
       {
         put("_parameter", new Bean("abc"));
       }

@@ -18,7 +18,7 @@ package org.mybatis.scripting.template;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.mapping.SqlSource;
-import org.apache.ibatis.scripting.xmltags.DynamicContext;
+import org.apache.ibatis.scripting.DynamicContext;
 import org.apache.ibatis.session.Configuration;
 
 import java.io.StringWriter;

@@ -15,17 +15,17 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.HashMap;
-
 import org.apache.ibatis.scripting.ExpressionEvaluator;
+import org.apache.ibatis.scripting.MapBinding;
 import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * <pre>{@code
@@ -64,7 +64,7 @@ class WhereSqlNodeTest extends SqlNodeTest {
   @Test
   @Override
   public void shouldApply() throws Exception {
-    when(context.getBindings()).thenReturn(new HashMap() {
+    when(context.getBindings()).thenReturn(new MapBinding() {
       {
         put("id", 1);
         put("name", "mybatis");
@@ -79,7 +79,7 @@ class WhereSqlNodeTest extends SqlNodeTest {
 
   @Test
   public void shouldAppendOnlyId() throws Exception {
-    when(context.getBindings()).thenReturn(new HashMap() {
+    when(context.getBindings()).thenReturn(new MapBinding() {
       {
         put("id", 1);
       }
@@ -93,7 +93,7 @@ class WhereSqlNodeTest extends SqlNodeTest {
 
   @Test
   public void shouldAppendOnlyName() throws Exception {
-    when(context.getBindings()).thenReturn(new HashMap<String, Object>() {
+    when(context.getBindings()).thenReturn(new MapBinding() {
       {
         put("name", "mybatis");
       }
@@ -107,7 +107,7 @@ class WhereSqlNodeTest extends SqlNodeTest {
 
   @Test
   public void shouldAppendNone() throws Exception {
-    when(context.getBindings()).thenReturn(new HashMap<>());
+    when(context.getBindings()).thenReturn(new MapBinding());
 
     boolean result = sqlNode.apply(context);
 

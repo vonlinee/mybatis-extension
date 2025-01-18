@@ -18,6 +18,7 @@ package org.apache.ibatis.scripting.xmltags;
 import org.apache.ibatis.parsing.DynamicCheckerTokenParser;
 import org.apache.ibatis.parsing.GenericTokenParser;
 import org.apache.ibatis.parsing.TokenHandler;
+import org.apache.ibatis.scripting.DynamicContext;
 import org.apache.ibatis.scripting.ExpressionEvaluator;
 
 import java.util.regex.Pattern;

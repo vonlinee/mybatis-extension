@@ -15,17 +15,17 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.HashMap;
-
 import org.apache.ibatis.scripting.ExpressionEvaluator;
+import org.apache.ibatis.scripting.MapBinding;
 import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * <pre>{@code
@@ -65,7 +65,7 @@ class SetSqlNodeTest extends SqlNodeTest {
   @Test
   @Override
   public void shouldApply() throws Exception {
-    when(context.getBindings()).thenReturn(new HashMap() {
+    when(context.getBindings()).thenReturn(new MapBinding() {
       {
         put("username", "Jack");
         put("password", "***");
@@ -80,7 +80,7 @@ class SetSqlNodeTest extends SqlNodeTest {
 
   @Test
   public void shouldAppendOnlyUsername() throws Exception {
-    when(context.getBindings()).thenReturn(new HashMap() {
+    when(context.getBindings()).thenReturn(new MapBinding() {
       {
         put("username", "Jack");
       }
@@ -94,7 +94,7 @@ class SetSqlNodeTest extends SqlNodeTest {
 
   @Test
   public void shouldAppendOnlyPassword() throws Exception {
-    when(context.getBindings()).thenReturn(new HashMap() {
+    when(context.getBindings()).thenReturn(new MapBinding() {
       {
         put("password", "***");
       }
@@ -108,7 +108,7 @@ class SetSqlNodeTest extends SqlNodeTest {
 
   @Test
   public void shouldAppendNone() throws Exception {
-    when(context.getBindings()).thenReturn(new HashMap<>());
+    when(context.getBindings()).thenReturn(new MapBinding());
 
     boolean result = sqlNode.apply(context);
 

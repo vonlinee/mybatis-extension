@@ -1,6 +1,6 @@
 package org.apache.ibatis.internal;
 
-public interface Constants {
+public interface StringKey {
 
   String JDBC_TYPE = "jdbcType";
   String JAVA_TYPE = "javaType";

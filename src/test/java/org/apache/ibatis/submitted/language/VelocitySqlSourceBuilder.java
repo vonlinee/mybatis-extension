@@ -19,7 +19,7 @@ import org.apache.ibatis.builder.BaseBuilder;
 import org.apache.ibatis.builder.BuilderException;
 import org.apache.ibatis.builder.ParameterExpression;
 import org.apache.ibatis.builder.StaticSqlSource;
-import org.apache.ibatis.internal.Constants;
+import org.apache.ibatis.internal.StringKey;
 import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.parsing.GenericTokenParser;
@@ -67,13 +67,13 @@ public class VelocitySqlSourceBuilder extends BaseBuilder {
     @Override
     public String handleToken(String content) {
       parameterMappings.add(buildParameterMapping(content));
-      return Constants.SQL_PARAM_PLACEHOLDER;
+      return StringKey.SQL_PARAM_PLACEHOLDER;
     }
 
     private ParameterMapping buildParameterMapping(String content) {
       Map<String, String> propertiesMap = parseParameterMapping(content);
-      String property = propertiesMap.get(Constants.PROPERTY);
-      String jdbcType = propertiesMap.get(Constants.JDBC_TYPE);
+      String property = propertiesMap.get(StringKey.PROPERTY);
+      String jdbcType = propertiesMap.get(StringKey.JDBC_TYPE);
       Class<?> propertyType;
       if (configuration.hasTypeHandler(parameterType)) {
         propertyType = parameterType;
@@ -98,24 +98,24 @@ public class VelocitySqlSourceBuilder extends BaseBuilder {
       for (Map.Entry<String, String> entry : propertiesMap.entrySet()) {
         String name = entry.getKey();
         String value = entry.getValue();
-        if (Constants.JAVA_TYPE.equals(name)) {
+        if (StringKey.JAVA_TYPE.equals(name)) {
           javaType = configuration.resolveClass(value);
           builder.javaType(javaType);
-        } else if (Constants.JDBC_TYPE.equals(name)) {
+        } else if (StringKey.JDBC_TYPE.equals(name)) {
           builder.jdbcType(configuration.resolveJdbcType(value));
-        } else if (Constants.MODE.equals(name)) {
+        } else if (StringKey.MODE.equals(name)) {
           builder.mode(BaseBuilder.resolveParameterMode(value));
-        } else if (Constants.NUMERIC_SCALE.equals(name)) {
+        } else if (StringKey.NUMERIC_SCALE.equals(name)) {
           builder.numericScale(Integer.valueOf(value));
-        } else if (Constants.RESULT_MAP.equals(name)) {
+        } else if (StringKey.RESULT_MAP.equals(name)) {
           builder.resultMapId(value);
-        } else if (Constants.TYPE_HANDLER.equals(name)) {
+        } else if (StringKey.TYPE_HANDLER.equals(name)) {
           typeHandlerAlias = value;
-        } else if (Constants.JDBC_TYPE_NAME.equals(name)) {
+        } else if (StringKey.JDBC_TYPE_NAME.equals(name)) {
           builder.jdbcTypeName(value);
-        } else if (Constants.PROPERTY.equals(name)) {
+        } else if (StringKey.PROPERTY.equals(name)) {
           // Do Nothing
-        } else if (Constants.EXPRESSION.equals(name)) {
+        } else if (StringKey.EXPRESSION.equals(name)) {
           builder.expression(value);
         } else {
           throw new BuilderException("An invalid property '" + name + "' was found in mapping @{" + content

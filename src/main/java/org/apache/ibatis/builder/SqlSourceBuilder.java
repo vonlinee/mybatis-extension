@@ -17,6 +17,7 @@ package org.apache.ibatis.builder;
 
 import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.parsing.GenericTokenParser;
+import org.apache.ibatis.scripting.BindingContext;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.util.StringUtils;
 import org.jetbrains.annotations.Nullable;
@@ -32,7 +33,7 @@ public class SqlSourceBuilder {
     return parse(configuration, originalSql, null, null);
   }
 
-  public static SqlSource parse(Configuration configuration, String originalSql, @Nullable Class<?> parameterType, Map<String, Object> additionalParameters) {
+  public static SqlSource parse(Configuration configuration, String originalSql, @Nullable Class<?> parameterType, BindingContext additionalParameters) {
     ParameterMappingTokenHandler handler = new ParameterMappingTokenHandler(configuration, parameterType,
       additionalParameters);
     GenericTokenParser parser = GenericTokenParser.ofSign(handler);

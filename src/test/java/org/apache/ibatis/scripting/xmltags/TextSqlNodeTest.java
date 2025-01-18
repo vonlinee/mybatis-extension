@@ -17,6 +17,7 @@ package org.apache.ibatis.scripting.xmltags;
 
 import org.apache.ibatis.parsing.DynamicCheckerTokenParser;
 import org.apache.ibatis.scripting.ExpressionEvaluator;
+import org.apache.ibatis.scripting.MapBinding;
 import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
 import org.junit.jupiter.api.Test;
 
@@ -56,7 +57,7 @@ class TextSqlNodeTest extends SqlNodeTest {
   public void shouldApplyDynamic() {
     // given
     TextSqlNode sqlNode = new TextSqlNode(evaluator, DYNAMIC_TEXT);
-    when(context.getBindings()).thenReturn(new HashMap() {
+    when(context.getBindings()).thenReturn(new MapBinding() {
       {
         put("id", 1);
       }

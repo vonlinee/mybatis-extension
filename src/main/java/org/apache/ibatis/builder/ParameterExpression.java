@@ -15,7 +15,7 @@
  */
 package org.apache.ibatis.builder;
 
-import org.apache.ibatis.internal.Constants;
+import org.apache.ibatis.internal.StringKey;
 
 import java.util.HashMap;
 
@@ -50,7 +50,7 @@ public class ParameterExpression extends HashMap<String, String> {
     int p = skipWS(expression, 0);
 
     Parameter param = new Parameter();
-    if (expression.charAt(p) == Constants.OPEN_PARENTHESIS) {
+    if (expression.charAt(p) == StringKey.OPEN_PARENTHESIS) {
       expression(expression, p + 1);
     } else {
       property(expression, p);
@@ -63,7 +63,7 @@ public class ParameterExpression extends HashMap<String, String> {
     int match = 1;
     int right = left + 1;
     while (match > 0) {
-      if (expression.charAt(right) == Constants.CLOSE_PARENTHESIS) {
+      if (expression.charAt(right) == StringKey.CLOSE_PARENTHESIS) {
         match--;
       } else if (expression.charAt(right) == '(') {
         match++;
@@ -112,9 +112,9 @@ public class ParameterExpression extends HashMap<String, String> {
   private void jdbcTypeOpt(String expression, int p) {
     p = skipWS(expression, p);
     if (p < expression.length()) {
-      if (expression.charAt(p) == Constants.COLON) {
+      if (expression.charAt(p) == StringKey.COLON) {
         jdbcType(expression, p + 1);
-      } else if (expression.charAt(p) == Constants.ENGLISH_COMMA) {
+      } else if (expression.charAt(p) == StringKey.ENGLISH_COMMA) {
         option(expression, p + 1);
       } else {
         throw new BuilderException("Parsing error in {" + expression + "} in position " + p);

@@ -15,6 +15,8 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
+import org.apache.ibatis.scripting.BindingContext;
+import org.apache.ibatis.scripting.DynamicContext;
 import org.apache.ibatis.session.Configuration;
 import org.jetbrains.annotations.NotNull;
 
@@ -109,7 +111,7 @@ public class TrimSqlNode implements SqlNode {
     }
 
     @Override
-    public Map<String, Object> getBindings() {
+    public BindingContext getBindings() {
       return delegate.getBindings();
     }
 

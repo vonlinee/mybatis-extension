@@ -15,6 +15,9 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
+import org.apache.ibatis.scripting.DynamicContext;
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Represents a SQL node in a dynamic SQL statement. This interface defines the
  * structure for SQL nodes that can be either static or dynamic in nature.
@@ -43,4 +46,16 @@ public interface SqlNode {
    * @return true if the application was successful; false otherwise
    */
   boolean apply(DynamicContext context);
+
+  /**
+   * Retrieves the generated SQL statement from the given dynamic context.
+   *
+   * @param context The dynamic context that contains information for SQL generation.
+   * @return The generated SQL statement as a String.
+   */
+  @NotNull
+  default String getSql(DynamicContext context) {
+    apply(context);
+    return context.getSql();
+  }
 }

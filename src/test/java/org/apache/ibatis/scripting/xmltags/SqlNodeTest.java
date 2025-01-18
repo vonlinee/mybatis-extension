@@ -15,6 +15,7 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
+import org.apache.ibatis.scripting.DynamicContext;
 import org.apache.ibatis.session.Configuration;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;

@@ -15,12 +15,12 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
+import org.apache.ibatis.scripting.MapBinding;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -58,7 +58,7 @@ class ForEachSqlNodeTest extends SqlNodeTest {
     ArgumentCaptor<Object> bindValueCaptor = ArgumentCaptor.forClass(Object.class);
     doNothing().when(context).bind(bindKeyCaptor.capture(), bindValueCaptor.capture());
 
-    when(context.getBindings()).thenReturn(new HashMap() {
+    when(context.getBindings()).thenReturn(new MapBinding() {
       {
         put("list", Arrays.asList("a", "b", "c"));
       }

@@ -20,6 +20,7 @@ import org.apache.ibatis.builder.BuilderException;
 import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.parsing.DynamicCheckerTokenParser;
 import org.apache.ibatis.parsing.XNode;
+import org.apache.ibatis.scripting.DynamicContext;
 import org.apache.ibatis.scripting.ExpressionEvaluator;
 import org.apache.ibatis.scripting.defaults.RawSqlSource;
 import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
@@ -69,7 +70,10 @@ public class XMLScriptBuilder extends BaseBuilder {
     if (isDynamic) {
       sqlSource = new DynamicSqlSource(configuration, rootSqlNode);
     } else {
-      sqlSource = new RawSqlSource(configuration, rootSqlNode, parameterType);
+      DynamicContext context = new DynamicContext(configuration, null);
+      rootSqlNode.apply(context);
+      String sql = rootSqlNode.getSql(context);
+      sqlSource = new RawSqlSource(configuration, sql, parameterType);
     }
     return sqlSource;
   }

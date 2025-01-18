@@ -23,7 +23,7 @@ import org.apache.ibatis.builder.MapperBuilderAssistant;
 import org.apache.ibatis.builder.ResultMapResolver;
 import org.apache.ibatis.cache.Cache;
 import org.apache.ibatis.executor.ErrorContext;
-import org.apache.ibatis.internal.Constants;
+import org.apache.ibatis.internal.StringKey;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.Discriminator;
 import org.apache.ibatis.mapping.ParameterMapping;
@@ -146,7 +146,7 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   private void cacheElement(XNode context) {
     if (context != null) {
-      String type = context.getStringAttribute(Constants.TYPE, "PERPETUAL");
+      String type = context.getStringAttribute(StringKey.TYPE, "PERPETUAL");
       Class<? extends Cache> typeClass = configuration.resolveAlias(type);
       String eviction = context.getStringAttribute("eviction", "LRU");
       Class<? extends Cache> evictionClass = configuration.resolveAlias(eviction);
@@ -162,7 +162,7 @@ public class XMLMapperBuilder extends BaseBuilder {
   private void parameterMapElement(List<XNode> list) {
     for (XNode parameterMapNode : list) {
       String id = parameterMapNode.getStringAttribute("id");
-      String type = parameterMapNode.getStringAttribute(Constants.TYPE);
+      String type = parameterMapNode.getStringAttribute(StringKey.TYPE);
       Class<?> parameterClass = configuration.resolveClass(type);
       List<XNode> parameterNodes = parameterMapNode.evalNodes("parameter");
       List<ParameterMapping> parameterMappings = new ArrayList<>();
@@ -203,8 +203,8 @@ public class XMLMapperBuilder extends BaseBuilder {
   private ResultMap resultMapElement(XNode resultMapNode, List<ResultMapping> additionalResultMappings,
                                      Class<?> enclosingType) {
     ErrorContext.instance().activity("processing " + resultMapNode.getValueBasedIdentifier());
-    String type = resultMapNode.getStringAttribute(Constants.TYPE, resultMapNode.getStringAttribute("ofType",
-      resultMapNode.getStringAttribute("resultType", resultMapNode.getStringAttribute(Constants.JAVA_TYPE))));
+    String type = resultMapNode.getStringAttribute(StringKey.TYPE, resultMapNode.getStringAttribute("ofType",
+      resultMapNode.getStringAttribute("resultType", resultMapNode.getStringAttribute(StringKey.JAVA_TYPE))));
     Class<?> typeClass = configuration.resolveClass(type);
     if (typeClass == null) {
       typeClass = inheritEnclosingType(resultMapNode, enclosingType);
@@ -219,15 +219,15 @@ public class XMLMapperBuilder extends BaseBuilder {
         discriminator = processDiscriminatorElement(resultChild, typeClass, resultMappings);
       } else {
         List<ResultFlag> flags = new ArrayList<>();
-        if (Constants.ID.equals(resultChild.getName())) {
+        if (StringKey.ID.equals(resultChild.getName())) {
           flags.add(ResultFlag.ID);
         }
         resultMappings.add(buildResultMappingFromContext(resultChild, typeClass, flags));
       }
     }
-    String id = resultMapNode.getStringAttribute(Constants.ID, resultMapNode.getValueBasedIdentifier());
-    String extend = resultMapNode.getStringAttribute(Constants.EXTENDS);
-    Boolean autoMapping = resultMapNode.getBooleanAttribute(Constants.AUTO_MAPPING);
+    String id = resultMapNode.getStringAttribute(StringKey.ID, resultMapNode.getValueBasedIdentifier());
+    String extend = resultMapNode.getStringAttribute(StringKey.EXTENDS);
+    Boolean autoMapping = resultMapNode.getBooleanAttribute(StringKey.AUTO_MAPPING);
     ResultMapResolver resultMapResolver = new ResultMapResolver(builderAssistant, id, typeClass, extend, discriminator,
       resultMappings, autoMapping);
     try {
@@ -239,13 +239,13 @@ public class XMLMapperBuilder extends BaseBuilder {
   }
 
   protected Class<?> inheritEnclosingType(XNode resultMapNode, Class<?> enclosingType) {
-    if (Constants.ASSOCIATION.equals(resultMapNode.getName()) && resultMapNode.getStringAttribute(Constants.RESULT_MAP) == null) {
-      String property = resultMapNode.getStringAttribute(Constants.PROPERTY);
+    if (StringKey.ASSOCIATION.equals(resultMapNode.getName()) && resultMapNode.getStringAttribute(StringKey.RESULT_MAP) == null) {
+      String property = resultMapNode.getStringAttribute(StringKey.PROPERTY);
       if (property != null && enclosingType != null) {
         MetaClass metaResultType = MetaClass.forClass(enclosingType, configuration.getReflectorFactory());
         return metaResultType.getSetterType(property);
       }
-    } else if (Constants.CASE.equals(resultMapNode.getName()) && resultMapNode.getStringAttribute(Constants.RESULT_MAP) == null) {
+    } else if (StringKey.CASE.equals(resultMapNode.getName()) && resultMapNode.getStringAttribute(StringKey.RESULT_MAP) == null) {
       return enclosingType;
     }
     return null;
@@ -256,7 +256,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     for (XNode argChild : argChildren) {
       List<ResultFlag> flags = new ArrayList<>();
       flags.add(ResultFlag.CONSTRUCTOR);
-      if (Constants.ID_ARG.equals(argChild.getName())) {
+      if (StringKey.ID_ARG.equals(argChild.getName())) {
         flags.add(ResultFlag.ID);
       }
       resultMappings.add(buildResultMappingFromContext(argChild, resultType, flags));
@@ -265,17 +265,17 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   private Discriminator processDiscriminatorElement(XNode context, Class<?> resultType,
                                                     List<ResultMapping> resultMappings) {
-    String column = context.getStringAttribute(Constants.COLUMN);
-    String javaType = context.getStringAttribute(Constants.JAVA_TYPE);
-    String jdbcType = context.getStringAttribute(Constants.JDBC_TYPE);
-    String typeHandler = context.getStringAttribute(Constants.TYPE_HANDLER);
+    String column = context.getStringAttribute(StringKey.COLUMN);
+    String javaType = context.getStringAttribute(StringKey.JAVA_TYPE);
+    String jdbcType = context.getStringAttribute(StringKey.JDBC_TYPE);
+    String typeHandler = context.getStringAttribute(StringKey.TYPE_HANDLER);
     Class<?> javaTypeClass = configuration.resolveClass(javaType);
     Class<? extends TypeHandler<?>> typeHandlerClass = configuration.resolveClass(typeHandler);
     JdbcType jdbcTypeEnum = configuration.resolveJdbcType(jdbcType);
     Map<String, String> discriminatorMap = new HashMap<>();
     for (XNode caseChild : context.getChildren()) {
-      String value = caseChild.getStringAttribute(Constants.VALUE);
-      String resultMap = caseChild.getStringAttribute(Constants.RESULT_MAP,
+      String value = caseChild.getStringAttribute(StringKey.VALUE);
+      String resultMap = caseChild.getStringAttribute(StringKey.RESULT_MAP,
         processNestedResultMappings(caseChild, resultMappings, resultType));
       discriminatorMap.put(value, resultMap);
     }
@@ -292,8 +292,8 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   private void sqlElement(List<XNode> list, String requiredDatabaseId) {
     for (XNode context : list) {
-      String databaseId = context.getStringAttribute(Constants.DATABASE_ID);
-      String id = context.getStringAttribute(Constants.ID);
+      String databaseId = context.getStringAttribute(StringKey.DATABASE_ID);
+      String id = context.getStringAttribute(StringKey.ID);
       id = builderAssistant.applyCurrentNamespace(id, false);
       if (databaseIdMatchesCurrent(id, databaseId, requiredDatabaseId)) {
         sqlFragments.put(id, context);
@@ -313,25 +313,25 @@ public class XMLMapperBuilder extends BaseBuilder {
     }
     // skip this fragment if there is a previous one with a not null databaseId
     XNode context = this.sqlFragments.get(id);
-    return context.getStringAttribute(Constants.DATABASE_ID) == null;
+    return context.getStringAttribute(StringKey.DATABASE_ID) == null;
   }
 
   private ResultMapping buildResultMappingFromContext(XNode context, Class<?> resultType, List<ResultFlag> flags) {
     String property;
     if (flags.contains(ResultFlag.CONSTRUCTOR)) {
-      property = context.getStringAttribute(Constants.NAME);
+      property = context.getStringAttribute(StringKey.NAME);
     } else {
-      property = context.getStringAttribute(Constants.PROPERTY);
+      property = context.getStringAttribute(StringKey.PROPERTY);
     }
-    String column = context.getStringAttribute(Constants.COLUMN);
-    String javaType = context.getStringAttribute(Constants.JAVA_TYPE);
-    String jdbcType = context.getStringAttribute(Constants.JDBC_TYPE);
+    String column = context.getStringAttribute(StringKey.COLUMN);
+    String javaType = context.getStringAttribute(StringKey.JAVA_TYPE);
+    String jdbcType = context.getStringAttribute(StringKey.JDBC_TYPE);
     String nestedSelect = context.getStringAttribute("select");
-    String nestedResultMap = context.getStringAttribute(Constants.RESULT_MAP,
+    String nestedResultMap = context.getStringAttribute(StringKey.RESULT_MAP,
       () -> processNestedResultMappings(context, Collections.emptyList(), resultType));
     String notNullColumn = context.getStringAttribute("notNullColumn");
     String columnPrefix = context.getStringAttribute("columnPrefix");
-    String typeHandler = context.getStringAttribute(Constants.TYPE_HANDLER);
+    String typeHandler = context.getStringAttribute(StringKey.TYPE_HANDLER);
     String resultSet = context.getStringAttribute("resultSet");
     String foreignColumn = context.getStringAttribute("foreignColumn");
     boolean lazy = "lazy"
@@ -355,10 +355,10 @@ public class XMLMapperBuilder extends BaseBuilder {
   }
 
   protected void validateCollection(XNode context, Class<?> enclosingType) {
-    if ("collection".equals(context.getName()) && context.getStringAttribute(Constants.RESULT_MAP) == null
-      && context.getStringAttribute(Constants.JAVA_TYPE) == null) {
+    if ("collection".equals(context.getName()) && context.getStringAttribute(StringKey.RESULT_MAP) == null
+      && context.getStringAttribute(StringKey.JAVA_TYPE) == null) {
       MetaClass metaResultType = MetaClass.forClass(enclosingType, configuration.getReflectorFactory());
-      String property = context.getStringAttribute(Constants.PROPERTY);
+      String property = context.getStringAttribute(StringKey.PROPERTY);
       if (!metaResultType.hasSetter(property)) {
         throw new BuilderException(
           "Ambiguous collection type for property '" + property + "'. You must specify 'javaType' or 'resultMap'.");

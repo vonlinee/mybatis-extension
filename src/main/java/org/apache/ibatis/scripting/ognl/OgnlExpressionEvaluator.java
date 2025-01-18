@@ -20,8 +20,8 @@ import ognl.OgnlRuntime;
 import ognl.PropertyAccessor;
 import org.apache.ibatis.builder.BuilderException;
 import org.apache.ibatis.scripting.ExpressionEvaluator;
-import org.apache.ibatis.scripting.xmltags.ContextMap;
-import org.apache.ibatis.scripting.xmltags.DynamicContext;
+import org.apache.ibatis.scripting.ContextMap;
+import org.apache.ibatis.scripting.DynamicContext;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;

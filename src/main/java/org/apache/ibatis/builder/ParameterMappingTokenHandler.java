@@ -1,10 +1,11 @@
 package org.apache.ibatis.builder;
 
-import org.apache.ibatis.internal.Constants;
+import org.apache.ibatis.internal.StringKey;
 import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.parsing.TokenHandler;
 import org.apache.ibatis.reflection.MetaClass;
 import org.apache.ibatis.reflection.MetaObject;
+import org.apache.ibatis.scripting.BindingContext;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.JdbcType;
 
@@ -22,7 +23,7 @@ public class ParameterMappingTokenHandler implements TokenHandler {
   private final Configuration configuration;
 
   public ParameterMappingTokenHandler(Configuration configuration, Class<?> parameterType,
-                                      Map<String, Object> additionalParameters) {
+                                      BindingContext additionalParameters) {
     this.configuration = configuration;
     this.parameterType = parameterType;
     this.metaParameters = configuration.newMetaObject(additionalParameters);
@@ -44,13 +45,13 @@ public class ParameterMappingTokenHandler implements TokenHandler {
 
   private ParameterMapping buildParameterMapping(String content) {
     Map<String, String> propertiesMap = parseParameterMapping(content);
-    String property = propertiesMap.get(Constants.PROPERTY);
+    String property = propertiesMap.get(StringKey.PROPERTY);
     Class<?> propertyType;
     if (metaParameters.hasGetter(property)) { // issue #448 get type from additional params
       propertyType = metaParameters.getGetterType(property);
     } else if (configuration.hasTypeHandler(parameterType)) {
       propertyType = parameterType;
-    } else if (JdbcType.CURSOR.name().equals(propertiesMap.get(Constants.JDBC_TYPE))) {
+    } else if (JdbcType.CURSOR.name().equals(propertiesMap.get(StringKey.JDBC_TYPE))) {
       propertyType = java.sql.ResultSet.class;
     } else if (property == null || Map.class.isAssignableFrom(parameterType)) {
       propertyType = Object.class;
@@ -68,24 +69,24 @@ public class ParameterMappingTokenHandler implements TokenHandler {
     for (Map.Entry<String, String> entry : propertiesMap.entrySet()) {
       String name = entry.getKey();
       String value = entry.getValue();
-      if (Constants.JAVA_TYPE.equals(name)) {
+      if (StringKey.JAVA_TYPE.equals(name)) {
         javaType = configuration.resolveClass(value);
         builder.javaType(javaType);
-      } else if (Constants.JDBC_TYPE.equals(name)) {
+      } else if (StringKey.JDBC_TYPE.equals(name)) {
         builder.jdbcType(configuration.resolveJdbcType(value));
-      } else if (Constants.MODE.equals(name)) {
+      } else if (StringKey.MODE.equals(name)) {
         builder.mode(BaseBuilder.resolveParameterMode(value));
-      } else if (Constants.NUMERIC_SCALE.equals(name)) {
+      } else if (StringKey.NUMERIC_SCALE.equals(name)) {
         builder.numericScale(Integer.valueOf(value));
-      } else if (Constants.RESULT_MAP.equals(name)) {
+      } else if (StringKey.RESULT_MAP.equals(name)) {
         builder.resultMapId(value);
-      } else if (Constants.TYPE_HANDLER.equals(name)) {
+      } else if (StringKey.TYPE_HANDLER.equals(name)) {
         typeHandlerAlias = value;
-      } else if (Constants.JDBC_TYPE_NAME.equals(name)) {
+      } else if (StringKey.JDBC_TYPE_NAME.equals(name)) {
         builder.jdbcTypeName(value);
-      } else if (Constants.PROPERTY.equals(name)) {
+      } else if (StringKey.PROPERTY.equals(name)) {
         // Do Nothing
-      } else if (Constants.EXPRESSION.equals(name)) {
+      } else if (StringKey.EXPRESSION.equals(name)) {
         throw new BuilderException("Expression based parameters are not supported yet");
       } else {
         throw new BuilderException("An invalid property '" + name + "' was found in mapping #{" + content

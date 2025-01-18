@@ -15,6 +15,8 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
+import org.apache.ibatis.scripting.DynamicContext;
+
 /**
  * the xml element does not contain ${foo} or #{xxx}
  * Represents a static text SQL node. This class implements the {@link SqlNode} interface
