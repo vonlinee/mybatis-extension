@@ -31,6 +31,7 @@ import org.apache.ibatis.domain.blog.Author;
 import org.apache.ibatis.domain.blog.Blog;
 import org.apache.ibatis.domain.blog.Post;
 import org.apache.ibatis.domain.blog.Section;
+import org.apache.ibatis.logging.stdout.StdOutImpl;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.ParameterMapping;
@@ -62,6 +63,7 @@ class BaseExecutorTest extends BaseDataTest {
     config.setUseColumnLabel(true);
     config.setDefaultStatementTimeout(5000);
     config.setDefaultFetchSize(100);
+    config.setLogImpl(StdOutImpl.class);
   }
 
   @Test
