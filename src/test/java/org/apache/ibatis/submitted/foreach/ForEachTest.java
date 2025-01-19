@@ -38,6 +38,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+/**
+ * @see org.apache.ibatis.scripting.xmltags.ForEachSqlNode
+ */
 class ForEachTest {
 
   private static SqlSessionFactory sqlSessionFactory;
@@ -47,12 +50,11 @@ class ForEachTest {
     // create a SqlSessionFactory
     try (Reader reader = Resources.getResourceAsReader("org/apache/ibatis/submitted/foreach/mybatis-config.xml")) {
       sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
-      sqlSessionFactory.getConfiguration().setLogImpl(StdOutImpl.class);
     }
 
     // populate in-memory database
     BaseDataTest.runScript(sqlSessionFactory.getConfiguration().getEnvironment().getDataSource(),
-        "org/apache/ibatis/submitted/foreach/CreateDB.sql");
+      "org/apache/ibatis/submitted/foreach/CreateDB.sql");
   }
 
   @Test
@@ -122,7 +124,7 @@ class ForEachTest {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
       when(() -> mapper.typoInItemProperty(Collections.singletonList(new User())));
       then(caughtException()).isInstanceOf(PersistenceException.class).hasMessageContaining(
-          "There is no getter for property named 'idd' in 'class org.apache.ibatis.submitted.foreach.User'");
+        "There is no getter for property named 'idd' in 'class org.apache.ibatis.submitted.foreach.User'");
     }
   }
 
@@ -151,7 +153,7 @@ class ForEachTest {
       sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
     }
     BaseDataTest.runScript(sqlSessionFactory.getConfiguration().getEnvironment().getDataSource(),
-        "org/apache/ibatis/submitted/foreach/CreateDB.sql");
+      "org/apache/ibatis/submitted/foreach/CreateDB.sql");
 
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       Mapper mapper = sqlSession.getMapper(Mapper.class);
@@ -216,4 +218,23 @@ class ForEachTest {
     }
   }
 
+  @Test
+  void testForeach() {
+    try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
+      sqlSessionFactory.getConfiguration().setNullableOnForEach(true);
+      Mapper mapper = sqlSession.getMapper(Mapper.class);
+      User user = new User();
+      List<User> friends = new ArrayList<>();
+      for (int i = 0; i < 100; i++) {
+        User friend = new User();
+        friend.setId(i);
+        friend.setName("friend " + i);
+        friends.add(friend);
+      }
+      user.setFriendList(friends);
+      int result = mapper.countUserWithNullableIsFalse(user);
+    } catch (PersistenceException e) {
+      Assertions.assertEquals("The expression 'friendList' evaluated to a null value.", e.getCause().getMessage());
+    }
+  }
 }

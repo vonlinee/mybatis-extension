@@ -122,18 +122,4 @@
       </foreach>
     </where>
   </select>
-
-  <select id="dynamicForeach2Test" resultType="Blog">
-    select * from t_blog where id in
-    <foreach collection="array" index="index" item="item" open="(" separator="," close=")">
-      #{item}
-    </foreach>
-  </select>
-
-  <select id="dynamicForeach3Test" resultType="Blog">
-    select * from t_blog where title like "%"#{title}"%" and id in
-    <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
-      #{item}
-    </foreach>
-  </select>
 </mapper>
