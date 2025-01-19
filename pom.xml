@@ -190,6 +190,7 @@
       <groupId>org.jetbrains</groupId>
       <artifactId>annotations</artifactId>
       <version>26.0.1</version>
+      <scope>compile</scope>
     </dependency>
 
     <dependency>
