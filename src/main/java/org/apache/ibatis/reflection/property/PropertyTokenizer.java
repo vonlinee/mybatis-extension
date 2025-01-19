@@ -21,9 +21,33 @@ import java.util.Iterator;
  * @author Clinton Begin
  */
 public class PropertyTokenizer implements Iterator<PropertyTokenizer> {
+
+  /**
+   * The first block name of the current attribute.
+   * for example:
+   * <li>if jdbc.name, then name is jdbc</li>
+   * <li>if arr[i], then name is arr</li>
+   * <li>if username, then name is username</li>
+   */
   private String name;
+
+  /**
+   * The first block name of the current attribute.
+   * for example:
+   * <li>if jdbc.name, then name is jdbc</li>
+   * <li>if arr[i], then indexedName is arr[i]</li>
+   * <li>if username, then name is indexedName</li>
+   */
   private final String indexedName;
+
+  /**
+   * for example, if full name is arr [1], then index=1
+   */
   private String index;
+
+  /**
+   * for example: jdbc.name then children is name.
+   */
   private final String children;
 
   public PropertyTokenizer(String fullName) {
@@ -72,6 +96,6 @@ public class PropertyTokenizer implements Iterator<PropertyTokenizer> {
   @Override
   public void remove() {
     throw new UnsupportedOperationException(
-        "Remove is not supported, as it has no meaning in the context of properties.");
+      "Remove is not supported, as it has no meaning in the context of properties.");
   }
 }
