@@ -1193,7 +1193,7 @@ public class Configuration {
     return handler == null ? typeHandlerRegistry.getInstance(javaType, typeHandlerType) : handler;
   }
 
-  public SqlBuildContext createDynamicContext(@Nullable Object parameterObject) {
+  public SqlBuildContext createSqlBuildContext(@Nullable Object parameterObject) {
     BindingContext bindings;
     if (parameterObject != null && !(parameterObject instanceof Map)) {
       MetaObject metaObject = this.newMetaObject(parameterObject);
@@ -1202,9 +1202,11 @@ public class Configuration {
     } else {
       bindings = new ContextMap(null, false);
     }
-    bindings.put("_parameter", parameterObject);
-    bindings.put("_databaseId", this.getDatabaseId());
-    return new DefaultSqlBuildContext(bindings);
+    bindings.put(SqlBuildContext.PARAMETER_OBJECT_KEY, parameterObject);
+    bindings.put(SqlBuildContext.DATABASE_ID_KEY, this.getDatabaseId());
+    DefaultSqlBuildContext context = new DefaultSqlBuildContext(bindings);
+    context.setDatabaseId(this.getDatabaseId());
+    return context;
   }
 
   /**

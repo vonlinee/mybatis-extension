@@ -35,7 +35,7 @@ public class InSqlNode extends ForEachSqlNode {
 
   public InSqlNode(SqlNode contents, @NotNull ExpressionEvaluator evaluator,
                    @NotNull String collectionExpression,
-                   @NotNull String conditionExpression,
+                   @Nullable String conditionExpression,
                    @Nullable String itemExpression,
                    boolean nullable,
                    @Nullable String column) {

@@ -27,6 +27,11 @@ import org.jetbrains.annotations.Nullable;
  */
 public class SqlSourceBuilder {
 
+  public static SqlSource parse(Configuration configuration, String originalSql, @Nullable Object parameterObject, BindingContext additionalParameters) {
+    Class<?> parameterType = parameterObject == null ? Object.class : parameterObject.getClass();
+    return parse(configuration, originalSql, parameterType, additionalParameters);
+  }
+
   public static SqlSource parse(Configuration configuration, String originalSql, @Nullable Class<?> parameterType, BindingContext additionalParameters) {
     parameterType = parameterType == null ? Object.class : parameterType;
     ParameterMappingTokenHandler handler = new ParameterMappingTokenHandler(configuration, parameterType,

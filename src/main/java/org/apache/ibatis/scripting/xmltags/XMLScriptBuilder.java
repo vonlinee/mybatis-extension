@@ -68,7 +68,7 @@ public class XMLScriptBuilder extends BaseBuilder {
     if (isDynamic) {
       sqlSource = new DynamicSqlSource(rootSqlNode);
     } else {
-      SqlBuildContext context = configuration.createDynamicContext(null);
+      SqlBuildContext context = configuration.createSqlBuildContext(null);
       String sql = rootSqlNode.getSql(context);
       sqlSource = new RawSqlSource(SqlSourceBuilder.parse(configuration, sql, parameterType, new MapBinding()));
     }
