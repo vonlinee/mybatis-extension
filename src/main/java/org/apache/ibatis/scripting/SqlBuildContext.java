@@ -71,5 +71,5 @@ public interface SqlBuildContext {
    *
    * @return a unique number
    */
-  int getUniqueNumber();
+  int nextUniqueNumber();
 }

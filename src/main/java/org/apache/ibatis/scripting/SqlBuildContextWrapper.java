@@ -49,7 +49,7 @@ public class SqlBuildContextWrapper implements SqlBuildContext {
   }
 
   @Override
-  public int getUniqueNumber() {
-    return context.getUniqueNumber();
+  public int nextUniqueNumber() {
+    return context.nextUniqueNumber();
   }
 }

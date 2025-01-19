@@ -128,11 +128,11 @@ public class ForEachSqlNode extends DynamicSqlNode {
     }
     boolean first = true;
     applyOpen(context);
-    int i = 0;
 
     final FilteredSqlBuildContext filteredContextDelegator = new FilteredSqlBuildContext();
     final PrefixedSqlBuildContext prefixedContextDelegator = new PrefixedSqlBuildContext(context, null);
 
+    int i = 0;
     for (Object o : iterable) {
       SqlBuildContext oldContext = context;
 
@@ -144,17 +144,8 @@ public class ForEachSqlNode extends DynamicSqlNode {
       prefixedContextDelegator.setWrapperContext(context);
       context = prefixedContextDelegator;
 
-      final int uniqueNumber = context.getUniqueNumber();
-      // Issue #709
-      if (o instanceof Map.Entry) {
-        @SuppressWarnings("unchecked")
-        Map.Entry<Object, Object> mapEntry = (Map.Entry<Object, Object>) o;
-        applyIndex(context, mapEntry.getKey(), uniqueNumber);
-        applyItem(context, mapEntry.getValue(), uniqueNumber);
-      } else {
-        applyIndex(context, i, uniqueNumber);
-        applyItem(context, o, uniqueNumber);
-      }
+      final int uniqueNumber = context.nextUniqueNumber();
+      applyIndexedItem(context, o, i, uniqueNumber);
 
       filteredContextDelegator.updateItem(item, index, uniqueNumber);
       filteredContextDelegator.setWrapperContext(context);
@@ -168,6 +159,19 @@ public class ForEachSqlNode extends DynamicSqlNode {
     applyClose(context);
     context.getBindings().removeKeys(item, index);
     return true;
+  }
+
+  public final void applyIndexedItem(SqlBuildContext context, Object object, int index, int uniqueNumber) {
+    // Issue #709
+    if (object instanceof Map.Entry) {
+      @SuppressWarnings("unchecked")
+      Map.Entry<Object, Object> mapEntry = (Map.Entry<Object, Object>) object;
+      applyIndex(context, mapEntry.getKey(), uniqueNumber);
+      applyItem(context, mapEntry.getValue(), uniqueNumber);
+    } else {
+      applyIndex(context, index, uniqueNumber);
+      applyItem(context, object, uniqueNumber);
+    }
   }
 
   /**

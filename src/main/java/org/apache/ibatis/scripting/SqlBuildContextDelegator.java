@@ -42,7 +42,7 @@ public class SqlBuildContextDelegator implements SqlBuildContext {
   }
 
   @Override
-  public int getUniqueNumber() {
-    return delegator.getUniqueNumber();
+  public int nextUniqueNumber() {
+    return delegator.nextUniqueNumber();
   }
 }

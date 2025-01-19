@@ -44,7 +44,7 @@ public final class DefaultSqlBuildContext implements SqlBuildContext {
   }
 
   @Override
-  public int getUniqueNumber() {
+  public int nextUniqueNumber() {
     return uniqueNumber++;
   }
 }
