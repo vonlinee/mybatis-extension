@@ -58,6 +58,10 @@ public class ForEachSqlNode extends DynamicSqlNode {
    * whether the element to iterate can be nullable
    */
   private final boolean nullable;
+
+  /**
+   * the sql nodes.
+   */
   private final SqlNode contents;
 
   /**
@@ -128,12 +132,14 @@ public class ForEachSqlNode extends DynamicSqlNode {
     int i = 0;
     for (Object o : iterable) {
       SqlBuildContext oldContext = context;
+
+      String prefix = separator;
       if (first || separator == null) {
-        context = new PrefixedSqlBuildContext(context, "");
-      } else {
-        context = new PrefixedSqlBuildContext(context, separator);
+        prefix = "";
       }
-      int uniqueNumber = context.getUniqueNumber();
+      context = new PrefixedSqlBuildContext(context, prefix);
+
+      final int uniqueNumber = context.getUniqueNumber();
       // Issue #709
       if (o instanceof Map.Entry) {
         @SuppressWarnings("unchecked")
@@ -157,27 +163,32 @@ public class ForEachSqlNode extends DynamicSqlNode {
     return true;
   }
 
-  private void applyIndex(SqlBuildContext context, Object o, int i) {
+  /**
+   * @param context context
+   * @param o       index value
+   * @param i       index
+   */
+  protected void applyIndex(SqlBuildContext context, Object o, int i) {
     if (index != null) {
       context.bind(index, o);
       context.bind(itemizeItem(index, i), o);
     }
   }
 
-  private void applyItem(SqlBuildContext context, Object o, int i) {
+  protected void applyItem(SqlBuildContext context, Object o, int i) {
     if (item != null) {
       context.bind(item, o);
       context.bind(itemizeItem(item, i), o);
     }
   }
 
-  private void applyOpen(SqlBuildContext context) {
+  protected void applyOpen(SqlBuildContext context) {
     if (open != null) {
       context.appendSql(open);
     }
   }
 
-  private void applyClose(SqlBuildContext context) {
+  protected void applyClose(SqlBuildContext context) {
     if (close != null) {
       context.appendSql(close);
     }
@@ -188,7 +199,6 @@ public class ForEachSqlNode extends DynamicSqlNode {
   }
 
   private static class FilteredSqlBuildContext extends SqlBuildContextDelegator {
-    private final SqlBuildContext delegate;
     private final int index;
     private final String itemIndex;
     private final String item;
@@ -196,7 +206,6 @@ public class ForEachSqlNode extends DynamicSqlNode {
     public FilteredSqlBuildContext(SqlBuildContext delegate, String itemIndex, String item,
                                    int i) {
       super(delegate);
-      this.delegate = delegate;
       this.index = i;
       this.itemIndex = itemIndex;
       this.item = item;
@@ -211,18 +220,16 @@ public class ForEachSqlNode extends DynamicSqlNode {
         }
         return "#{" + newContent + "}";
       });
-      delegate.appendSql(parser.parse(sql));
+      super.appendSql(parser.parse(sql));
     }
   }
 
   private static class PrefixedSqlBuildContext extends SqlBuildContextDelegator {
-    private final SqlBuildContext delegate;
     private final String prefix;
     private boolean prefixApplied;
 
     public PrefixedSqlBuildContext(SqlBuildContext delegate, String prefix) {
       super(delegate);
-      this.delegate = delegate;
       this.prefix = prefix;
       this.prefixApplied = false;
     }
@@ -234,10 +241,10 @@ public class ForEachSqlNode extends DynamicSqlNode {
     @Override
     public void appendSql(String sql) {
       if (!prefixApplied && sql != null && !sql.trim().isEmpty()) {
-        delegate.appendSql(prefix);
+        super.appendSql(prefix);
         prefixApplied = true;
       }
-      delegate.appendSql(sql);
+      super.appendSql(sql);
     }
   }
 }

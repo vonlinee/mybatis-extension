@@ -79,14 +79,12 @@ public class TrimSqlNode implements SqlNode {
   }
 
   private class FilteredSqlBuildContext extends SqlBuildContextDelegator {
-    private final SqlBuildContext delegate;
     private boolean prefixApplied;
     private boolean suffixApplied;
     private StringBuilder sqlBuffer;
 
     public FilteredSqlBuildContext(SqlBuildContext delegate) {
       super(delegate);
-      this.delegate = delegate;
       this.prefixApplied = false;
       this.suffixApplied = false;
       this.sqlBuffer = new StringBuilder();
@@ -99,7 +97,7 @@ public class TrimSqlNode implements SqlNode {
         applyPrefix(sqlBuffer, trimmedUppercaseSql);
         applySuffix(sqlBuffer, trimmedUppercaseSql);
       }
-      delegate.appendSql(sqlBuffer.toString());
+      super.appendSql(sqlBuffer.toString());
     }
 
     @Override
