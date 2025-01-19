@@ -176,6 +176,12 @@ nullable CDATA #IMPLIED
 condition CDATA #IMPLIED
 >
 
+<!ELEMENT eq EMPTY>
+<!ATTLIST in
+property CDATA #REQUIRED
+column CDATA #IMPLIED
+>
+
 <!ELEMENT select (#PCDATA | include | trim | where | set | foreach | choose | if | bind | in)*>
 <!ATTLIST select
 id CDATA #REQUIRED

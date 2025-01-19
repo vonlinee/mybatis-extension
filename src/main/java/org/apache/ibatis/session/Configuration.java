@@ -31,12 +31,7 @@ import org.apache.ibatis.cache.impl.PerpetualCache;
 import org.apache.ibatis.datasource.jndi.JndiDataSourceFactory;
 import org.apache.ibatis.datasource.pooled.PooledDataSourceFactory;
 import org.apache.ibatis.datasource.unpooled.UnpooledDataSourceFactory;
-import org.apache.ibatis.executor.BatchExecutor;
-import org.apache.ibatis.executor.CachingExecutor;
-import org.apache.ibatis.executor.Executor;
-import org.apache.ibatis.executor.ExecutorException;
-import org.apache.ibatis.executor.ReuseExecutor;
-import org.apache.ibatis.executor.SimpleExecutor;
+import org.apache.ibatis.executor.*;
 import org.apache.ibatis.executor.keygen.KeyGenerator;
 import org.apache.ibatis.executor.loader.ProxyFactory;
 import org.apache.ibatis.executor.loader.cglib.CglibProxyFactory;
@@ -111,7 +106,7 @@ import java.util.function.BiFunction;
 public class Configuration {
 
   protected Environment environment;
-
+  protected NamingStrategy namingStrategy = NamingStrategy.DEFAULT;
   protected boolean safeRowBoundsEnabled;
   protected boolean safeResultHandlerEnabled = true;
   protected boolean mapUnderscoreToCamelCase;
@@ -321,6 +316,15 @@ public class Configuration {
    */
   public void setNullableOnForEach(boolean nullableOnForEach) {
     this.nullableOnForEach = nullableOnForEach;
+  }
+
+  @NotNull
+  public NamingStrategy getNamingStrategy() {
+    return namingStrategy;
+  }
+
+  public void setNamingStrategy(NamingStrategy namingStrategy) {
+    this.namingStrategy = namingStrategy == null ? NamingStrategy.DEFAULT : namingStrategy;
   }
 
   /**
