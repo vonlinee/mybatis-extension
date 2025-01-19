@@ -25,7 +25,6 @@
   <select id="getUser" resultType="org.apache.ibatis.submitted.in.User">
     select * from users
     WHERE id
-    <in collection="friendList"/>
   </select>
 
   <select id="countByUserList" resultType="_int" parameterType="list">
@@ -112,7 +111,7 @@
   <select id="countUserWithNullableIsFalse" resultType="_int">
     select count(*) from users
     <where>
-      t.user_id <in collection="friendList" item="item.id"/>
+      id <in collection="friendList" item="item.id"/>
     </where>
   </select>
 </mapper>

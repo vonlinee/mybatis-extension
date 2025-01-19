@@ -51,9 +51,4 @@ public class ContextMap extends HashMap<String, Object> implements BindingContex
   public void remove(String key) {
     super.remove(key);
   }
-
-  @Override
-  public void removeKeys(String... keys) {
-    throw new UnsupportedOperationException();
-  }
 }

@@ -25,7 +25,6 @@ public class VarDeclSqlNode extends DynamicSqlNode {
 
   private final String name;
   private final String expression;
-  private final ExpressionEvaluator evaluator;
 
   public VarDeclSqlNode(ExpressionEvaluator evaluator, String name, String exp) {
     this.evaluator = evaluator;

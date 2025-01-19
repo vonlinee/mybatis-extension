@@ -80,5 +80,4 @@ public class TextSqlNode implements SqlNode {
   public String getText() {
     return text;
   }
-
 }

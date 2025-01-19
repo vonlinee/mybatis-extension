@@ -234,6 +234,7 @@ class ForEachTest {
       user.setFriendList(friends);
       int result = mapper.countUserWithNullableIsFalse(user);
     } catch (PersistenceException e) {
+      e.printStackTrace();
       Assertions.assertEquals("The expression 'friendList' evaluated to a null value.", e.getCause().getMessage());
     }
   }

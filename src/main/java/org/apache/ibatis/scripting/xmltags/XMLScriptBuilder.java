@@ -22,6 +22,7 @@ import org.apache.ibatis.internal.StringKey;
 import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.parsing.DynamicCheckerTokenParser;
 import org.apache.ibatis.parsing.XNode;
+import org.apache.ibatis.reflection.property.PropertyTokenizer;
 import org.apache.ibatis.scripting.MapBinding;
 import org.apache.ibatis.scripting.SqlBuildContext;
 import org.apache.ibatis.scripting.ExpressionEvaluator;
@@ -266,16 +267,33 @@ public class XMLScriptBuilder extends BaseBuilder {
 
     @Override
     public void handleNode(XNode nodeToHandle, List<SqlNode> targetContents) {
-      MixedSqlNode mixedSqlNode = parseDynamicTags(nodeToHandle);
       String collection = nodeToHandle.getStringAttribute(StringKey.COLLECTION);
       String column = nodeToHandle.getStringAttribute(StringKey.COLUMN);
       String item = nodeToHandle.getStringAttribute(StringKey.ITEM);
-      Boolean nullable = nodeToHandle.getBooleanAttribute(StringKey.NULLABLE, false);
+      Boolean nullable = nodeToHandle.getBooleanAttribute(StringKey.NULLABLE);
+      if (nullable == null) {
+        nullable = configuration.isNullableOnForEach();
+      }
 
-      nullable = Optional.ofNullable(nullable).orElseGet(configuration::isNullableOnForEach);
+      StaticTextSqlNode contents = new StaticTextSqlNode("#{" + item + "}");
+      targetContents.add(new InSqlNode(contents, evaluator, collection, parseItemExpression(item), nullable, column));
+    }
 
-      InSqlNode forEachSqlNode = new InSqlNode(mixedSqlNode, collection, item, nullable, column);
-      targetContents.add(forEachSqlNode);
+    /**
+     * item.id -> item
+     *
+     * @param itemExpression item expression
+     * @return item expression value
+     */
+    private String parseItemExpression(String itemExpression) {
+      if (itemExpression == null) {
+        return null;
+      }
+      PropertyTokenizer tokenizer = new PropertyTokenizer(itemExpression);
+      if (tokenizer.hasNext()) {
+        return tokenizer.getName();
+      }
+      return itemExpression;
     }
   }
 }

@@ -51,5 +51,12 @@ public interface BindingContext {
    *
    * @param keys the key of the key-value pair to be removed
    */
-  void removeKeys(String... keys);
+  default void removeKeys(String... keys) {
+    if (keys == null) {
+      return;
+    }
+    for (String key : keys) {
+      remove(key);
+    }
+  }
 }

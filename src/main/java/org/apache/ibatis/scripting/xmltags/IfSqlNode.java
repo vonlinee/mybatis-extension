@@ -22,8 +22,15 @@ import org.apache.ibatis.scripting.ExpressionEvaluator;
  * @author Clinton Begin
  */
 public class IfSqlNode extends DynamicSqlNode {
-  private final ExpressionEvaluator evaluator;
+
+  /**
+   * test condition
+   */
   private final String test;
+
+  /**
+   * contents
+   */
   private final SqlNode contents;
 
   public IfSqlNode(ExpressionEvaluator evaluator, SqlNode contents, String test) {

@@ -20,6 +20,7 @@ import org.apache.ibatis.parsing.TokenHandler;
 import org.apache.ibatis.scripting.*;
 import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
 import org.apache.ibatis.util.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -48,8 +49,6 @@ import java.util.Map;
  */
 public class ForEachSqlNode extends DynamicSqlNode {
   public static final String ITEM_PREFIX = "__frch_";
-
-  private final ExpressionEvaluator evaluator;
 
   private final String collectionExpression;
 
@@ -132,6 +131,9 @@ public class ForEachSqlNode extends DynamicSqlNode {
     final FilteredSqlBuildContext filteredContextDelegator = new FilteredSqlBuildContext();
     final PrefixedSqlBuildContext prefixedContextDelegator = new PrefixedSqlBuildContext(context, null);
 
+    final String item = getItemExpression();
+    final String index = getIndexExpression();
+    final String separator = getSeparator();
     int i = 0;
     for (Object o : iterable) {
       SqlBuildContext oldContext = context;
@@ -149,7 +151,7 @@ public class ForEachSqlNode extends DynamicSqlNode {
 
       filteredContextDelegator.updateItem(item, index, uniqueNumber);
       filteredContextDelegator.setWrapperContext(context);
-      contents.apply(filteredContextDelegator);
+      applyContents(filteredContextDelegator);
       if (first) {
         first = !((PrefixedSqlBuildContext) context).isPrefixApplied();
       }
@@ -159,6 +161,10 @@ public class ForEachSqlNode extends DynamicSqlNode {
     applyClose(context);
     context.getBindings().removeKeys(item, index);
     return true;
+  }
+
+  protected void applyContents(@NotNull SqlBuildContext context) {
+    contents.apply(context);
   }
 
   public final void applyIndexedItem(SqlBuildContext context, Object object, int index, int uniqueNumber) {
@@ -174,12 +180,25 @@ public class ForEachSqlNode extends DynamicSqlNode {
     }
   }
 
+  public String getItemExpression() {
+    return item;
+  }
+
+  public String getIndexExpression() {
+    return index;
+  }
+
+  public String getSeparator() {
+    return separator;
+  }
+
   /**
    * @param context context
    * @param o       index value
    * @param i       index
    */
   protected void applyIndex(SqlBuildContext context, Object o, int i) {
+    String index = getIndexExpression();
     if (index != null) {
       context.bind(index, o);
       context.bind(itemizeItem(index, i), o);
@@ -187,6 +206,7 @@ public class ForEachSqlNode extends DynamicSqlNode {
   }
 
   protected void applyItem(SqlBuildContext context, Object o, int i) {
+    String item = getItemExpression();
     if (item != null) {
       context.bind(item, o);
       context.bind(itemizeItem(item, i), o);
@@ -279,5 +299,13 @@ public class ForEachSqlNode extends DynamicSqlNode {
       }
       super.appendSql(sql);
     }
+  }
+
+  public String getOpen() {
+    return open;
+  }
+
+  public String getClose() {
+    return close;
   }
 }

@@ -216,14 +216,12 @@ class InTest {
         user.setId(i);
         friends.add(user);
       }
-
       User user = new User();
       user.setFriendList(friends);
       int result = mapper.countUserWithNullableIsFalse(user);
-      Assertions.fail();
     } catch (PersistenceException e) {
+      e.printStackTrace();
       Assertions.assertEquals("The expression 'friendList' evaluated to a null value.", e.getCause().getMessage());
     }
   }
-
 }

@@ -33,6 +33,9 @@ public interface SqlNode {
 
   /**
    * Checks if this SQL node is dynamic.
+   * 'dynamic' means current sql node contains dynamic sql element like
+   * {@literal <where/>},{@literal <if/>}, {@literal <choose/>}, {@literal <set/>}
+   * as children.
    *
    * @return true if the SQL node is dynamic; false otherwise
    */
@@ -47,6 +50,11 @@ public interface SqlNode {
    */
   boolean apply(SqlBuildContext context);
 
+  /**
+   * whether this node has child nodes.
+   *
+   * @return whether this node has child nodes.
+   */
   default boolean hasChildren() {
     return false;
   }

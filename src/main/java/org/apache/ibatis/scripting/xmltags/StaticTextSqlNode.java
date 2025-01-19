@@ -25,6 +25,10 @@ import org.apache.ibatis.scripting.SqlBuildContext;
  * @author Clinton Begin
  */
 public class StaticTextSqlNode implements SqlNode {
+
+  /**
+   * static text, maybe a variable reference like #{user.name}.
+   */
   private final String text;
 
   public StaticTextSqlNode(String text) {
