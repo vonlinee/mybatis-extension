@@ -22,6 +22,7 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.scripting.defaults.RawSqlSource;
 import org.apache.ibatis.scripting.xmltags.DynamicSqlSource;
+import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
@@ -63,9 +64,12 @@ class RawSqlSourceTest {
 
   private void test(String statement, Class<? extends SqlSource> sqlSource) {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
-      Assertions.assertEquals(sqlSource,
-          sqlSession.getConfiguration().getMappedStatement(statement).getSqlSource().getClass());
-      String sql = sqlSession.getConfiguration().getMappedStatement(statement).getSqlSource().getBoundSql('?').getSql();
+
+      Configuration config = sqlSession.getConfiguration();
+
+      Assertions.assertEquals(sqlSource, config
+          .getMappedStatement(statement).getSqlSource().getClass());
+      String sql = sqlSession.getConfiguration().getMappedStatement(statement).getSqlSource().getBoundSql(config, '?').getSql();
       Assertions.assertEquals("select * from users where id = ?", sql);
       User user = sqlSession.selectOne(statement, 1);
       Assertions.assertEquals("User1", user.getName());

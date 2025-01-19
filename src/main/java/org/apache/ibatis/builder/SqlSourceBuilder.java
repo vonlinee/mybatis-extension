@@ -22,8 +22,6 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.util.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
-
 /**
  * @author Clinton Begin
  */
@@ -43,6 +41,6 @@ public class SqlSourceBuilder {
     } else {
       sql = parser.parse(originalSql);
     }
-    return new StaticSqlSource(configuration, sql, handler.getParameterMappings());
+    return new StaticSqlSource(sql, handler.getParameterMappings());
   }
 }

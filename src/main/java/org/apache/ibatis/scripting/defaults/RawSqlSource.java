@@ -21,8 +21,7 @@ import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.scripting.MapBinding;
 import org.apache.ibatis.scripting.xmltags.DynamicSqlSource;
 import org.apache.ibatis.session.Configuration;
-
-import java.util.HashMap;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Static SqlSource. It is faster than {@link DynamicSqlSource} because mappings are calculated during startup.
@@ -40,7 +39,8 @@ public class RawSqlSource implements SqlSource {
   }
 
   @Override
-  public BoundSql getBoundSql(Object parameterObject) {
-    return sqlSource.getBoundSql(parameterObject);
+  @NotNull
+  public BoundSql getBoundSql(@NotNull Configuration config, Object parameterObject) {
+    return sqlSource.getBoundSql(config, parameterObject);
   }
 }

@@ -20,6 +20,7 @@ import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.scripting.SqlBuildContext;
 import org.apache.ibatis.session.Configuration;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -44,7 +45,8 @@ public class TemplateScriptSqlSource implements SqlSource {
   }
 
   @Override
-  public BoundSql getBoundSql(Object parameterObject) {
+  @NotNull
+  public BoundSql getBoundSql(@NotNull Configuration config, Object parameterObject) {
     final Map<String, Object> context = new HashMap<>();
     final ParameterMappingCollector pmc = new ParameterMappingCollector(this.parameterMappingSources, context,
       this.configuration);

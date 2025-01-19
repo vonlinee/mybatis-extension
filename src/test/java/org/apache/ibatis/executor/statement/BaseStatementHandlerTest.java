@@ -49,7 +49,7 @@ class BaseStatementHandlerTest {
   @BeforeEach
   void setupMappedStatement() {
     this.mappedStatementBuilder = new MappedStatement.Builder(configuration, "id",
-        new StaticSqlSource(configuration, "sql"), null);
+        new StaticSqlSource("sql"), null);
   }
 
   @AfterEach

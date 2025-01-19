@@ -20,6 +20,7 @@ import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.scripting.SqlBuildContext;
 import org.apache.ibatis.session.Configuration;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * the sql that contains ${} or dynamic sql xml tag (if, foreach. etc.)
@@ -49,7 +50,7 @@ public class DynamicSqlSource implements SqlSource {
   }
 
   @Override
-  public BoundSql getBoundSql(Object parameterObject) {
+  public @NotNull BoundSql getBoundSql(@NotNull Configuration config, Object parameterObject) {
     SqlBuildContext context = configuration.createDynamicContext(parameterObject);
     // calculate all dynamic content
     rootSqlNode.apply(context);
@@ -58,7 +59,7 @@ public class DynamicSqlSource implements SqlSource {
     // the sql left may contain ${xxx} or #{xxx}, so we have to parse again
     Class<?> parameterType = parameterObject == null ? Object.class : parameterObject.getClass();
     SqlSource sqlSource = SqlSourceBuilder.parse(configuration, sql, parameterType, context.getBindings());
-    BoundSql boundSql = sqlSource.getBoundSql(parameterObject);
+    BoundSql boundSql = sqlSource.getBoundSql(config, parameterObject);
     context.getBindings().iterateFor(boundSql::setAdditionalParameter);
     return boundSql;
   }

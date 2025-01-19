@@ -67,12 +67,10 @@ class DefaultResultSetHandlerTest2 {
     final Configuration config = new Configuration();
     final TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
     final MappedStatement ms = new MappedStatement.Builder(config, "testSelect",
-        new StaticSqlSource(config, "some select statement"), SqlCommandType.SELECT)
+        new StaticSqlSource("some select statement"), SqlCommandType.SELECT)
             .resultMaps(new ArrayList<ResultMap>() {
-              private static final long serialVersionUID = 1L;
               {
                 add(new ResultMap.Builder(config, "testMap", HashMap.class, new ArrayList<ResultMapping>() {
-                  private static final long serialVersionUID = 1L;
                   {
                     add(new ResultMapping.Builder(config, "id", "id", registry.getTypeHandler(Integer.class)).build());
                   }
@@ -107,18 +105,15 @@ class DefaultResultSetHandlerTest2 {
     final TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
     final ResultMap nestedResultMap = new ResultMap.Builder(config, "roleMap", HashMap.class,
         new ArrayList<ResultMapping>() {
-          private static final long serialVersionUID = 1L;
           {
             add(new ResultMapping.Builder(config, "role", "role", registry.getTypeHandler(String.class)).build());
           }
         }).build();
     config.addResultMap(nestedResultMap);
     final MappedStatement ms = new MappedStatement.Builder(config, "selectPerson",
-        new StaticSqlSource(config, "select person..."), SqlCommandType.SELECT).resultMaps(new ArrayList<ResultMap>() {
-          private static final long serialVersionUID = 1L;
+        new StaticSqlSource("select person..."), SqlCommandType.SELECT).resultMaps(new ArrayList<ResultMap>() {
           {
             add(new ResultMap.Builder(config, "personMap", HashMap.class, new ArrayList<ResultMapping>() {
-              private static final long serialVersionUID = 1L;
               {
                 add(new ResultMapping.Builder(config, "id", "id", registry.getTypeHandler(Integer.class)).build());
                 add(new ResultMapping.Builder(config, "roles").nestedResultMapId("roleMap").build());

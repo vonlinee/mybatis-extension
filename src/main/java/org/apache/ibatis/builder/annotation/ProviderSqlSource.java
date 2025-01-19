@@ -23,6 +23,7 @@ import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.reflection.ParamNameResolver;
 import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.session.Configuration;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -122,9 +123,9 @@ public class ProviderSqlSource implements SqlSource {
   }
 
   @Override
-  public BoundSql getBoundSql(Object parameterObject) {
+  public @NotNull BoundSql getBoundSql(@NotNull Configuration config, Object parameterObject) {
     SqlSource sqlSource = createSqlSource(parameterObject);
-    return sqlSource.getBoundSql(parameterObject);
+    return sqlSource.getBoundSql(config, parameterObject);
   }
 
   private SqlSource createSqlSource(Object parameterObject) {

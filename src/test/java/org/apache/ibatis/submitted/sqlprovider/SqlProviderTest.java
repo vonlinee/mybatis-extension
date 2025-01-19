@@ -16,12 +16,7 @@
 package org.apache.ibatis.submitted.sqlprovider;
 
 import org.apache.ibatis.BaseDataTest;
-import org.apache.ibatis.annotations.DeleteProvider;
-import org.apache.ibatis.annotations.InsertProvider;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.SelectProvider;
-import org.apache.ibatis.annotations.UpdateProvider;
-import org.apache.ibatis.binding.MapperMethod;
+import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.binding.ParamMap;
 import org.apache.ibatis.builder.BuilderException;
 import org.apache.ibatis.builder.annotation.ProviderContext;
@@ -37,11 +32,7 @@ import org.junit.jupiter.api.Test;
 import java.io.Reader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -49,6 +40,8 @@ class SqlProviderTest {
 
   private static SqlSessionFactory sqlSessionFactory;
   private static SqlSessionFactory sqlSessionFactoryForDerby;
+
+  Configuration config = new Configuration();
 
   @BeforeAll
   static void setUp() throws Exception {
@@ -355,9 +348,10 @@ class SqlProviderTest {
   void notSupportParameterObjectOnMultipleArguments() throws NoSuchMethodException {
     try {
       Class<?> mapperType = Mapper.class;
+      Configuration config = new Configuration();
       Method mapperMethod = mapperType.getMethod("getUsersByName", String.class, String.class);
-      new ProviderSqlSource(new Configuration(), mapperMethod.getAnnotation(SelectProvider.class), mapperType,
-        mapperMethod).getBoundSql(new Object());
+      new ProviderSqlSource(config, mapperMethod.getAnnotation(SelectProvider.class), mapperType,
+        mapperMethod).getBoundSql(config, new Object());
       fail();
     } catch (BuilderException e) {
       assertTrue(e.getMessage().contains(
@@ -371,7 +365,7 @@ class SqlProviderTest {
       Class<?> mapperType = Mapper.class;
       Method mapperMethod = mapperType.getMethod("getUsersByNameWithParamName", String.class);
       new ProviderSqlSource(new Configuration(), mapperMethod.getAnnotation(SelectProvider.class), mapperType,
-        mapperMethod).getBoundSql(new Object());
+        mapperMethod).getBoundSql(config, new Object());
       fail();
     } catch (BuilderException e) {
       assertTrue(e.getMessage().contains(
@@ -385,7 +379,7 @@ class SqlProviderTest {
       Class<?> mapperType = ErrorMapper.class;
       Method mapperMethod = mapperType.getMethod("invokeError");
       new ProviderSqlSource(new Configuration(), mapperMethod.getAnnotation(SelectProvider.class), mapperType,
-        mapperMethod).getBoundSql(new Object());
+        mapperMethod).getBoundSql(config, new Object());
       fail();
     } catch (BuilderException e) {
       assertTrue(e.getMessage().contains(
@@ -399,7 +393,7 @@ class SqlProviderTest {
       Class<?> mapperType = ErrorMapper.class;
       Method mapperMethod = mapperType.getMethod("invokeNestedError");
       new ProviderSqlSource(new Configuration(), mapperMethod.getAnnotation(SelectProvider.class), mapperType,
-        mapperMethod).getBoundSql(new Object());
+        mapperMethod).getBoundSql(config, new Object());
       fail();
     } catch (BuilderException e) {
       assertTrue(e.getMessage().contains(
@@ -413,7 +407,7 @@ class SqlProviderTest {
       Class<?> mapperType = ErrorMapper.class;
       Method mapperMethod = mapperType.getMethod("invalidArgumentsCombination", String.class);
       new ProviderSqlSource(new Configuration(), mapperMethod.getAnnotation(DeleteProvider.class), mapperType,
-        mapperMethod).getBoundSql("foo");
+        mapperMethod).getBoundSql(config, "foo");
       fail();
     } catch (BuilderException e) {
       assertTrue(e.getMessage().contains(
@@ -656,7 +650,7 @@ class SqlProviderTest {
     Method mapperMethod = mapperType.getMethod("noArgument");
     ProviderSqlSource sqlSource = new ProviderSqlSource(new Configuration(),
       mapperMethod.getAnnotation(SelectProvider.class), mapperType, mapperMethod);
-    assertEquals("SELECT 1 FROM INFORMATION_SCHEMA.SYSTEM_USERS", sqlSource.getBoundSql(null).getSql());
+    assertEquals("SELECT 1 FROM INFORMATION_SCHEMA.SYSTEM_USERS", sqlSource.getBoundSql(config, null).getSql());
   }
 
   @Test
@@ -667,25 +661,25 @@ class SqlProviderTest {
     {
       Method mapperMethod = mapperType.getMethod("select", int.class);
       String sql = new ProviderSqlSource(configuration, mapperMethod.getAnnotation(SelectProvider.class), mapperType,
-        mapperMethod).getBoundSql(1).getSql();
+        mapperMethod).getBoundSql(config, 1).getSql();
       assertEquals("select name from foo where id = ?", sql);
     }
     {
       Method mapperMethod = mapperType.getMethod("insert", String.class);
       String sql = new ProviderSqlSource(configuration, mapperMethod.getAnnotation(InsertProvider.class), mapperType,
-        mapperMethod).getBoundSql("Taro").getSql();
+        mapperMethod).getBoundSql(config, "Taro").getSql();
       assertEquals("insert into foo (name) values(?)", sql);
     }
     {
       Method mapperMethod = mapperType.getMethod("update", int.class, String.class);
       String sql = new ProviderSqlSource(configuration, mapperMethod.getAnnotation(UpdateProvider.class), mapperType,
-        mapperMethod).getBoundSql(Collections.emptyMap()).getSql();
+        mapperMethod).getBoundSql(config, Collections.emptyMap()).getSql();
       assertEquals("update foo set name = ? where id = ?", sql);
     }
     {
       Method mapperMethod = mapperType.getMethod("delete", int.class);
       String sql = new ProviderSqlSource(configuration, mapperMethod.getAnnotation(DeleteProvider.class), mapperType,
-        mapperMethod).getBoundSql(Collections.emptyMap()).getSql();
+        mapperMethod).getBoundSql(config, Collections.emptyMap()).getSql();
       assertEquals("delete from foo where id = ?", sql);
     }
   }
@@ -721,9 +715,7 @@ class SqlProviderTest {
 
       private SqlProvider() {
       }
-
     }
-
   }
 
   public interface ErrorMapper {

@@ -35,7 +35,7 @@ public class SqlSourceBuilderTest {
   @Test
   void testShrinkWhitespacesInSqlIsFalse() {
     SqlSource sqlSource = SqlSourceBuilder.parse(configuration, sqlFromXml);
-    BoundSql boundSql = sqlSource.getBoundSql(null);
+    BoundSql boundSql = sqlSource.getBoundSql(configuration, null);
     String actual = boundSql.getSql();
     Assertions.assertEquals(sqlFromXml, actual);
   }
@@ -44,7 +44,7 @@ public class SqlSourceBuilderTest {
   void testShrinkWhitespacesInSqlIsTrue() {
     configuration.setShrinkWhitespacesInSql(true);
     SqlSource sqlSource = SqlSourceBuilder.parse(configuration, sqlFromXml);
-    BoundSql boundSql = sqlSource.getBoundSql(null);
+    BoundSql boundSql = sqlSource.getBoundSql(configuration, null);
     String actual = boundSql.getSql();
 
     String shrankWhitespacesInSql = "SELECT * FROM user WHERE user_id = 1";

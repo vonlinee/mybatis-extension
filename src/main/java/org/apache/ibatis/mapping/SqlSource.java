@@ -15,6 +15,10 @@
  */
 package org.apache.ibatis.mapping;
 
+import org.apache.ibatis.session.Configuration;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Represents the content of a mapped statement read from an XML file or an annotation. It creates the SQL that will be
  * passed to the database out of the input parameter received from the user.
@@ -23,6 +27,6 @@ package org.apache.ibatis.mapping;
  */
 public interface SqlSource {
 
-  BoundSql getBoundSql(Object parameterObject);
-
+  @NotNull
+  BoundSql getBoundSql(@NotNull Configuration config, @Nullable Object parameterObject);
 }

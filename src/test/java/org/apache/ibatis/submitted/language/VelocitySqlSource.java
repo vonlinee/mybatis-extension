@@ -30,6 +30,7 @@ import org.apache.velocity.app.Velocity;
 import org.apache.velocity.runtime.RuntimeServices;
 import org.apache.velocity.runtime.RuntimeSingleton;
 import org.apache.velocity.runtime.parser.node.SimpleNode;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Just a test case. Not a real Velocity implementation.
@@ -65,7 +66,7 @@ public class VelocitySqlSource implements SqlSource {
   }
 
   @Override
-  public BoundSql getBoundSql(Object parameterObject) {
+  public @NotNull BoundSql getBoundSql(@NotNull Configuration config, Object parameterObject) {
     Map<String, Object> bindings = createBindings(parameterObject, configuration);
     VelocityContext context = new VelocityContext(bindings);
     StringWriter sw = new StringWriter();
@@ -73,7 +74,7 @@ public class VelocitySqlSource implements SqlSource {
     VelocitySqlSourceBuilder sqlSourceParser = new VelocitySqlSourceBuilder(configuration);
     Class<?> parameterType = parameterObject == null ? Object.class : parameterObject.getClass();
     SqlSource sqlSource = sqlSourceParser.parse(sw.toString(), parameterType);
-    BoundSql boundSql = sqlSource.getBoundSql(parameterObject);
+    BoundSql boundSql = sqlSource.getBoundSql(config, parameterObject);
     for (Map.Entry<String, Object> entry : bindings.entrySet()) {
       boundSql.setAdditionalParameter(entry.getKey(), entry.getValue());
     }
