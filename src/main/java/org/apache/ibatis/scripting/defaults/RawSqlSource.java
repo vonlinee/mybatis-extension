@@ -33,9 +33,8 @@ public class RawSqlSource implements SqlSource {
 
   private final SqlSource sqlSource;
 
-  public RawSqlSource(Configuration configuration, String sql, Class<?> parameterType) {
-    Class<?> clazz = parameterType == null ? Object.class : parameterType;
-    sqlSource = SqlSourceBuilder.parse(configuration, sql, clazz, new MapBinding());
+  public RawSqlSource(SqlSource sqlSource) {
+    this.sqlSource = sqlSource;
   }
 
   @Override

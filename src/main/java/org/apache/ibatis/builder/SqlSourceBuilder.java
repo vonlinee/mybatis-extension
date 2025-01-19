@@ -27,11 +27,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public class SqlSourceBuilder {
 
-  public static SqlSource parse(Configuration configuration, String originalSql) {
-    return parse(configuration, originalSql, null, null);
-  }
-
   public static SqlSource parse(Configuration configuration, String originalSql, @Nullable Class<?> parameterType, BindingContext additionalParameters) {
+    parameterType = parameterType == null ? Object.class : parameterType;
     ParameterMappingTokenHandler handler = new ParameterMappingTokenHandler(configuration, parameterType,
       additionalParameters);
     GenericTokenParser parser = GenericTokenParser.ofSign(handler);

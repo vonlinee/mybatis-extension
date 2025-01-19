@@ -80,6 +80,7 @@ public final class InSqlNode extends ForEachSqlNode {
           throw new BuilderException("the item expression cannot be null.");
         }
         // TODO
+        super.apply(context);
       }
       sb.append(")");
     } else {

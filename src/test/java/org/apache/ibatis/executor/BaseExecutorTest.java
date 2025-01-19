@@ -485,15 +485,10 @@ class BaseExecutorTest extends BaseDataTest {
 
     Object parameterObject = 1;
 
-    BoundSql boundSql = new BoundSql(config, "some select statement", new ArrayList<ParameterMapping>() {
-      {
-        add(new ParameterMapping.Builder(config, "id", registry.getTypeHandler(int.class)).build());
-      }
-    }, parameterObject) {
-      {
-        setAdditionalParameter("id", 2);
-      }
-    };
+    List<ParameterMapping> parameterMappings = new ArrayList<>();
+    parameterMappings.add(new ParameterMapping.Builder(config, "id", registry.getTypeHandler(int.class)).build());
+    BoundSql boundSql = new BoundSql(config, "some select statement", parameterMappings, parameterObject);
+    boundSql.setAdditionalParameter("id", 2);
 
     Executor executor = createExecutor(new JdbcTransaction(ds, null, false));
     CacheKey cacheKey = executor.createCacheKey(mappedStatement, parameterObject, RowBounds.DEFAULT, boundSql);
@@ -517,11 +512,9 @@ class BaseExecutorTest extends BaseDataTest {
 
     Object parameterObject = null;
 
-    BoundSql boundSql = new BoundSql(config, "some select statement", new ArrayList<ParameterMapping>() {
-      {
-        add(new ParameterMapping.Builder(config, "id", registry.getTypeHandler(int.class)).build());
-      }
-    }, parameterObject);
+    List<ParameterMapping> parameterMappings = new ArrayList<>();
+    parameterMappings.add(new ParameterMapping.Builder(config, "id", registry.getTypeHandler(int.class)).build());
+    BoundSql boundSql = new BoundSql(config, "some select statement", parameterMappings, parameterObject);
 
     Executor executor = createExecutor(new JdbcTransaction(ds, null, false));
     CacheKey cacheKey = executor.createCacheKey(mappedStatement, parameterObject, RowBounds.DEFAULT, boundSql);

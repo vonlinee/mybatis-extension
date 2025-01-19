@@ -657,7 +657,7 @@ class ExecutorTestHelper {
         }
       }).build();
     config.addMappedStatement(kms);
-    return new MappedStatement.Builder(config, "insertAuthor", new DynamicSqlSource(config,
+    return new MappedStatement.Builder(config, "insertAuthor", new DynamicSqlSource(
       new TextSqlNode(new OgnlExpressionEvaluator(),
         "INSERT INTO author (id,username,password,email,bio,favourite_section) values(#{id},#{username},#{password},#{email},#{bio:VARCHAR},#{favouriteSection})")),
       SqlCommandType.INSERT).parameterMap(

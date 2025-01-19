@@ -38,6 +38,9 @@ import static com.googlecode.catchexception.apis.BDDCatchException.caughtExcepti
 import static com.googlecode.catchexception.apis.BDDCatchException.when;
 import static org.assertj.core.api.BDDAssertions.then;
 
+/**
+ * @see org.apache.ibatis.scripting.xmltags.InSqlNode
+ */
 class InTest {
 
   private static SqlSessionFactory sqlSessionFactory;

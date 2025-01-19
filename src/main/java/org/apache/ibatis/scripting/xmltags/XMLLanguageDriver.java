@@ -15,6 +15,7 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
+import org.apache.ibatis.builder.SqlSourceBuilder;
 import org.apache.ibatis.builder.xml.XMLMapperEntityResolver;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.mapping.BoundSql;
@@ -26,6 +27,7 @@ import org.apache.ibatis.parsing.XNode;
 import org.apache.ibatis.parsing.XPathParser;
 import org.apache.ibatis.scripting.ExpressionEvaluator;
 import org.apache.ibatis.scripting.LanguageDriver;
+import org.apache.ibatis.scripting.MapBinding;
 import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
 import org.apache.ibatis.scripting.defaults.RawSqlSource;
 import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
@@ -82,8 +84,8 @@ public class XMLLanguageDriver implements LanguageDriver {
     // issue #127
     script = PropertyParser.parse(script, configuration.getVariables());
     if (DynamicCheckerTokenParser.isDynamic(script)) {
-      return new DynamicSqlSource(configuration, new TextSqlNode(evaluator, script));
+      return new DynamicSqlSource(new TextSqlNode(evaluator, script));
     }
-    return new RawSqlSource(configuration, script, parameterType);
+    return new RawSqlSource(SqlSourceBuilder.parse(configuration, script, parameterType, new MapBinding()));
   }
 }

@@ -41,24 +41,22 @@ import org.jetbrains.annotations.NotNull;
  */
 public class DynamicSqlSource implements SqlSource {
 
-  private final Configuration configuration;
   private final SqlNode rootSqlNode;
 
-  public DynamicSqlSource(Configuration configuration, SqlNode rootSqlNode) {
-    this.configuration = configuration;
+  public DynamicSqlSource(SqlNode rootSqlNode) {
     this.rootSqlNode = rootSqlNode;
   }
 
   @Override
   public @NotNull BoundSql getBoundSql(@NotNull Configuration config, Object parameterObject) {
-    SqlBuildContext context = configuration.createDynamicContext(parameterObject);
+    SqlBuildContext context = config.createDynamicContext(parameterObject);
     // calculate all dynamic content
     rootSqlNode.apply(context);
 
     String sql = context.getSql();
     // the sql left may contain ${xxx} or #{xxx}, so we have to parse again
     Class<?> parameterType = parameterObject == null ? Object.class : parameterObject.getClass();
-    SqlSource sqlSource = SqlSourceBuilder.parse(configuration, sql, parameterType, context.getBindings());
+    SqlSource sqlSource = SqlSourceBuilder.parse(config, sql, parameterType, context.getBindings());
     BoundSql boundSql = sqlSource.getBoundSql(config, parameterObject);
     context.getBindings().iterateFor(boundSql::setAdditionalParameter);
     return boundSql;

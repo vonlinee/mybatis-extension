@@ -64,4 +64,9 @@ public class MixedSqlNode implements SqlNode {
     contents.forEach(node -> node.apply(context));
     return true;
   }
+
+  @Override
+  public boolean hasChildren() {
+    return contents != null && !contents.isEmpty();
+  }
 }

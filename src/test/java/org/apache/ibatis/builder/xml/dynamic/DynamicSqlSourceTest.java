@@ -335,7 +335,7 @@ class DynamicSqlSourceTest extends BaseDataTest {
     SqlSessionFactory sqlMapper = new SqlSessionFactoryBuilder().build(reader);
     Configuration configuration = sqlMapper.getConfiguration();
     MixedSqlNode sqlNode = mixedContents(contents);
-    return new DynamicSqlSource(configuration, sqlNode);
+    return new DynamicSqlSource(sqlNode);
   }
 
   private MixedSqlNode mixedContents(SqlNode... contents) {
@@ -346,7 +346,7 @@ class DynamicSqlSourceTest extends BaseDataTest {
   void shouldMapNullStringsToEmptyStrings() {
     final String expected = "id=${id}";
     final MixedSqlNode sqlNode = mixedContents(new TextSqlNode(evaluator, expected));
-    final DynamicSqlSource source = new DynamicSqlSource(new Configuration(), sqlNode);
+    final DynamicSqlSource source = new DynamicSqlSource(sqlNode);
     String sql = source.getBoundSql(config, new Bean(null)).getSql();
     Assertions.assertEquals("id=", sql);
   }

@@ -16,11 +16,10 @@
 package org.apache.ibatis.scripting.xmltags;
 
 import org.apache.ibatis.parsing.GenericTokenParser;
-import org.apache.ibatis.scripting.BindingContext;
-import org.apache.ibatis.scripting.SqlBuildContext;
-import org.apache.ibatis.scripting.ExpressionEvaluator;
-import org.apache.ibatis.scripting.SqlBuildContextDelegator;
+import org.apache.ibatis.parsing.TokenHandler;
+import org.apache.ibatis.scripting.*;
 import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
+import org.apache.ibatis.util.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -130,6 +129,10 @@ public class ForEachSqlNode extends DynamicSqlNode {
     boolean first = true;
     applyOpen(context);
     int i = 0;
+
+    final FilteredSqlBuildContext filteredContextDelegator = new FilteredSqlBuildContext();
+    final PrefixedSqlBuildContext prefixedContextDelegator = new PrefixedSqlBuildContext(context, null);
+
     for (Object o : iterable) {
       SqlBuildContext oldContext = context;
 
@@ -137,7 +140,9 @@ public class ForEachSqlNode extends DynamicSqlNode {
       if (first || separator == null) {
         prefix = "";
       }
-      context = new PrefixedSqlBuildContext(context, prefix);
+      prefixedContextDelegator.setPrefix(prefix);
+      prefixedContextDelegator.setWrapperContext(context);
+      context = prefixedContextDelegator;
 
       final int uniqueNumber = context.getUniqueNumber();
       // Issue #709
@@ -150,7 +155,10 @@ public class ForEachSqlNode extends DynamicSqlNode {
         applyIndex(context, i, uniqueNumber);
         applyItem(context, o, uniqueNumber);
       }
-      contents.apply(new FilteredSqlBuildContext(context, index, item, uniqueNumber));
+
+      filteredContextDelegator.updateItem(item, index, uniqueNumber);
+      filteredContextDelegator.setWrapperContext(context);
+      contents.apply(filteredContextDelegator);
       if (first) {
         first = !((PrefixedSqlBuildContext) context).isPrefixApplied();
       }
@@ -158,8 +166,7 @@ public class ForEachSqlNode extends DynamicSqlNode {
       i++;
     }
     applyClose(context);
-    context.getBindings().remove(item);
-    context.getBindings().remove(index);
+    context.getBindings().removeKeys(item, index);
     return true;
   }
 
@@ -198,38 +205,60 @@ public class ForEachSqlNode extends DynamicSqlNode {
     return ITEM_PREFIX + item + "_" + i;
   }
 
-  private static class FilteredSqlBuildContext extends SqlBuildContextDelegator {
-    private final int index;
-    private final String itemIndex;
-    private final String item;
+  static class FilteredTokenHandler implements TokenHandler {
 
-    public FilteredSqlBuildContext(SqlBuildContext delegate, String itemIndex, String item,
-                                   int i) {
-      super(delegate);
-      this.index = i;
-      this.itemIndex = itemIndex;
+    private String itemIndex;
+    private String item;
+    private int index;
+
+    FilteredTokenHandler() {
+    }
+
+    void updateItem(String item, String itemIndex, int index) {
       this.item = item;
+      this.itemIndex = itemIndex;
+      this.index = index;
+    }
+
+    @Override
+    public String handleToken(String content) {
+      String newContent = content.replaceFirst("^\\s*" + item + "(?![^.,:\\s])", itemizeItem(item, index));
+      if (itemIndex != null && newContent.equals(content)) {
+        newContent = content.replaceFirst("^\\s*" + itemIndex + "(?![^.,:\\s])", itemizeItem(itemIndex, index));
+      }
+      return "#{" + newContent + "}";
+    }
+  }
+
+  private static class FilteredSqlBuildContext extends SqlBuildContextWrapper {
+    private final GenericTokenParser parser;
+    private final FilteredTokenHandler tokenHandler;
+
+    public FilteredSqlBuildContext() {
+      this.parser = new GenericTokenParser("#{", "}", tokenHandler = new FilteredTokenHandler());
+    }
+
+    public final void updateItem(String item, String itemIndex, int index) {
+      tokenHandler.updateItem(item, itemIndex, index);
     }
 
     @Override
     public void appendSql(String sql) {
-      GenericTokenParser parser = new GenericTokenParser("#{", "}", content -> {
-        String newContent = content.replaceFirst("^\\s*" + item + "(?![^.,:\\s])", itemizeItem(item, index));
-        if (itemIndex != null && newContent.equals(content)) {
-          newContent = content.replaceFirst("^\\s*" + itemIndex + "(?![^.,:\\s])", itemizeItem(itemIndex, index));
-        }
-        return "#{" + newContent + "}";
-      });
       super.appendSql(parser.parse(sql));
     }
   }
 
-  private static class PrefixedSqlBuildContext extends SqlBuildContextDelegator {
-    private final String prefix;
+  private static class PrefixedSqlBuildContext extends SqlBuildContextWrapper {
+    private String prefix;
     private boolean prefixApplied;
 
     public PrefixedSqlBuildContext(SqlBuildContext delegate, String prefix) {
-      super(delegate);
+      setWrapperContext(delegate);
+      this.prefix = prefix;
+      this.prefixApplied = false;
+    }
+
+    public final void setPrefix(String prefix) {
       this.prefix = prefix;
       this.prefixApplied = false;
     }
@@ -240,7 +269,7 @@ public class ForEachSqlNode extends DynamicSqlNode {
 
     @Override
     public void appendSql(String sql) {
-      if (!prefixApplied && sql != null && !sql.trim().isEmpty()) {
+      if (!prefixApplied && !StringUtils.isBlank(sql)) {
         super.appendSql(prefix);
         prefixApplied = true;
       }

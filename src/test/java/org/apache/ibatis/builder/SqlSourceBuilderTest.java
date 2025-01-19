@@ -34,7 +34,7 @@ public class SqlSourceBuilderTest {
 
   @Test
   void testShrinkWhitespacesInSqlIsFalse() {
-    SqlSource sqlSource = SqlSourceBuilder.parse(configuration, sqlFromXml);
+    SqlSource sqlSource = SqlSourceBuilder.parse(configuration, sqlFromXml, null, null);
     BoundSql boundSql = sqlSource.getBoundSql(configuration, null);
     String actual = boundSql.getSql();
     Assertions.assertEquals(sqlFromXml, actual);
@@ -43,7 +43,7 @@ public class SqlSourceBuilderTest {
   @Test
   void testShrinkWhitespacesInSqlIsTrue() {
     configuration.setShrinkWhitespacesInSql(true);
-    SqlSource sqlSource = SqlSourceBuilder.parse(configuration, sqlFromXml);
+    SqlSource sqlSource = SqlSourceBuilder.parse(configuration, sqlFromXml, null, null);
     BoundSql boundSql = sqlSource.getBoundSql(configuration, null);
     String actual = boundSql.getSql();
 

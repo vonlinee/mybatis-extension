@@ -47,6 +47,10 @@ public interface SqlNode {
    */
   boolean apply(SqlBuildContext context);
 
+  default boolean hasChildren() {
+    return false;
+  }
+
   /**
    * Retrieves the generated SQL statement from the given dynamic context.
    *

@@ -17,10 +17,12 @@ package org.apache.ibatis.scripting.xmltags;
 
 import org.apache.ibatis.builder.BaseBuilder;
 import org.apache.ibatis.builder.BuilderException;
+import org.apache.ibatis.builder.SqlSourceBuilder;
 import org.apache.ibatis.internal.StringKey;
 import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.parsing.DynamicCheckerTokenParser;
 import org.apache.ibatis.parsing.XNode;
+import org.apache.ibatis.scripting.MapBinding;
 import org.apache.ibatis.scripting.SqlBuildContext;
 import org.apache.ibatis.scripting.ExpressionEvaluator;
 import org.apache.ibatis.scripting.defaults.RawSqlSource;
@@ -63,11 +65,11 @@ public class XMLScriptBuilder extends BaseBuilder {
     MixedSqlNode rootSqlNode = parseDynamicTags(context);
     SqlSource sqlSource;
     if (isDynamic) {
-      sqlSource = new DynamicSqlSource(configuration, rootSqlNode);
+      sqlSource = new DynamicSqlSource(rootSqlNode);
     } else {
       SqlBuildContext context = configuration.createDynamicContext(null);
       String sql = rootSqlNode.getSql(context);
-      sqlSource = new RawSqlSource(configuration, sql, parameterType);
+      sqlSource = new RawSqlSource(SqlSourceBuilder.parse(configuration, sql, parameterType, new MapBinding()));
     }
     return sqlSource;
   }
