@@ -270,13 +270,14 @@ public class XMLScriptBuilder extends BaseBuilder {
       String collection = nodeToHandle.getStringAttribute(StringKey.COLLECTION);
       String column = nodeToHandle.getStringAttribute(StringKey.COLUMN);
       String item = nodeToHandle.getStringAttribute(StringKey.ITEM);
+      String condition = nodeToHandle.getStringAttribute(StringKey.CONDITION);
       Boolean nullable = nodeToHandle.getBooleanAttribute(StringKey.NULLABLE);
       if (nullable == null) {
         nullable = configuration.isNullableOnForEach();
       }
 
       StaticTextSqlNode contents = new StaticTextSqlNode("#{" + item + "}");
-      targetContents.add(new InSqlNode(contents, evaluator, collection, parseItemExpression(item), nullable, column));
+      targetContents.add(new InSqlNode(contents, evaluator, collection, condition, parseItemExpression(item), nullable, column));
     }
 
     /**

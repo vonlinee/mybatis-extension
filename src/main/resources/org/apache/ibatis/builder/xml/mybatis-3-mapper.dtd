@@ -173,6 +173,7 @@ collection CDATA #REQUIRED
 item CDATA #IMPLIED
 column CDATA #IMPLIED
 nullable CDATA #IMPLIED
+condition CDATA #IMPLIED
 >
 
 <!ELEMENT select (#PCDATA | include | trim | where | set | foreach | choose | if | bind | in)*>

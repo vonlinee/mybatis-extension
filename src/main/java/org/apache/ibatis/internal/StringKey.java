@@ -48,6 +48,7 @@ public interface StringKey {
   String SETTINGS = "settings";
   String PROPERTIES = "properties";
   String ITEM = "item";
+  String CONDITION = "condition";
 
   String VFS_IMPL = "vfsImpl";
   String PREFIX = "prefix";

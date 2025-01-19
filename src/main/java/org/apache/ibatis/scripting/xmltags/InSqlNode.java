@@ -21,6 +21,13 @@ public class InSqlNode extends ForEachSqlNode {
   @Nullable
   private final String column;
 
+  /**
+   * expression that evaluate to boolean value
+   * if null, check the collection is not empty
+   */
+  @Nullable
+  private final String condition;
+
   @Override
   public String getName() {
     return "in";
@@ -28,10 +35,12 @@ public class InSqlNode extends ForEachSqlNode {
 
   public InSqlNode(SqlNode contents, @NotNull ExpressionEvaluator evaluator,
                    @NotNull String collectionExpression,
+                   @NotNull String conditionExpression,
                    @Nullable String itemExpression,
                    boolean nullable,
                    @Nullable String column) {
     super(contents, collectionExpression, nullable, "index", itemExpression, "(", ")", ",");
+    this.condition = conditionExpression;
     this.evaluator = evaluator;
     this.column = column;
   }
