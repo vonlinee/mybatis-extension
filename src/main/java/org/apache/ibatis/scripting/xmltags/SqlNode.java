@@ -66,7 +66,7 @@ public interface SqlNode {
    * @return The generated SQL statement as a String.
    */
   @NotNull
-  default String getSql(SqlBuildContext context) {
+  default String buildSql(SqlBuildContext context) {
     apply(context);
     return context.getSql();
   }

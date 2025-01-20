@@ -33,6 +33,9 @@ import org.apache.ibatis.scripting.defaults.RawSqlSource;
 import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
 import org.apache.ibatis.session.Configuration;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author Eduardo Macarron
  */
@@ -48,8 +51,8 @@ public class XMLLanguageDriver implements LanguageDriver {
 
   @Override
   public SqlSource createSqlSource(Configuration configuration, XNode script, Class<?> parameterType) {
-    XMLScriptBuilder builder = new XMLScriptBuilder(configuration, script, parameterType);
-    return builder.parseScriptNode();
+    XMLScriptBuilder builder = new XMLScriptBuilder(configuration, parameterType);
+    return builder.parseScriptNode(script);
   }
 
   /**

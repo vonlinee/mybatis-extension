@@ -56,6 +56,13 @@ public class TextSqlNode implements SqlNode {
     this.injectionFilter = injectionFilter;
   }
 
+  TextSqlNode(ExpressionEvaluator evaluator, String text, boolean dynamic) {
+    this.text = text;
+    this.evaluator = evaluator;
+    this.dynamic = dynamic;
+    this.injectionFilter = null;
+  }
+
   @Override
   public String getName() {
     return "text";

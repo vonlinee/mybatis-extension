@@ -18,7 +18,7 @@ package org.apache.ibatis.scripting.xmltags;
 import org.apache.ibatis.scripting.SqlBuildContext;
 
 /**
- * the xml element does not contain ${foo} or #{xxx}
+ * the xml element does not contain any dynamic sql xml tags.
  * Represents a static text SQL node. This class implements the {@link SqlNode} interface
  * and holds a fixed text string that can be applied to a given {@link SqlBuildContext}.
  *
