@@ -654,6 +654,7 @@ public class Configuration {
     return mapperRegistry;
   }
 
+  @NotNull
   public ReflectorFactory getReflectorFactory() {
     return reflectorFactory;
   }

@@ -16,11 +16,19 @@
 package org.apache.ibatis.mapping;
 
 import java.sql.ResultSet;
+import java.util.Map;
 
+import org.apache.ibatis.builder.BaseBuilder;
+import org.apache.ibatis.builder.BuilderException;
+import org.apache.ibatis.builder.ParameterExpression;
+import org.apache.ibatis.internal.StringKey;
+import org.apache.ibatis.reflection.MetaClass;
+import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Clinton Begin
@@ -109,12 +117,12 @@ public class ParameterMapping {
       if (ResultSet.class.equals(parameterMapping.javaType)) {
         if (parameterMapping.resultMapId == null) {
           throw new IllegalStateException("Missing result map in property '" + parameterMapping.property + "'.  "
-              + "Parameters of type java.sql.ResultSet require a result map.");
+            + "Parameters of type java.sql.ResultSet require a result map.");
         }
       } else if (parameterMapping.typeHandler == null) {
         throw new IllegalStateException("Type handler was null on parameter mapping for property '"
-            + parameterMapping.property + "'. It was either not specified and/or could not be found for the javaType ("
-            + parameterMapping.javaType.getName() + ") : jdbcType (" + parameterMapping.jdbcType + ") combination.");
+          + parameterMapping.property + "'. It was either not specified and/or could not be found for the javaType ("
+          + parameterMapping.javaType.getName() + ") : jdbcType (" + parameterMapping.jdbcType + ") combination.");
       }
     }
 
@@ -123,7 +131,7 @@ public class ParameterMapping {
         Configuration configuration = parameterMapping.configuration;
         TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
         parameterMapping.typeHandler = typeHandlerRegistry.getTypeHandler(parameterMapping.javaType,
-            parameterMapping.jdbcType);
+          parameterMapping.jdbcType);
       }
     }
 
@@ -220,5 +228,95 @@ public class ParameterMapping {
     sb.append(", expression='").append(expression).append('\'');
     sb.append('}');
     return sb.toString();
+  }
+
+  private static void buildParam(Class<?> javaType, Configuration configuration, ParameterExpression expression, ParameterMapping.Builder builder) {
+    final String jdbcType = expression.getJdbcType();
+    if (jdbcType != null) {
+      builder.jdbcType(configuration.resolveJdbcType(jdbcType));
+    }
+    String typeHandlerAlias = null;
+
+    if (expression.hasOption(StringKey.JAVA_TYPE)) {
+      javaType = configuration.resolveClass(expression.getOption(StringKey.JAVA_TYPE));
+      builder.javaType(javaType);
+    }
+
+    // jdbc type
+    if (expression.getJdbcType() != null) {
+      builder.jdbcType(configuration.resolveJdbcType(expression.getJdbcType()));
+    }
+
+    // mode
+    if (expression.hasOption(StringKey.MODE)) {
+      builder.mode(BaseBuilder.resolveParameterMode(expression.getOption(StringKey.MODE)));
+    }
+
+    // numericScale
+    if (expression.hasOption(StringKey.NUMERIC_SCALE)) {
+      builder.numericScale(Integer.valueOf(expression.getOption(StringKey.NUMERIC_SCALE)));
+    }
+
+    // result map
+    if (expression.hasOption(StringKey.RESULT_MAP)) {
+      builder.resultMapId(expression.getOption(StringKey.RESULT_MAP));
+    }
+
+    // type handler
+    if (expression.hasOption(StringKey.TYPE_HANDLER)) {
+      typeHandlerAlias = expression.getOption(StringKey.TYPE_HANDLER);
+    }
+
+    // jdbc type name
+    if (expression.hasOption(StringKey.JDBC_TYPE_NAME)) {
+      builder.jdbcTypeName(expression.getOption(StringKey.TYPE_HANDLER));
+    }
+
+    // expression
+    if (expression.isExpression()) {
+      throw new BuilderException("Expression based parameters are not supported yet");
+    }
+    // other unhandled property will be ignored.
+    if (typeHandlerAlias != null) {
+      builder.typeHandler(configuration.resolveTypeHandler(javaType, typeHandlerAlias));
+    }
+  }
+
+  /**
+   * #{property|(expression), var1=value1, var2=value2, ...}
+   * or
+   * ${property|(expression), var1=value1, var2=value2, ...}
+   * or
+   * {@literal @{property|(expression), var1=value1, var2=value2, ...}}
+   *
+   * @param content        content to parse.
+   * @param config         configuration instance.
+   * @param parameterType  parameter type hint to help parse process.
+   * @param metaParameters additional parameters to help parse process.
+   * @return ParameterMapping instance
+   */
+  public static ParameterMapping parse(String content, Configuration config, Class<?> parameterType, @Nullable MetaObject metaParameters) {
+    ParameterExpression expression = new ParameterExpression(content);
+    final String property = expression.getProperty();
+    Class<?> propertyType;
+    if (metaParameters != null && metaParameters.hasGetter(property)) { // issue #448 get type from additional params
+      propertyType = metaParameters.getGetterType(property);
+    } else if (config.hasTypeHandler(parameterType)) {
+      propertyType = parameterType;
+    } else if (JdbcType.CURSOR.name().equals(expression.getJdbcType())) {
+      propertyType = java.sql.ResultSet.class;
+    } else if (property == null || Map.class.isAssignableFrom(parameterType)) {
+      propertyType = Object.class;
+    } else {
+      MetaClass metaClass = MetaClass.forClass(parameterType, config.getReflectorFactory());
+      if (metaClass.hasGetter(property)) {
+        propertyType = metaClass.getGetterType(property);
+      } else {
+        propertyType = Object.class;
+      }
+    }
+    ParameterMapping.Builder builder = new ParameterMapping.Builder(config, property, propertyType);
+    buildParam(propertyType, config, expression, builder);
+    return builder.build();
   }
 }

@@ -23,9 +23,8 @@ import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.parsing.DynamicCheckerTokenParser;
 import org.apache.ibatis.parsing.XNode;
 import org.apache.ibatis.reflection.property.PropertyTokenizer;
-import org.apache.ibatis.scripting.MapBinding;
-import org.apache.ibatis.scripting.SqlBuildContext;
 import org.apache.ibatis.scripting.ExpressionEvaluator;
+import org.apache.ibatis.scripting.MapBinding;
 import org.apache.ibatis.scripting.defaults.RawSqlSource;
 import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
 import org.apache.ibatis.session.Configuration;
@@ -39,15 +38,12 @@ import java.util.*;
  */
 public class XMLScriptBuilder extends BaseBuilder {
 
-  private final XNode context;
-  private boolean isDynamic;
   private final Class<?> parameterType;
   private final Map<String, NodeHandler> nodeHandlerMap = new HashMap<>();
   private final ExpressionEvaluator evaluator = new OgnlExpressionEvaluator();
 
-  public XMLScriptBuilder(Configuration configuration, XNode context, Class<?> parameterType) {
+  public XMLScriptBuilder(Configuration configuration, Class<?> parameterType) {
     super(configuration);
-    this.context = context;
     this.parameterType = parameterType;
 
     nodeHandlerMap.put("trim", new TrimHandler());
@@ -60,32 +56,33 @@ public class XMLScriptBuilder extends BaseBuilder {
     nodeHandlerMap.put("otherwise", new OtherwiseHandler());
     nodeHandlerMap.put("bind", new BindHandler(this.evaluator));
     nodeHandlerMap.put("in", new InHandler());
+    nodeHandlerMap.put("and", new AndSqlNodeHandler());
   }
 
-  public SqlSource parseScriptNode() {
+  public SqlSource parseScriptNode(XNode context) {
     MixedSqlNode rootSqlNode = parseDynamicTags(context);
     SqlSource sqlSource;
-    if (isDynamic) {
+    if (rootSqlNode.isDynamic()) {
       sqlSource = new DynamicSqlSource(rootSqlNode);
     } else {
-      SqlBuildContext context = configuration.createSqlBuildContext(null);
-      String sql = rootSqlNode.getSql(context);
+      String sql = rootSqlNode.buildSql(configuration.createSqlBuildContext(null));
       sqlSource = new RawSqlSource(SqlSourceBuilder.parse(configuration, sql, parameterType, new MapBinding()));
     }
     return sqlSource;
   }
 
-  protected MixedSqlNode parseDynamicTags(XNode node) {
+  public MixedSqlNode parseDynamicTags(XNode rootNode) {
     List<SqlNode> contents = new ArrayList<>();
-    NodeList children = node.getNode().getChildNodes();
-    for (int i = 0; i < children.getLength(); i++) {
-      XNode child = node.newXNode(children.item(i));
+    NodeList children = rootNode.getNode().getChildNodes();
+
+    final int childCount = children.getLength();
+    for (int i = 0; i < childCount; i++) {
+      XNode child = rootNode.newXNode(children.item(i));
       if (child.getNode().getNodeType() == Node.CDATA_SECTION_NODE || child.getNode().getNodeType() == Node.TEXT_NODE) {
         // the body content of the xml element
         String data = child.getStringBody("");
         if (DynamicCheckerTokenParser.isDynamic(data)) {
-          contents.add(new TextSqlNode(evaluator, data));
-          isDynamic = true;
+          contents.add(new TextSqlNode(evaluator, data, true));
         } else {
           contents.add(new StaticTextSqlNode(data));
         }
@@ -96,7 +93,6 @@ public class XMLScriptBuilder extends BaseBuilder {
           throw new BuilderException("Unknown element <" + nodeName + "> in SQL statement.");
         }
         handler.handleNode(child, contents);
-        isDynamic = true;
       }
     }
     return new MixedSqlNode(contents);
@@ -291,6 +287,16 @@ public class XMLScriptBuilder extends BaseBuilder {
         return tokenizer.getName();
       }
       return itemExpression;
+    }
+  }
+
+  private class AndSqlNodeHandler implements NodeHandler {
+
+    @Override
+    public void handleNode(XNode nodeToHandle, List<SqlNode> targetContents) {
+      AndSqlNode andSqlNode = new AndSqlNode(null, null, null);
+
+      System.out.println(targetContents);
     }
   }
 }

@@ -17,27 +17,21 @@ package org.apache.ibatis.submitted.language;
 
 import org.apache.ibatis.builder.BaseBuilder;
 import org.apache.ibatis.builder.BuilderException;
-import org.apache.ibatis.builder.ParameterExpression;
 import org.apache.ibatis.builder.StaticSqlSource;
 import org.apache.ibatis.internal.StringKey;
 import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.parsing.GenericTokenParser;
 import org.apache.ibatis.parsing.TokenHandler;
-import org.apache.ibatis.reflection.MetaClass;
 import org.apache.ibatis.session.Configuration;
-import org.apache.ibatis.type.JdbcType;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Just a test case. Not a real Velocity implementation.
  */
 public class VelocitySqlSourceBuilder extends BaseBuilder {
-
-  private static final String parameterProperties = "javaType,jdbcType,mode,numericScale,resultMap,typeHandler,jdbcTypeName";
 
   public VelocitySqlSourceBuilder(Configuration configuration) {
     super(configuration);
@@ -71,66 +65,8 @@ public class VelocitySqlSourceBuilder extends BaseBuilder {
     }
 
     private ParameterMapping buildParameterMapping(String content) {
-      Map<String, String> propertiesMap = parseParameterMapping(content);
-      String property = propertiesMap.get(StringKey.PROPERTY);
-      String jdbcType = propertiesMap.get(StringKey.JDBC_TYPE);
-      Class<?> propertyType;
-      if (configuration.hasTypeHandler(parameterType)) {
-        propertyType = parameterType;
-      } else if (JdbcType.CURSOR.name().equals(jdbcType)) {
-        propertyType = java.sql.ResultSet.class;
-      } else if (property != null) {
-        MetaClass metaClass = MetaClass.forClass(parameterType, configuration.getReflectorFactory());
-        if (metaClass.hasGetter(property)) {
-          propertyType = metaClass.getGetterType(property);
-        } else {
-          propertyType = Object.class;
-        }
-      } else {
-        propertyType = Object.class;
-      }
-      ParameterMapping.Builder builder = new ParameterMapping.Builder(configuration, property, propertyType);
-      if (jdbcType != null) {
-        builder.jdbcType(configuration.resolveJdbcType(jdbcType));
-      }
-      Class<?> javaType = null;
-      String typeHandlerAlias = null;
-      for (Map.Entry<String, String> entry : propertiesMap.entrySet()) {
-        String name = entry.getKey();
-        String value = entry.getValue();
-        if (StringKey.JAVA_TYPE.equals(name)) {
-          javaType = configuration.resolveClass(value);
-          builder.javaType(javaType);
-        } else if (StringKey.JDBC_TYPE.equals(name)) {
-          builder.jdbcType(configuration.resolveJdbcType(value));
-        } else if (StringKey.MODE.equals(name)) {
-          builder.mode(BaseBuilder.resolveParameterMode(value));
-        } else if (StringKey.NUMERIC_SCALE.equals(name)) {
-          builder.numericScale(Integer.valueOf(value));
-        } else if (StringKey.RESULT_MAP.equals(name)) {
-          builder.resultMapId(value);
-        } else if (StringKey.TYPE_HANDLER.equals(name)) {
-          typeHandlerAlias = value;
-        } else if (StringKey.JDBC_TYPE_NAME.equals(name)) {
-          builder.jdbcTypeName(value);
-        } else if (StringKey.PROPERTY.equals(name)) {
-          // Do Nothing
-        } else if (StringKey.EXPRESSION.equals(name)) {
-          builder.expression(value);
-        } else {
-          throw new BuilderException("An invalid property '" + name + "' was found in mapping @{" + content
-            + "}.  Valid properties are " + parameterProperties);
-        }
-      }
-      if (typeHandlerAlias != null) {
-        builder.typeHandler(configuration.resolveTypeHandler(javaType, typeHandlerAlias));
-      }
-      return builder.build();
-    }
-
-    private Map<String, String> parseParameterMapping(String content) {
       try {
-        return new ParameterExpression(content);
+        return ParameterMapping.parse(content, configuration, parameterType, null);
       } catch (BuilderException ex) {
         throw ex;
       } catch (Exception ex) {
@@ -139,5 +75,4 @@ public class VelocitySqlSourceBuilder extends BaseBuilder {
       }
     }
   }
-
 }

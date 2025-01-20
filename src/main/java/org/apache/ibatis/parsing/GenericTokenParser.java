@@ -24,6 +24,12 @@ public class GenericTokenParser {
   private final String closeToken;
   private final TokenHandler handler;
 
+  /**
+   * handle token like #{...}
+   *
+   * @param handler token handler
+   * @return GenericTokenParser
+   */
   public static GenericTokenParser ofSign(TokenHandler handler) {
     return new GenericTokenParser(TokenHandler.OPEN_TOKEN_SIGN, TokenHandler.CLOSE_TOKEN, handler);
   }
