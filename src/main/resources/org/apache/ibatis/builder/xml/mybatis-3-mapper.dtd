@@ -177,7 +177,7 @@ condition CDATA #IMPLIED
 >
 
 <!ELEMENT eq EMPTY>
-<!ATTLIST in
+<!ATTLIST eq
 property CDATA #REQUIRED
 column CDATA #IMPLIED
 >
