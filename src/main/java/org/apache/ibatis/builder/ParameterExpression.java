@@ -34,7 +34,7 @@ import java.util.Map;
  *
  * @author Frank D. Martinez [mnesarco]
  */
-public class ParameterExpression extends HashMap<String, String> {
+public class ParameterExpression {
 
   private String jdbcType;
   private String property;
