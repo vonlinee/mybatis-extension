@@ -17,27 +17,21 @@ package org.apache.ibatis.submitted.language;
 
 import org.apache.ibatis.builder.BaseBuilder;
 import org.apache.ibatis.builder.BuilderException;
-import org.apache.ibatis.builder.ParameterExpression;
 import org.apache.ibatis.builder.StaticSqlSource;
 import org.apache.ibatis.internal.StringKey;
 import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.parsing.GenericTokenParser;
 import org.apache.ibatis.parsing.TokenHandler;
-import org.apache.ibatis.reflection.MetaClass;
 import org.apache.ibatis.session.Configuration;
-import org.apache.ibatis.type.JdbcType;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Just a test case. Not a real Velocity implementation.
  */
 public class VelocitySqlSourceBuilder extends BaseBuilder {
-
-  private static final String parameterProperties = "javaType,jdbcType,mode,numericScale,resultMap,typeHandler,jdbcTypeName";
 
   public VelocitySqlSourceBuilder(Configuration configuration) {
     super(configuration);
@@ -71,33 +65,8 @@ public class VelocitySqlSourceBuilder extends BaseBuilder {
     }
 
     private ParameterMapping buildParameterMapping(String content) {
-      ParameterExpression expression = parseParameterMapping(content);
-      String property = expression.getProperty();
-      final String jdbcType = expression.getJdbcType();
-      Class<?> propertyType;
-      if (configuration.hasTypeHandler(parameterType)) {
-        propertyType = parameterType;
-      } else if (JdbcType.CURSOR.name().equals(jdbcType)) {
-        propertyType = java.sql.ResultSet.class;
-      } else if (property != null) {
-        MetaClass metaClass = MetaClass.forClass(parameterType, configuration.getReflectorFactory());
-        if (metaClass.hasGetter(property)) {
-          propertyType = metaClass.getGetterType(property);
-        } else {
-          propertyType = Object.class;
-        }
-      } else {
-        propertyType = Object.class;
-      }
-      ParameterMapping.Builder builder = new ParameterMapping.Builder(configuration, property, propertyType);
-
-      ParameterMapping.buildParam(null, configuration, expression, builder);
-      return builder.build();
-    }
-
-    private ParameterExpression parseParameterMapping(String content) {
       try {
-        return new ParameterExpression(content);
+        return ParameterMapping.parse(content, configuration, parameterType, null);
       } catch (BuilderException ex) {
         throw ex;
       } catch (Exception ex) {
@@ -106,5 +75,4 @@ public class VelocitySqlSourceBuilder extends BaseBuilder {
       }
     }
   }
-
 }

@@ -19,6 +19,9 @@ import org.apache.ibatis.internal.StringKey;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Inline parameter expression parser. Supported grammar (simplified):
@@ -193,7 +196,7 @@ public class ParameterExpression {
     return this.expression != null;
   }
 
-  public static ParameterExpression parseParameterMapping(String content) {
+  public static ParameterExpression parseParameterMapping(String content, Function<String, String> errorMessageSupplier) {
     try {
       return new ParameterExpression(content);
     } catch (BuilderException ex) {
@@ -201,6 +204,17 @@ public class ParameterExpression {
     } catch (Exception ex) {
       throw new BuilderException("Parsing error was found in mapping #{" + content
         + "}.  Check syntax #{property|(expression), var1=value1, var2=value2, ...} ", ex);
+    }
+  }
+
+  public static ParameterExpression parseContent(String content, String identifier) {
+    try {
+      return new ParameterExpression(content);
+    } catch (BuilderException ex) {
+      throw ex;
+    } catch (Exception ex) {
+      throw new BuilderException(String.format("Parsing error was found in mapping %s{" + content
+        + "}.  Check syntax %s{property|(expression), var1=value1, var2=value2, ...} ", identifier, identifier), ex);
     }
   }
 }

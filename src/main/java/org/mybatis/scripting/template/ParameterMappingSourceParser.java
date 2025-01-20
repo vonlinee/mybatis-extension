@@ -17,16 +17,10 @@ package org.mybatis.scripting.template;
 
 import org.apache.ibatis.builder.BaseBuilder;
 import org.apache.ibatis.builder.BuilderException;
-import org.apache.ibatis.builder.ParameterExpression;
-import org.apache.ibatis.internal.StringKey;
 import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.parsing.GenericTokenParser;
 import org.apache.ibatis.parsing.TokenHandler;
-import org.apache.ibatis.reflection.DefaultReflectorFactory;
-import org.apache.ibatis.reflection.MetaClass;
-import org.apache.ibatis.reflection.ReflectorFactory;
 import org.apache.ibatis.session.Configuration;
-import org.apache.ibatis.type.JdbcType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,38 +69,12 @@ public class ParameterMappingSourceParser {
       int index = this.parameterMappings.size();
       ParameterMapping pm = buildParameterMapping(content);
       this.parameterMappings.add(pm);
-      return '$' + TemplateScriptSqlSource.MAPPING_COLLECTOR_KEY + ".g(" + index +
-        ")";
+      return '$' + TemplateScriptSqlSource.MAPPING_COLLECTOR_KEY + ".g(" + index + ")";
     }
 
     private ParameterMapping buildParameterMapping(String content) {
-      ParameterExpression expression = parseParameterMapping(content);
-      String property = expression.getProperty();
-      final String jdbcType = expression.getJdbcType();
-      Class<?> propertyType;
-      if (this.configuration.hasTypeHandler(this.parameterType)) {
-        propertyType = this.parameterType;
-      } else if (JdbcType.CURSOR.name().equals(jdbcType)) {
-        propertyType = java.sql.ResultSet.class;
-      } else if (property != null) {
-        ReflectorFactory reflectorFactory = new DefaultReflectorFactory();
-        MetaClass metaClass = MetaClass.forClass(this.parameterType, reflectorFactory);
-        if (metaClass.hasGetter(property)) {
-          propertyType = metaClass.getGetterType(property);
-        } else {
-          propertyType = Object.class;
-        }
-      } else {
-        propertyType = Object.class;
-      }
-      ParameterMapping.Builder builder = new ParameterMapping.Builder(this.configuration, property, propertyType);
-      ParameterMapping.buildParam(null, configuration, expression, builder);
-      return builder.build();
-    }
-
-    private ParameterExpression parseParameterMapping(String content) {
       try {
-        return new ParameterExpression(content);
+        return ParameterMapping.parse(content, configuration, parameterType, null);
       } catch (BuilderException ex) {
         throw ex;
       } catch (Exception ex) {
