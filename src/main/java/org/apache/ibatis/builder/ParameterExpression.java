@@ -18,6 +18,7 @@ package org.apache.ibatis.builder;
 import org.apache.ibatis.internal.StringKey;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Inline parameter expression parser. Supported grammar (simplified):
@@ -35,10 +36,20 @@ import java.util.HashMap;
  */
 public class ParameterExpression extends HashMap<String, String> {
 
-  private static final long serialVersionUID = -2417552199605158680L;
+  private String jdbcType;
+  private String property;
+  private String expression;
+  private Map<String, String> options;
 
   public ParameterExpression(String expression) {
     parse(expression);
+  }
+
+  public void addOption(String name, String value) {
+    if (options == null) {
+      this.options = new HashMap<>();
+    }
+    this.options.put(name, value);
   }
 
   /**
@@ -46,17 +57,13 @@ public class ParameterExpression extends HashMap<String, String> {
    *
    * @param expression expression
    */
-  private Parameter parse(String expression) {
+  private void parse(String expression) {
     int p = skipWS(expression, 0);
-
-    Parameter param = new Parameter();
     if (expression.charAt(p) == StringKey.OPEN_PARENTHESIS) {
       expression(expression, p + 1);
     } else {
       property(expression, p);
     }
-
-    return param;
   }
 
   private void expression(String expression, int left) {
@@ -70,14 +77,14 @@ public class ParameterExpression extends HashMap<String, String> {
       }
       right++;
     }
-    this.put("expression", expression.substring(left, right - 1));
+    this.expression = expression.substring(left, right - 1);
     jdbcTypeOpt(expression, right);
   }
 
   private void property(String expression, int left) {
     if (left < expression.length()) {
       int right = skipUntil(expression, left, ",:");
-      put("property", trimmedStr(expression, left, right));
+      this.property = trimmedStr(expression, left, right);
       jdbcTypeOpt(expression, right);
     }
   }
@@ -128,7 +135,7 @@ public class ParameterExpression extends HashMap<String, String> {
     if (right <= left) {
       throw new BuilderException("Parsing error in {" + expression + "} in position " + p);
     }
-    put("jdbcType", trimmedStr(expression, left, right));
+    this.jdbcType = trimmedStr(expression, left, right);
     option(expression, right + 1);
   }
 
@@ -140,7 +147,7 @@ public class ParameterExpression extends HashMap<String, String> {
       left = right + 1;
       right = skipUntil(expression, left, ",");
       String value = trimmedStr(expression, left, right);
-      put(name, value);
+      addOption(name, value);
       option(expression, right + 1);
     }
   }
@@ -155,4 +162,45 @@ public class ParameterExpression extends HashMap<String, String> {
     return start >= end ? "" : str.substring(start, end);
   }
 
+  public String getProperty() {
+    return property;
+  }
+
+  public String getJdbcType() {
+    return jdbcType;
+  }
+
+  public String getExpression() {
+    return expression;
+  }
+
+  public String getMode() {
+    return getOption(StringKey.MODE);
+  }
+
+  public String getOption(String name) {
+    if (options == null) {
+      return null;
+    }
+    return options.get(name);
+  }
+
+  public boolean hasOption(String name) {
+    return options.containsKey(name);
+  }
+
+  public boolean isExpression() {
+    return this.expression != null;
+  }
+
+  public static ParameterExpression parseParameterMapping(String content) {
+    try {
+      return new ParameterExpression(content);
+    } catch (BuilderException ex) {
+      throw ex;
+    } catch (Exception ex) {
+      throw new BuilderException("Parsing error was found in mapping #{" + content
+        + "}.  Check syntax #{property|(expression), var1=value1, var2=value2, ...} ", ex);
+    }
+  }
 }

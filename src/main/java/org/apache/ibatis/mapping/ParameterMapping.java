@@ -17,6 +17,10 @@ package org.apache.ibatis.mapping;
 
 import java.sql.ResultSet;
 
+import org.apache.ibatis.builder.BaseBuilder;
+import org.apache.ibatis.builder.BuilderException;
+import org.apache.ibatis.builder.ParameterExpression;
+import org.apache.ibatis.internal.StringKey;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
@@ -220,5 +224,57 @@ public class ParameterMapping {
     sb.append(", expression='").append(expression).append('\'');
     sb.append('}');
     return sb.toString();
+  }
+
+  public static void buildParam(Class<?> javaType, Configuration configuration, ParameterExpression expression, ParameterMapping.Builder builder) {
+    final String jdbcType = expression.getJdbcType();
+    if (jdbcType != null) {
+      builder.jdbcType(configuration.resolveJdbcType(jdbcType));
+    }
+    String typeHandlerAlias = null;
+
+    if (expression.hasOption(StringKey.JAVA_TYPE)) {
+      javaType = configuration.resolveClass(expression.getOption(StringKey.JAVA_TYPE));
+      builder.javaType(javaType);
+    }
+
+    // jdbc type
+    if (expression.getJdbcType() != null) {
+      builder.jdbcType(configuration.resolveJdbcType(expression.getJdbcType()));
+    }
+
+    // mode
+    if (expression.hasOption(StringKey.MODE)) {
+      builder.mode(BaseBuilder.resolveParameterMode(expression.getOption(StringKey.MODE)));
+    }
+
+    // numericScale
+    if (expression.hasOption(StringKey.NUMERIC_SCALE)) {
+      builder.numericScale(Integer.valueOf(expression.getOption(StringKey.NUMERIC_SCALE)));
+    }
+
+    // result map
+    if (expression.hasOption(StringKey.RESULT_MAP)) {
+      builder.resultMapId(expression.getOption(StringKey.RESULT_MAP));
+    }
+
+    // type handler
+    if (expression.hasOption(StringKey.TYPE_HANDLER)) {
+      typeHandlerAlias = expression.getOption(StringKey.TYPE_HANDLER);
+    }
+
+    // jdbc type name
+    if (expression.hasOption(StringKey.JDBC_TYPE_NAME)) {
+      builder.jdbcTypeName(expression.getOption(StringKey.TYPE_HANDLER));
+    }
+
+    // expression
+    if (expression.isExpression()) {
+      throw new BuilderException("Expression based parameters are not supported yet");
+    }
+    // other unhandled property will be ignored.
+    if (typeHandlerAlias != null) {
+      builder.typeHandler(configuration.resolveTypeHandler(javaType, typeHandlerAlias));
+    }
   }
 }

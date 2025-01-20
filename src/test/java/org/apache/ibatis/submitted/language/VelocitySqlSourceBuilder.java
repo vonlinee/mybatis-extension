@@ -71,9 +71,9 @@ public class VelocitySqlSourceBuilder extends BaseBuilder {
     }
 
     private ParameterMapping buildParameterMapping(String content) {
-      Map<String, String> propertiesMap = parseParameterMapping(content);
-      String property = propertiesMap.get(StringKey.PROPERTY);
-      String jdbcType = propertiesMap.get(StringKey.JDBC_TYPE);
+      ParameterExpression expression = parseParameterMapping(content);
+      String property = expression.getProperty();
+      final String jdbcType = expression.getJdbcType();
       Class<?> propertyType;
       if (configuration.hasTypeHandler(parameterType)) {
         propertyType = parameterType;
@@ -90,45 +90,12 @@ public class VelocitySqlSourceBuilder extends BaseBuilder {
         propertyType = Object.class;
       }
       ParameterMapping.Builder builder = new ParameterMapping.Builder(configuration, property, propertyType);
-      if (jdbcType != null) {
-        builder.jdbcType(configuration.resolveJdbcType(jdbcType));
-      }
-      Class<?> javaType = null;
-      String typeHandlerAlias = null;
-      for (Map.Entry<String, String> entry : propertiesMap.entrySet()) {
-        String name = entry.getKey();
-        String value = entry.getValue();
-        if (StringKey.JAVA_TYPE.equals(name)) {
-          javaType = configuration.resolveClass(value);
-          builder.javaType(javaType);
-        } else if (StringKey.JDBC_TYPE.equals(name)) {
-          builder.jdbcType(configuration.resolveJdbcType(value));
-        } else if (StringKey.MODE.equals(name)) {
-          builder.mode(BaseBuilder.resolveParameterMode(value));
-        } else if (StringKey.NUMERIC_SCALE.equals(name)) {
-          builder.numericScale(Integer.valueOf(value));
-        } else if (StringKey.RESULT_MAP.equals(name)) {
-          builder.resultMapId(value);
-        } else if (StringKey.TYPE_HANDLER.equals(name)) {
-          typeHandlerAlias = value;
-        } else if (StringKey.JDBC_TYPE_NAME.equals(name)) {
-          builder.jdbcTypeName(value);
-        } else if (StringKey.PROPERTY.equals(name)) {
-          // Do Nothing
-        } else if (StringKey.EXPRESSION.equals(name)) {
-          builder.expression(value);
-        } else {
-          throw new BuilderException("An invalid property '" + name + "' was found in mapping @{" + content
-            + "}.  Valid properties are " + parameterProperties);
-        }
-      }
-      if (typeHandlerAlias != null) {
-        builder.typeHandler(configuration.resolveTypeHandler(javaType, typeHandlerAlias));
-      }
+
+      ParameterMapping.buildParam(null, configuration, expression, builder);
       return builder.build();
     }
 
-    private Map<String, String> parseParameterMapping(String content) {
+    private ParameterExpression parseParameterMapping(String content) {
       try {
         return new ParameterExpression(content);
       } catch (BuilderException ex) {

@@ -15,13 +15,10 @@
  */
 package org.mybatis.scripting.template;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.ibatis.builder.BaseBuilder;
 import org.apache.ibatis.builder.BuilderException;
 import org.apache.ibatis.builder.ParameterExpression;
+import org.apache.ibatis.internal.StringKey;
 import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.parsing.GenericTokenParser;
 import org.apache.ibatis.parsing.TokenHandler;
@@ -31,9 +28,14 @@ import org.apache.ibatis.reflection.ReflectorFactory;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.JdbcType;
 
-public class ParameterMappingSourceParser {
+import java.util.ArrayList;
+import java.util.List;
 
-  private static final String VALID_PROPERTIES = "javaType,jdbcType,mode,numericScale,resultMap,typeHandler,jdbcTypeName";
+/**
+ * valid properties below:
+ * javaType,jdbcType,mode,numericScale,resultMap,typeHandler,jdbcTypeName
+ */
+public class ParameterMappingSourceParser {
 
   private final String sql;
 
@@ -78,9 +80,9 @@ public class ParameterMappingSourceParser {
     }
 
     private ParameterMapping buildParameterMapping(String content) {
-      Map<String, String> propertiesMap = parseParameterMapping(content);
-      String property = propertiesMap.get("property");
-      String jdbcType = propertiesMap.get("jdbcType");
+      ParameterExpression expression = parseParameterMapping(content);
+      String property = expression.getProperty();
+      final String jdbcType = expression.getJdbcType();
       Class<?> propertyType;
       if (this.configuration.hasTypeHandler(this.parameterType)) {
         propertyType = this.parameterType;
@@ -98,55 +100,19 @@ public class ParameterMappingSourceParser {
         propertyType = Object.class;
       }
       ParameterMapping.Builder builder = new ParameterMapping.Builder(this.configuration, property, propertyType);
-      if (jdbcType != null) {
-        builder.jdbcType(configuration.resolveJdbcType(jdbcType));
-      }
-      Class<?> javaType = null;
-      String typeHandlerAlias = null;
-      for (Map.Entry<String, String> entry : propertiesMap.entrySet()) {
-        String name = entry.getKey();
-        String value = entry.getValue();
-        if ("javaType".equals(name)) {
-          javaType = configuration.resolveClass(value);
-          builder.javaType(javaType);
-        } else if ("jdbcType".equals(name)) {
-          builder.jdbcType(configuration.resolveJdbcType(value));
-        } else if ("mode".equals(name)) {
-          builder.mode(BaseBuilder.resolveParameterMode(value));
-        } else if ("numericScale".equals(name)) {
-          builder.numericScale(Integer.valueOf(value));
-        } else if ("resultMap".equals(name)) {
-          builder.resultMapId(value);
-        } else if ("typeHandler".equals(name)) {
-          typeHandlerAlias = value;
-        } else if ("jdbcTypeName".equals(name)) {
-          builder.jdbcTypeName(value);
-        } else if ("property".equals(name)) {
-          // Do Nothing
-        } else if ("expression".equals(name)) {
-          throw new BuilderException("Expression based parameters are not supported yet");
-        } else {
-          throw new BuilderException("An invalid property '" + name + "' was found in mapping @{" + content
-              + "}.  Valid properties are " + VALID_PROPERTIES);
-        }
-      }
-      if (typeHandlerAlias != null) {
-        builder.typeHandler(configuration.resolveTypeHandler(javaType, typeHandlerAlias));
-      }
+      ParameterMapping.buildParam(null, configuration, expression, builder);
       return builder.build();
     }
 
-    private Map<String, String> parseParameterMapping(String content) {
+    private ParameterExpression parseParameterMapping(String content) {
       try {
         return new ParameterExpression(content);
       } catch (BuilderException ex) {
         throw ex;
       } catch (Exception ex) {
         throw new BuilderException("Parsing error was found in mapping @{" + content
-            + "}.  Check syntax #{property|(expression), var1=value1, var2=value2, ...} ", ex);
+          + "}.  Check syntax #{property|(expression), var1=value1, var2=value2, ...} ", ex);
       }
     }
-
   }
-
 }

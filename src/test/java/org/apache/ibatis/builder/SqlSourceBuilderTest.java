@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 public class SqlSourceBuilderTest {
 
   private static Configuration configuration;
-  private final String sqlFromXml = "\t\n\n  SELECT * \n        FROM user\n \t        WHERE user_id = 1\n\t  ";
+  private final String sqlFromXml = "\t\n\n  SELECT * \n        FROM user\n \t        WHERE user_id = #{userId, jdbcType=BIGINT}\n\t  ";
 
   @BeforeEach
   void setUp() {
