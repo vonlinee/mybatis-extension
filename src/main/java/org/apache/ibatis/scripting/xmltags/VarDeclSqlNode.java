@@ -39,7 +39,7 @@ public class VarDeclSqlNode extends DynamicSqlNode {
 
   @Override
   public boolean apply(SqlBuildContext context) {
-    final Object value = evaluator.getValue(expression, context.getBindings());
+    final Object value = evaluator.getValue(expression, context.getBindings().asMap());
     context.bind(name, value);
     return true;
   }

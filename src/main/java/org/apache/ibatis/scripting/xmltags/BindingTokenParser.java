@@ -2,6 +2,7 @@ package org.apache.ibatis.scripting.xmltags;
 
 import org.apache.ibatis.internal.StringKey;
 import org.apache.ibatis.parsing.TokenHandler;
+import org.apache.ibatis.scripting.BindingContext;
 import org.apache.ibatis.scripting.SqlBuildContext;
 import org.apache.ibatis.scripting.ExpressionEvaluator;
 import org.apache.ibatis.scripting.ScriptingException;
@@ -23,13 +24,14 @@ public class BindingTokenParser implements TokenHandler {
 
   @Override
   public String handleToken(String content) {
-    Object parameter = context.getBindings().get(SqlBuildContext.PARAMETER_OBJECT_KEY);
+    BindingContext bindings = this.context.getBindings();
+    Object parameter = bindings.get(SqlBuildContext.PARAMETER_OBJECT_KEY);
     if (parameter == null) {
-      context.bind(StringKey.VALUE, null);
+      this.context.bind(StringKey.VALUE, null);
     } else if (SimpleTypeRegistry.isSimpleType(parameter.getClass())) {
-      context.bind(StringKey.VALUE, parameter);
+      this.context.bind(StringKey.VALUE, parameter);
     }
-    Object value = evaluator.getValue(content, context.getBindings());
+    Object value = evaluator.getValue(content, bindings);
     String srtValue = value == null ? "" : String.valueOf(value); // issue #274 return "" instead of "null"
     checkInjection(srtValue);
     return srtValue;

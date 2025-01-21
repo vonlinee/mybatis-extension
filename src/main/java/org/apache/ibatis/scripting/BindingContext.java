@@ -1,5 +1,6 @@
 package org.apache.ibatis.scripting;
 
+import java.util.Map;
 import java.util.function.BiConsumer;
 
 /**
@@ -59,4 +60,11 @@ public interface BindingContext {
       remove(key);
     }
   }
+
+  /**
+   * for compatibility
+   *
+   * @return context as map
+   */
+  Map<String, Object> asMap();
 }

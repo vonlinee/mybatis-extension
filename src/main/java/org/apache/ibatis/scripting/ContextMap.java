@@ -3,6 +3,7 @@ package org.apache.ibatis.scripting;
 import org.apache.ibatis.reflection.MetaObject;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.function.BiConsumer;
 
 public class ContextMap extends HashMap<String, Object> implements BindingContext {
@@ -50,5 +51,10 @@ public class ContextMap extends HashMap<String, Object> implements BindingContex
   @Override
   public void remove(String key) {
     super.remove(key);
+  }
+
+  @Override
+  public Map<String, Object> asMap() {
+    return this;
   }
 }

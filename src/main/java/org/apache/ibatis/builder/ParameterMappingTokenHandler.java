@@ -20,7 +20,7 @@ public class ParameterMappingTokenHandler implements TokenHandler {
                                       BindingContext additionalParameters) {
     this.configuration = configuration;
     this.parameterType = parameterType;
-    this.metaParameters = configuration.newMetaObject(additionalParameters);
+    this.metaParameters = configuration.newMetaObject(additionalParameters.asMap());
   }
 
   public List<ParameterMapping> getParameterMappings() {

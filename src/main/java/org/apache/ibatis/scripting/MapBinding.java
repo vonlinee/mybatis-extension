@@ -38,4 +38,9 @@ public class MapBinding implements BindingContext {
   public void remove(String key) {
     backingMap.remove(key);
   }
+
+  @Override
+  public Map<String, Object> asMap() {
+    return backingMap;
+  }
 }

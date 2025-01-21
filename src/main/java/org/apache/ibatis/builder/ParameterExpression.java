@@ -45,6 +45,7 @@ public class ParameterExpression {
   private Map<String, String> options;
 
   public ParameterExpression(String expression) {
+    this.options = new HashMap<>();
     parse(expression);
   }
 
