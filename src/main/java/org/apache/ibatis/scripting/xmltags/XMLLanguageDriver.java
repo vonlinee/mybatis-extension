@@ -33,15 +33,10 @@ import org.apache.ibatis.scripting.defaults.RawSqlSource;
 import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
 import org.apache.ibatis.session.Configuration;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @author Eduardo Macarron
  */
 public class XMLLanguageDriver implements LanguageDriver {
-
-  ExpressionEvaluator evaluator = new OgnlExpressionEvaluator();
 
   @Override
   public ParameterHandler createParameterHandler(MappedStatement mappedStatement, Object parameterObject,
@@ -87,6 +82,7 @@ public class XMLLanguageDriver implements LanguageDriver {
     // issue #127
     script = PropertyParser.parse(script, configuration.getVariables());
     if (DynamicCheckerTokenParser.isDynamic(script)) {
+      ExpressionEvaluator evaluator = new OgnlExpressionEvaluator();
       return new DynamicSqlSource(new TextSqlNode(evaluator, script));
     }
     return new RawSqlSource(SqlSourceBuilder.parse(configuration, script, parameterType, new MapBinding()));

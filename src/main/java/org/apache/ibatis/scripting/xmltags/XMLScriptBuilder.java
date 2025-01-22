@@ -31,7 +31,11 @@ import org.apache.ibatis.session.Configuration;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author Clinton Begin
@@ -72,6 +76,20 @@ public class XMLScriptBuilder extends BaseBuilder {
     return sqlSource;
   }
 
+  /**
+   * Parses dynamic tags from the given XML node and constructs a list of SQL nodes.
+   * <p>
+   * This method processes the child nodes of the provided root node. It distinguishes between
+   * CDATA sections, text nodes, and element nodes. If the content of a text node is dynamic,
+   * it creates a {@link TextSqlNode}. If it is static, it creates a {@link StaticTextSqlNode}.
+   * For element nodes, it retrieves the appropriate handler from the {@code nodeHandlerMap}
+   * and processes the node accordingly. If an unknown element is encountered, a {@link BuilderException}
+   * is thrown.
+   *
+   * @param rootNode the root XML node to parse
+   * @return a {@link MixedSqlNode} containing the parsed SQL nodes
+   * @throws BuilderException if an unknown element is encountered in the SQL statement
+   */
   public MixedSqlNode parseDynamicTags(XNode rootNode) {
     List<SqlNode> contents = new ArrayList<>();
     NodeList children = rootNode.getNode().getChildNodes();
@@ -113,8 +131,7 @@ public class XMLScriptBuilder extends BaseBuilder {
     public void handleNode(XNode nodeToHandle, List<SqlNode> targetContents) {
       final String name = nodeToHandle.getStringAttribute(StringKey.NAME);
       final String expression = nodeToHandle.getStringAttribute(StringKey.VALUE);
-      final VarDeclSqlNode node = new VarDeclSqlNode(this.evaluator, name, expression);
-      targetContents.add(node);
+      targetContents.add(new VarDeclSqlNode(this.evaluator, name, expression));
     }
   }
 
@@ -303,7 +320,7 @@ public class XMLScriptBuilder extends BaseBuilder {
       String test = nodeToHandle.getStringAttribute("test");
       String type = nodeToHandle.getStringAttribute("type");
 
-      AndSqlNode andSqlNode = new AndSqlNode(Collections.singletonList(sqlNode), type, column, property, test);
+      AndSqlNode andSqlNode = new AndSqlNode(sqlNode.getContents(), type, column, property, test);
       targetContents.add(andSqlNode);
     }
   }
@@ -319,7 +336,7 @@ public class XMLScriptBuilder extends BaseBuilder {
       String test = nodeToHandle.getStringAttribute("test");
       String type = nodeToHandle.getStringAttribute("type");
 
-      AndSqlNode andSqlNode = new AndSqlNode(Collections.singletonList(sqlNode), type, column, property, test);
+      OrSqlNode andSqlNode = new OrSqlNode(sqlNode.getContents(), type, column, property, test);
       targetContents.add(andSqlNode);
     }
   }

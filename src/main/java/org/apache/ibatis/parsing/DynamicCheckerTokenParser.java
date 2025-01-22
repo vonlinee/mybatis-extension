@@ -27,6 +27,7 @@ public class DynamicCheckerTokenParser implements TokenHandler {
    *
    * @param text the text to check
    * @return whether the text is dynamic.
+   * @see DynamicCheckerTokenParser#isDynamic(String)
    */
   public static boolean isDynamic(String text) {
     DynamicCheckerTokenParser checker = new DynamicCheckerTokenParser();

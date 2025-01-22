@@ -43,6 +43,10 @@ public class TextSqlNode implements SqlNode {
   private final String text;
   private final Pattern injectionFilter;
   private ExpressionEvaluator evaluator;
+
+  /**
+   * whether this node is dynamic, text nodes containing ${} placeholders
+   */
   private final boolean dynamic;
 
   public TextSqlNode(ExpressionEvaluator evaluator, String text) {

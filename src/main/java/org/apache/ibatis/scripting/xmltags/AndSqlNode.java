@@ -11,8 +11,20 @@ import java.util.List;
 public class AndSqlNode extends MixedSqlNode {
 
   private final String type;
+
+  /**
+   * column used in condition.
+   */
   private final String column;
+
+  /**
+   * property
+   */
   private final String property;
+
+  /**
+   * test condition expression.
+   */
   private final String test;
 
   public AndSqlNode(List<SqlNode> contents, String type, String column, String property, String test) {
@@ -29,12 +41,17 @@ public class AndSqlNode extends MixedSqlNode {
   }
 
   @Override
-  public boolean isDynamic() {
-    return false;
-  }
-
-  @Override
   public boolean apply(SqlBuildContext context) {
-    return false;
+    if (getChildCount() == 1) {
+      // it should be a StaticTextSqlNode
+      context.appendSql(" AND ");
+      SqlNode sqlNode = getContents().get(0);
+      return sqlNode.apply(context);
+    }
+    context.appendSql(" AND (");
+    boolean result = super.apply(context);
+    context.appendSql(" )");
+
+    return result;
   }
 }

@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.ibatis.builder.SqlSourceBuilder;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.reflection.ArrayUtil;
 import org.apache.ibatis.util.StringUtils;

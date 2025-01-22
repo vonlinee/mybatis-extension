@@ -59,6 +59,9 @@ class AndTest {
         friends.add(user);
       }
       User user = new User();
+      user.setId(2343);
+      user.setName("zs");
+      user.setBestFriend(friends.get(3));
       user.setFriendList(friends);
       int result = mapper.countUserWithNullableIsFalse(user);
     } catch (PersistenceException e) {
