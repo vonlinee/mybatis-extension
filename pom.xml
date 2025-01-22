@@ -299,7 +299,7 @@
     <dependency>
       <groupId>com.github.hazendaz.catch-exception</groupId>
       <artifactId>catch-exception</artifactId>
-      <version>${catch-exception.version}</version>
+      <version>${hazendaz.catch-exception}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -505,12 +505,13 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <!--jdk8 compatibility -->
         <commons.logging.version>1.2</commons.logging.version>
-        <catch-exception.version>2.1.4</catch-exception.version>
+        <catch-exception.version>1.2.0</catch-exception.version>
         <mockito.version>3.12.4</mockito.version>
         <mockito-subclass.version>4.10.0</mockito-subclass.version>
         <logback-classic.version>1.2.4</logback-classic.version>
         <slf4j-api.version>1.7.34</slf4j-api.version>
         <hsqldb.version>2.2.9</hsqldb.version>
+        <hazendaz.catch-exception>2.1.4</hazendaz.catch-exception>
       </properties>
       <build>
         <pluginManagement>
@@ -553,6 +554,7 @@
         <logback-classic.version>1.5.16</logback-classic.version>
         <slf4j-api.version>1.7.34</slf4j-api.version>
         <hsqldb.version>2.7.4</hsqldb.version>
+        <hazendaz.catch-exception>2.1.4</hazendaz.catch-exception>
       </properties>
       <build>
         <pluginManagement>
@@ -598,6 +600,7 @@
         <logback-classic.version>1.5.16</logback-classic.version>
         <slf4j-api.version>1.7.34</slf4j-api.version>
         <hsqldb.version>2.7.4</hsqldb.version>
+        <hazendaz.catch-exception>2.3.3</hazendaz.catch-exception>
       </properties>
     </profile>
     <profile>
@@ -615,6 +618,7 @@
         <logback-classic.version>1.5.16</logback-classic.version>
         <slf4j-api.version>1.7.34</slf4j-api.version>
         <hsqldb.version>2.7.4</hsqldb.version>
+        <hazendaz.catch-exception>2.3.3</hazendaz.catch-exception>
       </properties>
     </profile>
     <profile>
@@ -632,6 +636,7 @@
         <logback-classic.version>1.5.16</logback-classic.version>
         <slf4j-api.version>1.7.34</slf4j-api.version>
         <hsqldb.version>2.7.4</hsqldb.version>
+        <hazendaz.catch-exception>2.3.3</hazendaz.catch-exception>
       </properties>
     </profile>
 

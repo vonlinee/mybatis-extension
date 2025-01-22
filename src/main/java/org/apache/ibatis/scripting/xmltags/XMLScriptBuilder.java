@@ -57,6 +57,7 @@ public class XMLScriptBuilder extends BaseBuilder {
     nodeHandlerMap.put("bind", new BindHandler(this.evaluator));
     nodeHandlerMap.put("in", new InHandler());
     nodeHandlerMap.put("and", new AndSqlNodeHandler());
+    nodeHandlerMap.put("or", new OrSqlNodeHandler());
   }
 
   public SqlSource parseScriptNode(XNode context) {
@@ -78,6 +79,7 @@ public class XMLScriptBuilder extends BaseBuilder {
     final int childCount = children.getLength();
     for (int i = 0; i < childCount; i++) {
       XNode child = rootNode.newXNode(children.item(i));
+      // CDATA Node or text node
       if (child.getNode().getNodeType() == Node.CDATA_SECTION_NODE || child.getNode().getNodeType() == Node.TEXT_NODE) {
         // the body content of the xml element
         String data = child.getStringBody("");
@@ -294,9 +296,31 @@ public class XMLScriptBuilder extends BaseBuilder {
 
     @Override
     public void handleNode(XNode nodeToHandle, List<SqlNode> targetContents) {
-      AndSqlNode andSqlNode = new AndSqlNode(null, null, null);
+      MixedSqlNode sqlNode = parseDynamicTags(nodeToHandle);
 
-      System.out.println(targetContents);
+      String property = nodeToHandle.getStringAttribute("property");
+      String column = nodeToHandle.getStringAttribute("column");
+      String test = nodeToHandle.getStringAttribute("test");
+      String type = nodeToHandle.getStringAttribute("type");
+
+      AndSqlNode andSqlNode = new AndSqlNode(Collections.singletonList(sqlNode), type, column, property, test);
+      targetContents.add(andSqlNode);
+    }
+  }
+
+  private class OrSqlNodeHandler implements NodeHandler {
+
+    @Override
+    public void handleNode(XNode nodeToHandle, List<SqlNode> targetContents) {
+      MixedSqlNode sqlNode = parseDynamicTags(nodeToHandle);
+
+      String property = nodeToHandle.getStringAttribute("property");
+      String column = nodeToHandle.getStringAttribute("column");
+      String test = nodeToHandle.getStringAttribute("test");
+      String type = nodeToHandle.getStringAttribute("type");
+
+      AndSqlNode andSqlNode = new AndSqlNode(Collections.singletonList(sqlNode), type, column, property, test);
+      targetContents.add(andSqlNode);
     }
   }
 }

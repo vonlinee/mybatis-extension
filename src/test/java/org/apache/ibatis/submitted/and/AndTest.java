@@ -18,25 +18,15 @@ package org.apache.ibatis.submitted.and;
 import org.apache.ibatis.BaseDataTest;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.logging.stdout.StdOutImpl;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.io.Reader;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-
-import static com.googlecode.catchexception.apis.BDDCatchException.caughtException;
-import static com.googlecode.catchexception.apis.BDDCatchException.when;
-import static org.assertj.core.api.BDDAssertions.then;
 
 /**
  * @see org.apache.ibatis.scripting.xmltags.AndSqlNode
@@ -58,7 +48,7 @@ class AndTest {
   }
 
   @Test
-  void normal() {
+  void testNormalFlow() {
     try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
       sqlSessionFactory.getConfiguration().setNullableOnForEach(true);
       Mapper mapper = sqlSession.getMapper(Mapper.class);
@@ -72,8 +62,7 @@ class AndTest {
       user.setFriendList(friends);
       int result = mapper.countUserWithNullableIsFalse(user);
     } catch (PersistenceException e) {
-      e.printStackTrace();
-      Assertions.assertEquals("The expression 'friendList' evaluated to a null value.", e.getCause().getMessage());
+      throw e;
     }
   }
 }

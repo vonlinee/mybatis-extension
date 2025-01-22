@@ -23,6 +23,7 @@ public class DynamicCheckerTokenParser implements TokenHandler {
 
   /**
    * TODO refactor this method
+   * not contains ${xxx}
    *
    * @param text the text to check
    * @return whether the text is dynamic.

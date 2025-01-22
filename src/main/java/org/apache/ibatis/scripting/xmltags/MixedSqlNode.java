@@ -16,8 +16,10 @@
 package org.apache.ibatis.scripting.xmltags;
 
 import org.apache.ibatis.scripting.SqlBuildContext;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents a mixed SQL node, which can contain multiple SQL nodes.
@@ -27,10 +29,15 @@ import java.util.List;
  * @author Clinton Begin
  */
 public class MixedSqlNode implements SqlNode {
+
+  /**
+   * the children contents
+   */
+  @NotNull
   private final List<SqlNode> contents;
 
   public MixedSqlNode(List<SqlNode> contents) {
-    this.contents = contents;
+    this.contents = Objects.requireNonNull(contents, "contents cannot be null.");
   }
 
   @Override
@@ -67,6 +74,15 @@ public class MixedSqlNode implements SqlNode {
 
   @Override
   public boolean hasChildren() {
-    return contents != null && !contents.isEmpty();
+    return !contents.isEmpty();
+  }
+
+  @NotNull
+  public List<SqlNode> getContents() {
+    return contents;
+  }
+
+  public int getChildCount() {
+    return contents.size();
   }
 }

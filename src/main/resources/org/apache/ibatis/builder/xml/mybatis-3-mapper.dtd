@@ -184,10 +184,20 @@ column CDATA #IMPLIED
 >
 
 <!-- <and></and> -->
-<!ELEMENT and (#PCDATA | include | trim | where | set | foreach | choose | if | bind | in | eq)*>
+<!ELEMENT and (#PCDATA | include | trim | where | set | foreach | choose | if | bind | in | eq | and | or)*>
 <!ATTLIST and
-type (eq | ne | in | notIn | le | ge | lt | gt ) #REQUIRED
-property CDATA #REQUIRED
+type (eq | ne | in | notIn | le | ge | lt | gt | none ) #IMPLIED
+property CDATA #IMPLIED
+test CDATA #IMPLIED
+column CDATA #IMPLIED
+>
+
+<!-- <or></or> -->
+<!ELEMENT or (#PCDATA | include | trim | where | set | foreach | choose | if | bind | in | eq | and | or)*>
+<!ATTLIST or
+type (eq | ne | in | notIn | le | ge | lt | gt | none ) #IMPLIED
+test CDATA #IMPLIED
+property CDATA #IMPLIED
 column CDATA #IMPLIED
 >
 
