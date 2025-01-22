@@ -19,7 +19,11 @@ import org.apache.ibatis.scripting.SqlBuildContext;
 import org.apache.ibatis.scripting.SqlBuildContextDelegator;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.StringTokenizer;
 
 /**
  * @author Clinton Begin
@@ -28,9 +32,19 @@ public class TrimSqlNode implements SqlNode {
 
   @NotNull
   private final SqlNode contents;
+
+  /**
+   * prefix to trim
+   */
   private final String prefix;
+
+  /**
+   * suffix to trim
+   */
   private final String suffix;
+
   private final List<String> prefixesToOverride;
+
   private final List<String> suffixesToOverride;
 
   public TrimSqlNode(SqlNode contents, String prefix, String prefixesToOverride,
@@ -56,6 +70,11 @@ public class TrimSqlNode implements SqlNode {
   @Override
   public boolean isDynamic() {
     return contents.isDynamic();
+  }
+
+  @NotNull
+  public SqlNode getContents() {
+    return contents;
   }
 
   @Override
@@ -110,9 +129,13 @@ public class TrimSqlNode implements SqlNode {
         return;
       }
       prefixApplied = true;
-      if (prefixesToOverride != null) {
-        prefixesToOverride.stream().filter(trimmedUppercaseSql::startsWith).findFirst()
-          .ifPresent(toRemove -> sql.delete(0, toRemove.trim().length()));
+      if (prefixesToOverride != null && !prefixesToOverride.isEmpty()) {
+        for (String prefix : prefixesToOverride) {
+          if (trimmedUppercaseSql.startsWith(prefix)) {
+            sql.delete(0, prefix.trim().length());
+            break;
+          }
+        }
       }
       if (prefix != null) {
         sql.insert(0, " ").insert(0, prefix);
@@ -124,14 +147,14 @@ public class TrimSqlNode implements SqlNode {
         return;
       }
       suffixApplied = true;
-      if (suffixesToOverride != null) {
-        suffixesToOverride.stream()
-          .filter(toRemove -> trimmedUppercaseSql.endsWith(toRemove) || trimmedUppercaseSql.endsWith(toRemove.trim()))
-          .findFirst().ifPresent(toRemove -> {
-            int start = sql.length() - toRemove.trim().length();
+      if (suffixesToOverride != null && !suffixesToOverride.isEmpty()) {
+        for (String suffix : suffixesToOverride) {
+          if (trimmedUppercaseSql.endsWith(suffix) || trimmedUppercaseSql.endsWith(suffix.trim())) {
+            int start = sql.length() - suffix.trim().length();
             int end = sql.length();
             sql.delete(start, end);
-          });
+          }
+        }
       }
       if (suffix != null) {
         sql.append(" ").append(suffix);
