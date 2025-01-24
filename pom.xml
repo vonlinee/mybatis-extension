@@ -135,7 +135,6 @@
     <byte-buddy.version>1.15.11</byte-buddy.version>
     <derby.version>10.17.1.0</derby.version>
     <log4j.version>2.24.3</log4j.version>
-    <mockito.version>5.14.2</mockito.version>
     <mssql-jdbc.version>12.8.1.jre11</mssql-jdbc.version>
     <testcontainers.version>1.20.4</testcontainers.version>
 
@@ -186,10 +185,11 @@
       <version>3.3.0</version>
       <optional>true</optional>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/javax.persistence/javax.persistence-api -->
     <dependency>
-      <groupId>jakarta.persistence</groupId>
-      <artifactId>jakarta.persistence-api</artifactId>
-      <version>3.2.0</version>
+      <groupId>javax.persistence</groupId>
+      <artifactId>javax.persistence-api</artifactId>
+      <version>2.2</version>
     </dependency>
 
     <dependency>
@@ -506,7 +506,7 @@
         <!--jdk8 compatibility -->
         <commons.logging.version>1.2</commons.logging.version>
         <catch-exception.version>1.2.0</catch-exception.version>
-        <mockito.version>3.12.4</mockito.version>
+        <mockito.version>4.9.0</mockito.version>
         <mockito-subclass.version>4.10.0</mockito-subclass.version>
         <logback-classic.version>1.2.4</logback-classic.version>
         <slf4j-api.version>1.7.34</slf4j-api.version>
