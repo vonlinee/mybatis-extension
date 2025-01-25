@@ -1,6 +1,7 @@
 package org.apache.ibatis.scripting.xmltags;
 
 import org.apache.ibatis.scripting.SqlBuildContext;
+import org.apache.ibatis.util.StringUtils;
 
 import java.util.List;
 
@@ -45,13 +46,25 @@ public class AndSqlNode extends MixedSqlNode {
     if (getChildCount() == 1) {
       // it should be a StaticTextSqlNode
       context.appendSql(" AND ");
-      SqlNode sqlNode = getContents().get(0);
+      SqlNode sqlNode = getChild(0);
       return sqlNode.apply(context);
     }
-    context.appendSql(" AND (");
-    boolean result = super.apply(context);
-    context.appendSql(" )");
-
+    BufferedSqlBuildContextDelegator childContext = new BufferedSqlBuildContextDelegator(context);
+    boolean result = super.apply(childContext);
+    String sql = childContext.getSql();
+    context.appendSql("(");
+    context.appendSql(removePrefix(sql));
+    context.appendSql(")");
     return result;
+  }
+
+  private String removePrefix(String sql) {
+    int i = StringUtils.indexOfIgnoreCase(sql, "and");
+    if (i >= 0) {
+      sql = sql.substring(i + 3);
+    } else if ((i = StringUtils.indexOfIgnoreCase(sql, "or")) >= 0) {
+      sql = sql.substring(i + 2);
+    }
+    return sql;
   }
 }

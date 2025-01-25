@@ -17,7 +17,9 @@ package org.apache.ibatis.scripting.xmltags;
 
 import org.apache.ibatis.parsing.GenericTokenParser;
 import org.apache.ibatis.parsing.TokenHandler;
-import org.apache.ibatis.scripting.*;
+import org.apache.ibatis.scripting.BindingContext;
+import org.apache.ibatis.scripting.SqlBuildContext;
+import org.apache.ibatis.scripting.SqlBuildContextWrapper;
 import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
 import org.apache.ibatis.util.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -31,7 +33,7 @@ import java.util.Map;
  * an input parameter, @ Param ("keyName") can be used to set the key. After setting the keyName, the list and array
  * will become invalid. In addition to the situation of parameter input, there is also a case where a certain field
  * is used as a parameter object. For example, if the User has the property List ids. If the input parameter is a
- * User object, then this collection="ids". If the User has the property Ids ids; Ids is an object, and Ids has a
+ * User object, then this collection="ids". If the User has the property "ids"; {@code ids} is an object, and Ids has a
  * property called List ID; If the input parameter is a User object, then collection="ids. id"
  * <p>
  * If a single parameter is passed in and the parameter type is a List, the collection property value is list
@@ -64,13 +66,13 @@ public class ForEachSqlNode extends DynamicSqlNode {
 
   /**
    * The starting symbol of the FHIR code is usually used in conjunction with 'close='.
-   * Commonly used in in() and values(). This parameter is optional
+   * Commonly used in {@code in()} and values(). This parameter is optional
    */
   private final String open;
 
   /**
    * The 'close' symbol in the 'exec' code is usually used in conjunction with 'open=' (').
-   * It is commonly used in in() and values(). This parameter is optional.
+   * It is commonly used in {@code in()} and values(). This parameter is optional.
    */
   private final String close;
 

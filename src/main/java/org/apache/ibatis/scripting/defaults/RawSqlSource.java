@@ -15,10 +15,8 @@
  */
 package org.apache.ibatis.scripting.defaults;
 
-import org.apache.ibatis.builder.SqlSourceBuilder;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.SqlSource;
-import org.apache.ibatis.scripting.MapBinding;
 import org.apache.ibatis.scripting.xmltags.DynamicSqlSource;
 import org.apache.ibatis.session.Configuration;
 import org.jetbrains.annotations.NotNull;

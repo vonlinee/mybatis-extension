@@ -78,8 +78,15 @@ public class MixedSqlNode implements SqlNode {
   }
 
   @NotNull
-  public List<SqlNode> getContents() {
+  public List<SqlNode> getChildren() {
     return contents;
+  }
+
+  public SqlNode getChild(int i) {
+    if (i < 0 || i > contents.size()) {
+      return null;
+    }
+    return contents.get(i);
   }
 
   public int getChildCount() {

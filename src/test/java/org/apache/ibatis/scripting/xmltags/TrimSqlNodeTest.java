@@ -42,7 +42,6 @@ import static org.mockito.Mockito.when;
  * }</pre>
  *
  * @author <a href="1181963012mw@gmail.com">mawen12</a>
- *
  * @see <a href="https://mybatis.org/mybatis-3/dynamic-sql.html#trim-where-set">trim-where-set</a>
  */
 class TrimSqlNodeTest extends SqlNodeTest {
@@ -68,12 +67,12 @@ class TrimSqlNodeTest extends SqlNodeTest {
   @Test
   @Override
   public void shouldApply() throws Exception {
-    when(context.getBindings()).thenReturn(new MapBinding() {
-      {
-        put("id", 1);
-        put("name", "mybatis");
-      }
-    });
+
+    MapBinding binding = new MapBinding()
+      .set("id", 1)
+      .set("name", "mybatis");
+
+    when(context.getBindings()).thenReturn(binding);
 
     boolean result = sqlNode.apply(context);
 
@@ -83,11 +82,10 @@ class TrimSqlNodeTest extends SqlNodeTest {
 
   @Test
   public void shouldAppendOnlyId() throws Exception {
-    when(context.getBindings()).thenReturn(new MapBinding() {
-      {
-        put("id", 1);
-      }
-    });
+
+    MapBinding binding = new MapBinding().set("id", 1);
+
+    when(context.getBindings()).thenReturn(binding);
 
     boolean result = sqlNode.apply(context);
 
@@ -97,11 +95,10 @@ class TrimSqlNodeTest extends SqlNodeTest {
 
   @Test
   public void shouldAppendOnlyName() throws Exception {
-    when(context.getBindings()).thenReturn(new MapBinding() {
-      {
-        put("name", "mybatis");
-      }
-    });
+    MapBinding binding = new MapBinding()
+      .set("name", "mybatis");
+
+    when(context.getBindings()).thenReturn(binding);
 
     boolean result = sqlNode.apply(context);
 

@@ -1,12 +1,24 @@
 package org.apache.ibatis.scripting;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiConsumer;
 
-public class MapBinding implements BindingContext {
+public class MapBinding extends AbstractMap<String, Object> implements BindingContext {
 
-  private final Map<String, Object> backingMap = new HashMap<>();
+  private final Map<String, Object> backingMap;
+
+  public MapBinding(Map<String, Object> backingMap) {
+    this.backingMap = backingMap;
+  }
+
+  public MapBinding() {
+    this(new HashMap<>());
+  }
 
   @Override
   public boolean containsKey(Object key) {
@@ -29,6 +41,12 @@ public class MapBinding implements BindingContext {
     return backingMap.put(key, value);
   }
 
+  @NotNull
+  @Override
+  public Set<Entry<String, Object>> entrySet() {
+    return backingMap.entrySet();
+  }
+
   @Override
   public void iterateFor(BiConsumer<String, Object> consumer) {
     backingMap.forEach(consumer);
@@ -42,5 +60,14 @@ public class MapBinding implements BindingContext {
   @Override
   public Map<String, Object> asMap() {
     return backingMap;
+  }
+
+  public MapBinding set(String name, Object value) {
+    this.put(name, value);
+    return this;
+  }
+
+  public static MapBinding of(Map<String, Object> map) {
+    return new MapBinding(map);
   }
 }

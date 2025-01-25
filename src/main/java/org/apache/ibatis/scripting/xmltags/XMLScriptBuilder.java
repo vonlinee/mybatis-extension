@@ -320,7 +320,7 @@ public class XMLScriptBuilder extends BaseBuilder {
       String test = nodeToHandle.getStringAttribute("test");
       String type = nodeToHandle.getStringAttribute("type");
 
-      AndSqlNode andSqlNode = new AndSqlNode(sqlNode.getContents(), type, column, property, test);
+      AndSqlNode andSqlNode = new AndSqlNode(sqlNode.getChildren(), type, column, property, test);
       targetContents.add(andSqlNode);
     }
   }
@@ -336,7 +336,7 @@ public class XMLScriptBuilder extends BaseBuilder {
       String test = nodeToHandle.getStringAttribute("test");
       String type = nodeToHandle.getStringAttribute("type");
 
-      OrSqlNode andSqlNode = new OrSqlNode(sqlNode.getContents(), type, column, property, test);
+      OrSqlNode andSqlNode = new OrSqlNode(sqlNode.getChildren(), type, column, property, test);
       targetContents.add(andSqlNode);
     }
   }

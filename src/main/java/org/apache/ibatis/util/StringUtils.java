@@ -186,7 +186,7 @@ public final class StringUtils {
    * @return capitalized String, {@code null} if null String input
    */
   public static String capitalizeFully(String str, final char... delimiters) {
-    if (org.apache.commons.lang3.StringUtils.isEmpty(str)) {
+    if (isEmpty(str)) {
       return str;
     }
     str = str.toLowerCase();
@@ -247,7 +247,7 @@ public final class StringUtils {
    * @return capitalized String, {@code null} if null String input
    */
   public static String capitalize(final String str, final char... delimiters) {
-    if (org.apache.commons.lang3.StringUtils.isEmpty(str)) {
+    if (isEmpty(str)) {
       return str;
     }
     final Predicate<Integer> isDelimiter = generateIsDelimiterFunction(delimiters);
@@ -326,5 +326,92 @@ public final class StringUtils {
       }
     }
     return builder.toString();
+  }
+
+  /**
+   * Removes leading whitespace characters from the given string.
+   * <p>
+   * If the input string is null, this method returns an empty string.
+   * Leading whitespace is defined as any character that is considered
+   * whitespace according to the Unicode standard, including spaces,
+   * tabs, and other whitespace characters.
+   * </p>
+   *
+   * @param str the input string to be trimmed
+   * @return a new string with leading whitespace removed;
+   * returns an empty string if the input is null
+   */
+  public static String leftTrim(String str) {
+    if (str == null) {
+      return "";
+    }
+    int len = str.length();
+    int st = 0;
+    char[] val = str.toCharArray();
+    while ((st < len) && (val[st] <= ' ')) {
+      st++;
+    }
+    while ((st < len) && (val[len - 1] <= ' ')) {
+      len--;
+    }
+    return ((st > 0)) ? str.substring(st, len) : str;
+  }
+
+  /**
+   * Case in-sensitive find of the first index within a CharSequence
+   * from the specified position.
+   *
+   * <p>A {@code null} CharSequence will return {@code -1}.
+   * A negative start position is treated as zero.
+   * An empty ("") search CharSequence always matches.
+   * A start position greater than the string length only matches
+   * an empty search CharSequence.</p>
+   *
+   * @param str       the CharSequence to check, may be null
+   * @param searchStr the CharSequences to find, may be null
+   * @return the first index of the search CharSequence (always &ge; startPos),
+   * -1 if no match or {@code null} string input
+   * @see StringUtils#indexOfIgnoreCase(String, String, int)
+   */
+  public static int indexOfIgnoreCase(final String str, final String searchStr) {
+    return indexOfIgnoreCase(str, searchStr, 0);
+  }
+
+  /**
+   * Case in-sensitive find of the first index within a CharSequence
+   * from the specified position.
+   *
+   * <p>A {@code null} CharSequence will return {@code -1}.
+   * A negative start position is treated as zero.
+   * An empty ("") search CharSequence always matches.
+   * A start position greater than the string length only matches
+   * an empty search CharSequence.</p>
+   *
+   * @param str       the CharSequence to check, may be null
+   * @param searchStr the CharSequences to find, may be null
+   * @param startPos  the start position, negative treated as zero
+   * @return the first index of the search CharSequence (always &ge; startPos),
+   * -1 if no match or {@code null} string input
+   */
+  public static int indexOfIgnoreCase(final String str, final String searchStr, int startPos) {
+    if (str == null || searchStr == null) {
+      return -1;
+    }
+    if (startPos < 0) {
+      startPos = 0;
+    }
+    final int endLimit = str.length() - searchStr.length() + 1;
+    if (startPos > endLimit) {
+      return -1;
+    }
+    if (searchStr.isEmpty()) {
+      return startPos;
+    }
+    for (int i = startPos; i < endLimit; i++) {
+      if (str.regionMatches(true, i, searchStr, 0, searchStr.length())) {
+        return i;
+      }
+    }
+    return -1;
   }
 }

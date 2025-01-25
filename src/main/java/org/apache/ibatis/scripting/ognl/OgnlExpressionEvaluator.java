@@ -19,8 +19,9 @@ import ognl.OgnlContext;
 import ognl.OgnlRuntime;
 import ognl.PropertyAccessor;
 import org.apache.ibatis.builder.BuilderException;
-import org.apache.ibatis.scripting.ExpressionEvaluator;
+import org.apache.ibatis.scripting.BindingContext;
 import org.apache.ibatis.scripting.ContextMap;
+import org.apache.ibatis.scripting.ExpressionEvaluator;
 import org.apache.ibatis.scripting.SqlBuildContext;
 
 import java.lang.reflect.Array;
@@ -40,7 +41,7 @@ public class OgnlExpressionEvaluator implements ExpressionEvaluator {
 
   @Override
   public boolean evaluateBoolean(String expression, Object parameterObject) {
-    Object value = OgnlCache.getValue(expression, parameterObject);
+    Object value = OgnlCache.getValue(expression, getRootObject(parameterObject));
     if (value instanceof Boolean) {
       return (Boolean) value;
     }
@@ -50,13 +51,20 @@ public class OgnlExpressionEvaluator implements ExpressionEvaluator {
     return value != null;
   }
 
+  private Object getRootObject(Object parameterObject) {
+    if (parameterObject instanceof BindingContext) {
+      parameterObject = ((BindingContext) parameterObject).asMap();
+    }
+    return parameterObject;
+  }
+
   /**
    * @since 3.5.9
    */
   @Override
   @SuppressWarnings("rawtypes")
   public Iterable<?> evaluateIterable(String expression, Object parameterObject, boolean nullable) {
-    Object value = OgnlCache.getValue(expression, parameterObject);
+    Object value = OgnlCache.getValue(expression, getRootObject(parameterObject));
     if (value == null) {
       if (nullable) {
         return null;
@@ -86,10 +94,9 @@ public class OgnlExpressionEvaluator implements ExpressionEvaluator {
   }
 
   @Override
-  public Object getValue(String content, Object parameter) {
-    return OgnlCache.getValue(content, parameter);
+  public Object getValue(String content, Object parameterObject) {
+    return OgnlCache.getValue(content, getRootObject(parameterObject));
   }
-
 
   static class ContextAccessor implements PropertyAccessor {
 
