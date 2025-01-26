@@ -15,6 +15,9 @@
  */
 package org.apache.ibatis.submitted.custom_collection_handling;
 
+import org.apache.ibatis.reflection.ReflectionRuntimeException;
+import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
@@ -27,17 +30,10 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.ibatis.reflection.ReflectionRuntimeException;
-import org.apache.ibatis.reflection.factory.ObjectFactory;
-
-public class CustomObjectFactory implements ObjectFactory {
+public class CustomObjectFactory extends DefaultObjectFactory {
 
   @Override
-  public <T> T create(Class<T> type) {
-    return create(type, null, null);
-  }
-
-  @Override
+  @SuppressWarnings("unchecked")
   public <T> T create(Class<T> type, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
     Class<?> classToCreate = resolveInterface(type);
     return (T) instantiateClass(classToCreate, constructorArgTypes, constructorArgs);
@@ -53,11 +49,11 @@ public class CustomObjectFactory implements ObjectFactory {
         }
         return constructor.newInstance();
       }
-      constructor = type.getDeclaredConstructor(constructorArgTypes.toArray(new Class[constructorArgTypes.size()]));
+      constructor = type.getDeclaredConstructor(constructorArgTypes.toArray(new Class[0]));
       if (!constructor.isAccessible()) {
         constructor.setAccessible(true);
       }
-      return constructor.newInstance(constructorArgs.toArray(new Object[constructorArgs.size()]));
+      return constructor.newInstance(constructorArgs.toArray(new Object[0]));
     } catch (Exception e) {
       StringBuilder argTypes = new StringBuilder();
       if (constructorArgTypes != null) {
@@ -69,16 +65,17 @@ public class CustomObjectFactory implements ObjectFactory {
       StringBuilder argValues = new StringBuilder();
       if (constructorArgs != null) {
         for (Object argValue : constructorArgs) {
-          argValues.append(String.valueOf(argValue));
+          argValues.append(argValue);
           argValues.append(",");
         }
       }
       throw new ReflectionRuntimeException("Error instantiating " + type + " with invalid types (" + argTypes + ") or values ("
-          + argValues + "). Cause: " + e, e);
+        + argValues + "). Cause: " + e, e);
     }
   }
 
-  private Class<?> resolveInterface(Class<?> type) {
+  @Override
+  public Class<?> resolveInterface(Class<?> type) {
     Class<?> classToCreate;
     if (type == List.class || type == Collection.class) {
       classToCreate = LinkedList.class;
@@ -103,5 +100,4 @@ public class CustomObjectFactory implements ObjectFactory {
   public <T> T[] createArray(Class<T> type, int size) {
     return (T[]) Array.newInstance(type, size);
   }
-
 }

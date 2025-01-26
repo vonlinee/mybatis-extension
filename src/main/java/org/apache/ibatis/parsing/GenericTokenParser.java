@@ -15,6 +15,8 @@
  */
 package org.apache.ibatis.parsing;
 
+import java.util.List;
+
 /**
  * @author Clinton Begin
  */
@@ -100,5 +102,19 @@ public class GenericTokenParser {
   public static String parse(String text, String openToken, String closeToken, TokenHandler handler) {
     GenericTokenParser parser = new GenericTokenParser(openToken, closeToken, handler);
     return parser.parse(text);
+  }
+
+  /**
+   * Collects all variable names specified between the given tokens in the provided text.
+   * #{user.name} or ${user.name}
+   *
+   * @param text The text string to be parsed, which may contain variables.
+   * @return A list containing all collected variable names. Returns an empty list if no variable names are found.
+   */
+  public static List<String> collectVariableNames(String text) {
+    VariableNameCollector collector = new VariableNameCollector();
+    parse(text, TokenHandler.OPEN_TOKEN_$, TokenHandler.CLOSE_TOKEN, collector);
+    parse(text, TokenHandler.OPEN_TOKEN_SIGN, TokenHandler.CLOSE_TOKEN, collector);
+    return collector.getVariableNames();
   }
 }

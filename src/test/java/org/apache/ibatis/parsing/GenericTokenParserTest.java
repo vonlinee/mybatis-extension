@@ -24,26 +24,14 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.time.Duration;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 class GenericTokenParserTest {
-
-  public static class VariableTokenHandler implements TokenHandler {
-    private final Map<String, String> variables;
-
-    VariableTokenHandler(Map<String, String> variables) {
-      this.variables = variables;
-    }
-
-    @Override
-    public String handleToken(String content) {
-      return variables.get(content);
-    }
-  }
 
   @ParameterizedTest
   @MethodSource("shouldDemonstrateGenericTokenReplacementProvider")
@@ -99,17 +87,16 @@ class GenericTokenParserTest {
   @Disabled("Because it randomly fails on Github CI. It could be useful during development.")
   @Test
   void shouldParseFastOnJdk7u6() {
+    HashMap<String, String> map = new HashMap<>();
+    map.put("first_name", "James");
+    map.put("initial", "T");
+    map.put("last_name", "Kirk");
+    map.put("", "");
+
     Assertions.assertTimeout(Duration.ofMillis(1000), () -> {
       // issue #760
       GenericTokenParser parser = new GenericTokenParser("${", "}",
-        new VariableTokenHandler(new HashMap<String, String>() {
-          {
-            put("first_name", "James");
-            put("initial", "T");
-            put("last_name", "Kirk");
-            put("", "");
-          }
-        }));
+        new VariableTokenHandler(map));
 
       StringBuilder input = new StringBuilder();
       for (int i = 0; i < 10000; i++) {
@@ -123,4 +110,16 @@ class GenericTokenParserTest {
     });
   }
 
+  static Stream<Arguments> interpolateVariablesProvider() {
+    return Stream.of(arguments("My name is ${firstName} ${lastName}"),
+      arguments("hello ${user.firstName} ${param.user.name}"));
+  }
+
+  @ParameterizedTest
+  @MethodSource("interpolateVariablesProvider")
+  void shouldCollectNames(String expression) {
+    List<String> strings = GenericTokenParser.collectVariableNames(expression);
+
+    System.out.println(strings);
+  }
 }

@@ -24,5 +24,11 @@ public interface TokenHandler {
   String OPEN_TOKEN_$ = "${";
   String CLOSE_TOKEN = "}";
 
+  /**
+   * handle token
+   *
+   * @param content content wrapped in #{xxx} or ${xxx}
+   * @return the handled content
+   */
   String handleToken(String content);
 }

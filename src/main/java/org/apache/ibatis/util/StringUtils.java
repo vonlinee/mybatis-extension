@@ -1,9 +1,12 @@
 package org.apache.ibatis.util;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public final class StringUtils {
 
@@ -279,7 +282,7 @@ public final class StringUtils {
   /**
    * Given the array of delimiters supplied; returns a function determining whether a character code point is a delimiter.
    * The function provides O(1) lookup time.
-   * Whitespace is defined by {@link Character#isWhitespace(char)} and is used as the defaultvalue if delimiters is null.
+   * Whitespace is defined by {@link Character#isWhitespace(char)} and is used as the default value if delimiters is null.
    *
    * @param delimiters set of characters to determine delimiters, null means whitespace
    * @return Predicate<Integer> taking a code point value as an argument and returning true if a delimiter.
@@ -295,7 +298,6 @@ public final class StringUtils {
       }
       isDelimiter = delimiterSet::contains;
     }
-
     return isDelimiter;
   }
 
@@ -413,5 +415,41 @@ public final class StringUtils {
       }
     }
     return -1;
+  }
+
+  /**
+   * Joins the elements of a collection into a single string,
+   * with each element transformed by a specified mapping function
+   * and separated by a given separator.
+   *
+   * @param <T>        the type of elements in the collection
+   * @param collection the collection of elements to be joined
+   * @param mapper     a function that transforms each element into a string
+   * @param separator  the string to separate each joined element
+   * @return a single string containing all elements joined by the separator;
+   * returns an empty string if the collection is null or empty
+   */
+  public static <T> String join(Collection<T> collection, Function<T, String> mapper, String separator) {
+    if (CollectionUtils.isEmpty(collection)) {
+      return "";
+    }
+    return collection.stream().map(mapper).collect(Collectors.joining(separator));
+  }
+
+  /**
+   * Skips whitespace characters in the given string starting from the specified index.
+   *
+   * @param str   The string in which to skip whitespace.
+   * @param start The starting index from which to begin skipping whitespace.
+   * @return The index of the first non-whitespace character, or the length of the string
+   * if no non-whitespace character is found.
+   */
+  public static int skipWhitespace(String str, int start) {
+    for (int i = start; i < str.length(); i++) {
+      if (str.charAt(i) > 0x20) {
+        return i;
+      }
+    }
+    return str.length();
   }
 }

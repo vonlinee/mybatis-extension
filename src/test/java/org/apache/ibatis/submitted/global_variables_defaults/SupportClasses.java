@@ -25,7 +25,6 @@ import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
 public class SupportClasses {
 
   public static class CustomObjectFactory extends DefaultObjectFactory {
-    private static final long serialVersionUID = 4576592418878031661L;
     private Properties properties;
 
     @Override

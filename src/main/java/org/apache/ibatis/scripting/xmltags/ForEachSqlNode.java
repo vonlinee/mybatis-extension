@@ -310,4 +310,8 @@ public class ForEachSqlNode extends DynamicSqlNode {
   public String getClose() {
     return close;
   }
+
+  public String getCollectionExpression() {
+    return collectionExpression;
+  }
 }

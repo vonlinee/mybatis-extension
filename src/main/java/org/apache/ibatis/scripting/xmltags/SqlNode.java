@@ -33,11 +33,13 @@ public interface SqlNode {
 
   /**
    * Checks if this SQL node is dynamic.
-   * 'dynamic' means current sql node contains dynamic sql element like
-   * {@literal <where/>},{@literal <if/>}, {@literal <choose/>}, {@literal <set/>}
-   * as children.
+   * <p>
+   * whether this sql node is dynamic depends on the specific element.
+   * <p>
    *
    * @return true if the SQL node is dynamic; false otherwise
+   * @see org.apache.ibatis.scripting.defaults.RawSqlSource
+   * @see DynamicSqlSource
    */
   boolean isDynamic();
 

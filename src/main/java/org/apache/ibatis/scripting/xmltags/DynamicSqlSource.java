@@ -48,7 +48,8 @@ public class DynamicSqlSource implements SqlSource {
   }
 
   @Override
-  public @NotNull BoundSql getBoundSql(@NotNull Configuration config, Object parameterObject) {
+  @NotNull
+  public BoundSql getBoundSql(@NotNull Configuration config, Object parameterObject) {
     SqlBuildContext context = config.createSqlBuildContext(parameterObject);
     // calculate all dynamic content
     rootSqlNode.apply(context);

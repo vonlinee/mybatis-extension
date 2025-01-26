@@ -61,4 +61,8 @@ public class StaticTextSqlNode implements SqlNode {
     context.appendSql(text);
     return true;
   }
+
+  public String getText() {
+    return text;
+  }
 }

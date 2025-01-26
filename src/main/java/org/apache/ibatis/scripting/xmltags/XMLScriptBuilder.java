@@ -25,9 +25,11 @@ import org.apache.ibatis.parsing.XNode;
 import org.apache.ibatis.reflection.property.PropertyTokenizer;
 import org.apache.ibatis.scripting.ExpressionEvaluator;
 import org.apache.ibatis.scripting.MapBinding;
+import org.apache.ibatis.scripting.PredicateFactory;
 import org.apache.ibatis.scripting.defaults.RawSqlSource;
-import org.apache.ibatis.scripting.ognl.OgnlExpressionEvaluator;
 import org.apache.ibatis.session.Configuration;
+import org.jetbrains.annotations.NotNull;
+import org.mybatis.scripting.template.TemplateException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -35,6 +37,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -44,11 +47,13 @@ public class XMLScriptBuilder extends BaseBuilder {
 
   private final Class<?> parameterType;
   private final Map<String, NodeHandler> nodeHandlerMap = new HashMap<>();
-  private final ExpressionEvaluator evaluator = new OgnlExpressionEvaluator();
+  private final ExpressionEvaluator evaluator;
 
   public XMLScriptBuilder(Configuration configuration, Class<?> parameterType) {
     super(configuration);
     this.parameterType = parameterType;
+
+    this.evaluator = configuration.getObjectFactory().get(ExpressionEvaluator.class);
 
     nodeHandlerMap.put("trim", new TrimHandler());
     nodeHandlerMap.put("where", new WhereHandler());
@@ -60,8 +65,8 @@ public class XMLScriptBuilder extends BaseBuilder {
     nodeHandlerMap.put("otherwise", new OtherwiseHandler());
     nodeHandlerMap.put("bind", new BindHandler(this.evaluator));
     nodeHandlerMap.put("in", new InHandler());
-    nodeHandlerMap.put("and", new AndSqlNodeHandler());
-    nodeHandlerMap.put("or", new OrSqlNodeHandler());
+    nodeHandlerMap.put("and", new ConditionSqlNodeHandler("and"));
+    nodeHandlerMap.put("or", new ConditionSqlNodeHandler("or"));
   }
 
   public SqlSource parseScriptNode(XNode context) {
@@ -309,35 +314,51 @@ public class XMLScriptBuilder extends BaseBuilder {
     }
   }
 
-  private class AndSqlNodeHandler implements NodeHandler {
+  private class ConditionSqlNodeHandler implements NodeHandler {
 
-    @Override
-    public void handleNode(XNode nodeToHandle, List<SqlNode> targetContents) {
-      MixedSqlNode sqlNode = parseDynamicTags(nodeToHandle);
+    @NotNull
+    private final String conditionOperator;
 
-      String property = nodeToHandle.getStringAttribute("property");
-      String column = nodeToHandle.getStringAttribute("column");
-      String test = nodeToHandle.getStringAttribute("test");
-      String type = nodeToHandle.getStringAttribute("type");
-
-      AndSqlNode andSqlNode = new AndSqlNode(sqlNode.getChildren(), type, column, property, test);
-      targetContents.add(andSqlNode);
+    private ConditionSqlNodeHandler(@NotNull String conditionOperator) {
+      this.conditionOperator =
+        Objects.requireNonNull(conditionOperator, "condition operator must not be null.");
     }
-  }
-
-  private class OrSqlNodeHandler implements NodeHandler {
 
     @Override
     public void handleNode(XNode nodeToHandle, List<SqlNode> targetContents) {
       MixedSqlNode sqlNode = parseDynamicTags(nodeToHandle);
+      final String test = nodeToHandle.getStringAttribute("test");
 
-      String property = nodeToHandle.getStringAttribute("property");
-      String column = nodeToHandle.getStringAttribute("column");
-      String test = nodeToHandle.getStringAttribute("test");
-      String type = nodeToHandle.getStringAttribute("type");
+      String text = null;
+      if (sqlNode.getChildCount() == 1) {
+        SqlNode child = sqlNode.getChild(0);
+        if (child instanceof StaticTextSqlNode) {
+          text = ((StaticTextSqlNode) child).getText();
+        } else if (child instanceof TextSqlNode) {
+          text = ((TextSqlNode) child).getText();
+        } else if (child instanceof AndSqlNode) {
+          // error?
+          targetContents.add(child);
+          return;
+        } else if (child instanceof OrSqlNode) {
+          // error?
+          targetContents.add(child);
+          return;
+        }
+      }
 
-      OrSqlNode andSqlNode = new OrSqlNode(sqlNode.getChildren(), type, column, property, test);
-      targetContents.add(andSqlNode);
+      SqlNode conditonSqlNode;
+      PredicateFactory predicateFactory = configuration.getObjectFactory().get(PredicateFactory.class);
+      if (this.conditionOperator.equalsIgnoreCase("and")) {
+        conditonSqlNode = new AndSqlNode(sqlNode.getChildren(),
+          evaluator, predicateFactory, text, test);
+      } else if (this.conditionOperator.equalsIgnoreCase("or")) {
+        conditonSqlNode = new OrSqlNode(sqlNode.getChildren(),
+          evaluator, predicateFactory, text, test);
+      } else {
+        throw new TemplateException(String.format("unsupported operator [%s]", this.conditionOperator));
+      }
+      targetContents.add(conditonSqlNode);
     }
   }
 }

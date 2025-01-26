@@ -75,7 +75,6 @@ public final class ReflectionUtils {
    * @param method the method to make accessible
    * @see java.lang.reflect.Method#setAccessible
    */
-  @SuppressWarnings("deprecation")
   public static void tryMakeAccessible(Method method) {
     try {
       if ((!Modifier.isPublic(method.getModifiers())

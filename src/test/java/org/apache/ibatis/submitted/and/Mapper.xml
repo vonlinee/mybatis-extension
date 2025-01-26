@@ -26,10 +26,7 @@
         select count(*) from users
         <where>
             <and>
-                <and>name = ${id}</and>
-                <or>name = #{id}</or>
-                <and>name = #{name}</and>
-                <and>id = #{id}</and>
+                <and>id > #{id}</and>
             </and>
         </where>
     </select>

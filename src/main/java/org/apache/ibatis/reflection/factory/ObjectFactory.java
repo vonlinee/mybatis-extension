@@ -37,6 +37,23 @@ public interface ObjectFactory {
   }
 
   /**
+   * get an object with specified type.
+   *
+   * @param <T>  the generic type
+   * @param type Object type
+   * @return the t
+   */
+  <T> T get(Class<T> type);
+
+  /**
+   * puts an instance into the registry associated with its class type.
+   *
+   * @param type     the class type of the instance
+   * @param instance the instance to be registered
+   */
+  void put(Class<?> type, Object instance);
+
+  /**
    * Creates a new object with default constructor.
    *
    * @param <T>  the generic type

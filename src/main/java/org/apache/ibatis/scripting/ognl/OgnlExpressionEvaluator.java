@@ -16,12 +16,14 @@
 package org.apache.ibatis.scripting.ognl;
 
 import ognl.OgnlContext;
+import ognl.OgnlException;
 import ognl.OgnlRuntime;
 import ognl.PropertyAccessor;
 import org.apache.ibatis.builder.BuilderException;
 import org.apache.ibatis.scripting.BindingContext;
 import org.apache.ibatis.scripting.ContextMap;
 import org.apache.ibatis.scripting.ExpressionEvaluator;
+import org.apache.ibatis.scripting.MapBinding;
 import org.apache.ibatis.scripting.SqlBuildContext;
 
 import java.lang.reflect.Array;
@@ -37,6 +39,7 @@ public class OgnlExpressionEvaluator implements ExpressionEvaluator {
 
   static {
     OgnlRuntime.setPropertyAccessor(ContextMap.class, new ContextAccessor());
+    OgnlRuntime.setPropertyAccessor(MapBinding.class, new MapBindingAccessor());
   }
 
   @Override
@@ -132,6 +135,34 @@ public class OgnlExpressionEvaluator implements ExpressionEvaluator {
 
     @Override
     public String getSourceSetter(OgnlContext arg0, Object arg1, Object arg2) {
+      return null;
+    }
+  }
+
+  static class MapBindingAccessor implements PropertyAccessor {
+
+    @Override
+    public Object getProperty(OgnlContext context, Object target, Object name) throws OgnlException {
+      MapBinding binding = (MapBinding) target;
+      if (!(name instanceof String)) {
+        return null;
+      }
+      return binding.get(name);
+    }
+
+    @Override
+    public void setProperty(OgnlContext context, Object target, Object name, Object value) throws OgnlException {
+      MapBinding binding = (MapBinding) target;
+      binding.set((String) name, value);
+    }
+
+    @Override
+    public String getSourceAccessor(OgnlContext context, Object target, Object index) {
+      return null;
+    }
+
+    @Override
+    public String getSourceSetter(OgnlContext context, Object target, Object index) {
       return null;
     }
   }
